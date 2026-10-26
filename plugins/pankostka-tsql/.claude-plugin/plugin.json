@@ -1,5 +1,5 @@
 {
-  "name": "tsql",
+  "name": "pankostka-tsql",
   "description": "Zásady psaní T-SQL pro MS SQL Server a kontrola souborů .sql proti nim",
   "author": {
     "name": "Jiří Dvořák"

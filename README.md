@@ -8,7 +8,7 @@ Obsah skillů je česky.
 
 | Plugin | Co dělá | Volání |
 |---|---|---|
-| `tsql` | Zásady psaní T-SQL pro MS SQL Server a kontrola souborů `.sql` | `/tsql:tsql [soubor \| adresář \| --changed]` |
+| `pankostka-tsql` | Zásady psaní T-SQL pro MS SQL Server a kontrola souborů `.sql` | `/pankostka-tsql [soubor \| adresář \| --changed]` |
 
 ## Instalace do Claude Code
 
@@ -19,7 +19,7 @@ claude plugin marketplace add pankostka/PanKostkaSkills
 ```
 
 ```bash
-claude plugin install tsql@pankostka
+claude plugin install pankostka-tsql@pankostka
 ```
 
 Totéž jde uvnitř session přes `/plugin`, kde se pluginy dají vybírat po jednom. Aktualizace:
@@ -33,9 +33,9 @@ claude plugin marketplace update pankostka
 Bez argumentu se skill načte sám, když Claude píše nebo upravuje SQL. Ručně ho spustíš s cestou ke kontrole:
 
 ```
-/tsql:tsql 20_dim/nsp20DimUcet.sql
-/tsql:tsql 20_dim
-/tsql:tsql --changed
+/pankostka-tsql 20_dim/nsp20DimUcet.sql
+/pankostka-tsql 20_dim
+/pankostka-tsql --changed
 ```
 
 `--changed` zkontroluje jen soubory `.sql`, které git hlásí jako změněné nebo nové. Výsledkem je seznam neshod se soubory, řádky a návrhy oprav; nic se neopravuje bez odsouhlasení.
@@ -45,7 +45,7 @@ Bez argumentu se skill načte sám, když Claude píše nebo upravuje SQL. Ručn
 Testy kontrolního skriptu:
 
 ```bash
-python tests/tsql/run.py
+python tests/pankostka-tsql/run.py
 ```
 
 Kontrola marketplace a pluginů:

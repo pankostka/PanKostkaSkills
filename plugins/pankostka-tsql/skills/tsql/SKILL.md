@@ -1,5 +1,5 @@
 ---
-name: tsql
+name: pankostka-tsql
 description: Zásady psaní T-SQL pro MS SQL Server - WHERE 1=1, JOIN na jednom řádku, sargable predikáty, CREATE OR ALTER, sekce v těle procedury s dvojitým END, hlavička procedury, kódování UTF-8. Použij vždy, když píšeš, upravuješ nebo kontroluješ SQL dotaz, uloženou proceduru (stored procedure), funkci nebo skript .sql. S argumentem (soubor, adresář nebo --changed) zkontroluje soubory proti zásadám a vypíše neshody.
 argument-hint: "[soubor | adresář | --changed]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check.py *)

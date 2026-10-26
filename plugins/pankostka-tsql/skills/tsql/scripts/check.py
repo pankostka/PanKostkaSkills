@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kontrola mechanických pravidel T-SQL ze skillu tsql.
+"""Kontrola mechanických pravidel T-SQL ze skillu pankostka-tsql.
 
 Použití: check.py <soubor|adresář>... | --changed
 Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.

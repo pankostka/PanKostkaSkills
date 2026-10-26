@@ -6,8 +6,8 @@
   },
   "plugins": [
     {
-      "name": "tsql",
-      "source": "./plugins/tsql",
+      "name": "pankostka-tsql",
+      "source": "./plugins/pankostka-tsql",
       "description": "Zásady psaní T-SQL pro MS SQL Server a kontrola souborů .sql proti nim"
     }
   ]

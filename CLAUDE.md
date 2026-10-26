@@ -9,6 +9,15 @@ Marketplace pluginů pro Claude Code. Každý plugin obsahuje skilly s pravidly 
 - `plugins/<plugin>/skills/<skill>/SKILL.md` - zásady a režim kontroly, skripty vedle v `scripts/`.
 - `tests/<plugin>/` - testy skriptů, do pluginu se nebalí.
 
+## Pojmenování
+
+Všechno, co uživatel píše, začíná `pankostka-`, a volání je v Claude Code i na claude.ai stejné: `/pankostka-<téma>`.
+
+- Plugin: `pankostka-<téma>`, adresář `plugins/pankostka-<téma>/`.
+- `name` v `SKILL.md`: `pankostka-<téma>`. Na claude.ai je to jediný název skillu.
+- Adresář skillu: jen `<téma>`, tedy `plugins/pankostka-tsql/skills/tsql/`. **Nesmí se jmenovat stejně jako `name`.** Claude Code povoluje volání bez prefixu pluginu jen u skillu, jehož `name` se liší od adresáře. Se stejným názvem by zbylo jen `/pankostka-tsql:pankostka-tsql`.
+- Testy: `tests/pankostka-<téma>/`.
+
 ## Zásady
 
 - Názvy souborů a adresářů anglicky, obsah česky včetně diakritiky.
