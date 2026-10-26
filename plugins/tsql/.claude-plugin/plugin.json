@@ -1,0 +1,9 @@
+{
+  "name": "tsql",
+  "description": "Zásady psaní T-SQL pro MS SQL Server a kontrola souborů .sql proti nim",
+  "author": {
+    "name": "Jiří Dvořák"
+  },
+  "repository": "https://github.com/pankostka/PanKostkaSkills",
+  "keywords": ["tsql", "sql-server", "mssql", "stored-procedure", "code-style"]
+}

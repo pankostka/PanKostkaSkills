@@ -1,0 +1,14 @@
+{
+  "name": "pankostka",
+  "description": "Skilly pro Claude Code a Claude: konvence a kontrola T-SQL, DWH, Power BI, Markdownu a Helios Nephrite",
+  "owner": {
+    "name": "Jiří Dvořák"
+  },
+  "plugins": [
+    {
+      "name": "tsql",
+      "source": "./plugins/tsql",
+      "description": "Zásady psaní T-SQL pro MS SQL Server a kontrola souborů .sql proti nim"
+    }
+  ]
+}
