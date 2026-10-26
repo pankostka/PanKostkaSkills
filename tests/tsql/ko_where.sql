@@ -1,17 +1,25 @@
--- Každý WHERE bez 1=1 se musí nahlásit jako [where], celkem 3 neshody.
-SELECT * FROM dbo.Tabulka WHERE Id = 1
+-- Víceřádkový nebo složený WHERE bez 1=1 se musí nahlásit jako [where], celkem 5 neshod.
 
+-- podmínka začíná až na dalším řádku
 SELECT *
 FROM dbo.Tabulka
 WHERE
     Id = 1
     AND Nazev = 'x'
 
-UPDATE dbo.Tabulka SET Nazev = 'y' WHERE 1=2
+-- složená podmínka na jednom řádku
+SELECT * FROM dbo.Tabulka WHERE Id = 1 AND Nazev = 'x'
 
--- tohle je v pořádku a hlásit se nesmí
-SELECT * FROM dbo.Tabulka WHERE 1=1 AND Id = 1
+-- OR na jednom řádku
+SELECT * FROM dbo.Tabulka WHERE Id = 1 OR Id = 2
+
+-- pokračování na dalším řádku přes AND
 SELECT * FROM dbo.Tabulka
-WHERE
-    1=1
-    AND Id = 1
+WHERE Id = 1
+    AND Nazev = 'x'
+
+-- jediná podmínka, ale přes víc řádků v závorce
+SELECT * FROM dbo.Tabulka
+WHERE Id IN (
+    SELECT Id FROM dbo.Jina
+)

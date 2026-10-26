@@ -16,6 +16,8 @@ import sys
 RE_CREATE = re.compile(r"\bCREATE\s+(?!OR\s+ALTER\b)(PROC|PROCEDURE|FUNCTION|VIEW|TRIGGER)\b", re.IGNORECASE)
 RE_WHERE = re.compile(r"\bWHERE\b", re.IGNORECASE)
 RE_ONE_EQ_ONE = re.compile(r"\s*1\s*=\s*1\b")
+RE_AND_OR = re.compile(r"\b(AND|OR)\b", re.IGNORECASE)
+RE_BETWEEN = re.compile(r"\bBETWEEN\b.*?\bAND\b", re.IGNORECASE)
 
 
 def keep_newlines(s):
@@ -68,6 +70,19 @@ def line_of(text, pos):
     return text.count("\n", 0, pos) + 1
 
 
+def is_single_line_condition(code, end):
+    """Podmínka za WHERE je celá na jeho řádku a je jediná, tedy bez AND/OR a bez pokračování na dalším řádku."""
+    eol = code.find("\n", end)
+    eol = len(code) if eol == -1 else eol
+    rest = code[end:eol]
+    if not rest.strip() or rest.count("(") > rest.count(")"):
+        return False
+    if RE_AND_OR.search(RE_BETWEEN.sub(" ", rest)):
+        return False
+    following = next((line for line in code[eol + 1:].split("\n") if line.strip()), "")
+    return not RE_AND_OR.match(following.strip())
+
+
 def read_text(path, findings):
     """Načte soubor jako UTF-8. Při jiném kódování zapíše neshodu a vrátí None."""
     with open(path, "rb") as f:
@@ -97,8 +112,8 @@ def check_file(path):
         findings.append((line_of(code, m.start()), "create", f"CREATE {m.group(1).upper()} bez OR ALTER, použij CREATE OR ALTER"))
 
     for m in RE_WHERE.finditer(code):
-        if not RE_ONE_EQ_ONE.match(code, m.end()):
-            findings.append((line_of(code, m.start()), "where", "WHERE nezačíná 1=1, podmínky připoj níž jako AND"))
+        if not RE_ONE_EQ_ONE.match(code, m.end()) and not is_single_line_condition(code, m.end()):
+            findings.append((line_of(code, m.start()), "where", "víceřádková nebo složená podmínka nezačíná WHERE 1=1, podmínky připoj níž jako AND"))
 
     findings.sort()
     return findings

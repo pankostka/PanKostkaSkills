@@ -37,6 +37,8 @@ WHERE 1=1
     --AND spolecnost = @spolecnost
 ```
 
+**Výjimkou je jediná podmínka celá na řádku s `WHERE`**, třeba `... FROM s20.DimZdroj_AD WHERE DimZdrojID <> -1` v řadě `UNION ALL` nebo `WHERE SourceSRV IS NOT NULL` v kurzoru. Tam není co zakomentovat bez sáhnutí na `WHERE` a `1=1` by řádku jen prodloužilo. Jakmile podmínka pokračuje na další řádek nebo obsahuje `AND` či `OR`, `1=1` je povinné. `BETWEEN ... AND` se za složenou podmínku nepočítá.
+
 **Každý JOIN piš na jednu řádku**, tedy tabulku i podmínku spojení pohromadě. Seznam joinů se tak dá přečíst svisle a je vidět, kolik tabulek dotaz spojuje. Když se podmínka na jednu řádku nevejde, je to obvykle signál, že spojení je složitější, než se zdá, a zaslouží komentář.
 
 ## Výkon
@@ -98,7 +100,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    python ${CLAUDE_SKILL_DIR}/scripts/check.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER` a `WHERE` bez `1=1`. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
+   Když `python` neexistuje, použij `python3`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER` a víceřádkový nebo složený `WHERE` bez `1=1`. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
    - sargable predikáty,
