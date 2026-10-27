@@ -1,6 +1,6 @@
 # PanKostkaSkills
 
-Marketplace pluginů pro Claude Code. Každý plugin obsahuje skilly s pravidly a kontrolou souborů proti nim. Repo je zatím soukromé, zveřejní se po kontrole obsahu.
+Marketplace pluginů pro Claude Code. Každý plugin obsahuje skilly s pravidly a kontrolou souborů proti nim. Repo je veřejné pod licencí MIT. Do skillů proto nepatří nic citlivého: hesla, tokeny, GUID workspace a datasetů, skutečné názvy serverů a databází ani údaje zákazníků. V příkladech používej neutrální názvy (`HGFirmaOstra`, `SQLSRVX`).
 
 ## Struktura
 
