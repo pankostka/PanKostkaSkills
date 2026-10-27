@@ -42,6 +42,7 @@ Každé normativní pravidlo (co se má nebo nesmí) má identifikátor **`<tém
 - `SKILL.md` je zdroj pravidel, ne výtah z jiného dokumentu. Odůvodnění pravidel v něm zůstávají.
 - Skilly musí fungovat i samostatně jako zip pro claude.ai: žádné odkazy mimo adresář skillu a žádné `${CLAUDE_PLUGIN_ROOT}`, jen `${CLAUDE_SKILL_DIR}`.
 - Skripty jen se standardní knihovnou Pythonu.
+- Zkratky a pojmy jsou v `glossary.md` skillu, který je používá: DWH v `pankostka-dwh`, Helios v `pankostka-nephrite`, Power BI v `pankostka-powerbi`. Samostatný skill na slovník není, model by ho musel načítat zvlášť. Zkratka potřebná ve dvou skillech (FV, FD) je v obou. Zkratky společností a zdrojů do veřejného repa nepatří.
 - Mechanická pravidla kontroluje skript, úsudek model. Nové pravidlo ve skriptu potřebuje test `ko_<popis>`.
 - Testy: `ok_*` nesmí mít neshodu, `ko_<popis>_*` jen neshody pravidla s tím popisem, počet podle textu `celkem N` v testu. Test je soubor, nebo adresář, když pravidlo porovnává soubory mezi sebou (`pankostka-md`: přílohy, tagy, odkazy). Testy `ko_` porušují pravidla záměrně, kontrola skillu na ně nemíří.
 - Po každé změně spusť testy (`python tests/<plugin>/run.py`) a `claude plugin validate .`.

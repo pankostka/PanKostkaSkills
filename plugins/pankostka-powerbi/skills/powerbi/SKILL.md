@@ -15,6 +15,7 @@ Zásady pro sémantický model a report Power BI uložené jako soubory v gitu. 
 | `${CLAUDE_SKILL_DIR}/field-parameters.md` | zakládáš nebo upravuješ field parameter, tedy tabulku `Select...`, nebo vizuál, který ho používá |
 | `${CLAUDE_SKILL_DIR}/roles.md` | zakládáš nebo měníš roli, RLS nebo OLS |
 | `${CLAUDE_SKILL_DIR}/excel.md` | uživatel čte model kontingenční tabulkou v Excelu, nebo ji sestavuješ skriptem |
+| `${CLAUDE_SKILL_DIR}/glossary.md` | narazíš na zkratku (PBIP, PBIR, TMDL, RLS, TI), nebo zavádíš novou |
 
 Argument: `$ARGUMENTS`
 

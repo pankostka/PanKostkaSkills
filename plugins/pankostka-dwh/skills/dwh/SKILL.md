@@ -9,7 +9,7 @@ allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_dwh.py *) Bash(pyth
 
 Zásady pro datový sklad v MS SQL Server, nad kterým stojí reporting v Power BI. Pravidla psaní T-SQL jsou ve skillu `pankostka-tsql`, sémantický model ve skillu `pankostka-powerbi`. Konkrétní zdroje, společnosti, marty, server a databáze patří do `CLAUDE.md` nebo `CLAUDE_Project.md` repa.
 
-Pojmy (datamart, kostka, `Key = -1`, junk a degenerate dimension, alokace) jsou v `${CLAUDE_SKILL_DIR}/glossary.md`, postupy pro přidání dimenze a míry v `${CLAUDE_SKILL_DIR}/checklists.md`.
+Pojmy a zkratky (datamart, kostka, `Key = -1`, junk a degenerate dimension, alokace, zkratky v názvech sloupců jako `Org`, `Zak`, `SK`) jsou v `${CLAUDE_SKILL_DIR}/glossary.md`. Než zkratku použiješ nebo zavedeš novou, podívej se tam. Postupy pro přidání dimenze a míry jsou v `${CLAUDE_SKILL_DIR}/checklists.md`.
 
 Argument: `$ARGUMENTS`
 
