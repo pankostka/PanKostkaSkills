@@ -1,0 +1,4 @@
+CREATE OR ALTER PROCEDURE nsp20AllocPartnerPodil_AX AS
+BEGIN
+	SELECT 1 AS Podil INTO s20.AllocPartnerPodil_AX FROM s20.FactKurz
+END

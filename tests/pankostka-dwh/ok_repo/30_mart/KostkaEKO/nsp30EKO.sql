@@ -1,0 +1,7 @@
+CREATE OR ALTER PROCEDURE nsp30EKO AS
+BEGIN
+	SELECT d.DenikKc INTO s30EKO.FactDenik FROM s20.FactDenik AS d
+	ALTER TABLE s30EKO.DimUcet ADD CONSTRAINT PK_DimUcet PRIMARY KEY (DimUcetID)
+	ALTER TABLE s30EKO.FactDenik ADD CONSTRAINT FK_FactDenikDimUcet FOREIGN KEY (DimUcetID) REFERENCES s30EKO.DimUcet (DimUcetID)
+	-- s30AXMain je jiný mart, ale tohle je komentář
+END

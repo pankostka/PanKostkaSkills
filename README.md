@@ -12,6 +12,7 @@ Obsah skillů je česky.
 | `pankostka-md` | Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů `.md` | `/pankostka-md [soubor \| adresář \| --changed]` |
 | `pankostka-obsidian` | Vault v Obsidianu nad git repem: nastavení, co verzovat, šablona konfigurace, kontrola vaultu | `/pankostka-obsidian [adresář vaultu]` |
 | `pankostka-powerbi` | Sémantický model a report Power BI v PBIP: TMDL, PBIR, názvy měr, DAX, field parameters, role. Kontrola modelu a mrtvých odkazů v reportech | `/pankostka-powerbi [adresář \| soubor.tmdl \| --changed]` |
+| `pankostka-dwh` | Datový sklad v MS SQL Server: vrstvy stage, star a mart, pořadí plnění, struktura repa, jmenné konvence. Kontrola názvů procedur, odkazů mezi vrstvami a klíčů | `/pankostka-dwh [soubor \| adresář \| --changed]` |
 | `pankostka-powerbi` | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
 
 ## Plánované skilly
@@ -25,7 +26,7 @@ Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v proje
 | `pankostka-obsidian` | `pankostka-obsidian` | hotovo | `dokumentace.md`, šablona z `_JDStandards/.obsidian` |
 | `pankostka-powerbi` | `pankostka-powerbi` | hotovo | `powerbi_JD.md`, obecná část Vrstvy 30 z `ProjektDWH/CLAUDE.md`, validátory z `ProjektDWH/00_common/pbi` |
 | `pankostka-powerbi` | `pankostka-powerbi-wiki` | hotovo | `dwh_dokumentace_JD.md`, rozhodnutí o tabulce ukazatelů z `ProjektDWH/TODO 🌐.md`, `wiki_ukazatele.py` z `ProjektDWH/00_common/pbi` |
-| `pankostka-dwh` | `pankostka-dwh` | vrstvy 10/20/30, pořadí plnění, jmenné konvence, `Key = -1` | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md` |
+| `pankostka-dwh` | `pankostka-dwh` | hotovo, nesrovnalosti zdroje zatím převzaté beze změny | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md`, pojmy DWH ze `slovnik_zkratek_JD.md` |
 | `pankostka-nephrite` | `pankostka-nephrite` | objekty v Heliosu: schéma `lcs`, vlastní tabulky, NSP procedury, formuláře, pojmy Heliosu | `helios_objekty_JD.md` |
 | `pankostka-tasks` | `pankostka-tasks` | adresář `tasks/`, rozcestník, článek na úkol, průběžný zápis, mazání po dokončení | `tasks_JD.md` |
 | `pankostka-git` | `pankostka-git` | commit zpráva, kdy commitovat, jak volat git, kódování, hooky, sufixy `-VZOR`, `-DRAFT` a `-TMP` v názvech souborů a adresářů | `git_JD.md`, sufixy z `ProjektDWH/CLAUDE.md` |
@@ -98,6 +99,10 @@ python tests/pankostka-powerbi/run.py
 
 ```bash
 python tests/pankostka-powerbi-wiki/run.py
+```
+
+```bash
+python tests/pankostka-dwh/run.py
 ```
 
 Kontrola marketplace a pluginů:

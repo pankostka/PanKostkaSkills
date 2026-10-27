@@ -1,0 +1,4 @@
+CREATE OR ALTER PROCEDURE nsp20FactKurz AS
+BEGIN
+	SELECT k.Kurz FROM s10CSV.Kurz AS k JOIN s20.DimMena AS m ON m.MenaKod = k.Mena
+END

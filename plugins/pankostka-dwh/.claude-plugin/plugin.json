@@ -1,0 +1,9 @@
+{
+  "name": "pankostka-dwh",
+  "description": "Zásady datového skladu v MS SQL Server - vrstvy stage, star a mart, jmenné konvence a kontrola procedur proti nim",
+  "author": {
+    "name": "Jiří Dvořák"
+  },
+  "repository": "https://github.com/pankostka/PanKostkaSkills",
+  "keywords": ["data-warehouse", "dwh", "star-schema", "sql-server", "naming-conventions"]
+}

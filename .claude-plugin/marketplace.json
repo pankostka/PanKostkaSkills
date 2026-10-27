@@ -24,6 +24,11 @@
       "name": "pankostka-powerbi",
       "source": "./plugins/pankostka-powerbi",
       "description": "Zásady pro sémantický model a report Power BI v PBIP (TMDL, PBIR, DAX) s kontrolou a wiki kostky pro uživatele"
+    },
+    {
+      "name": "pankostka-dwh",
+      "source": "./plugins/pankostka-dwh",
+      "description": "Zásady datového skladu v MS SQL Server - vrstvy stage, star a mart, jmenné konvence a kontrola procedur proti nim"
     }
   ]
 }
