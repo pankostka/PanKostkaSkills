@@ -1,0 +1,21 @@
+/* Styl menu - skryje titulek nad embedy a levý pruh, embed jen podbarví.
+   Pozn.: platí pro VŠECHNY embedy ve vaultu (přesné scopování jen na menu
+   se přes cssclasses/HTML div nepodařilo zprovoznit), ne jen pro menu. */
+
+.markdown-embed-title {
+  display: none;
+}
+
+.internal-embed.markdown-embed {
+  border-left: none;
+  padding-left: 0;
+  margin-left: 0;
+  background-color: var(--background-secondary);
+}
+
+.internal-embed.markdown-embed .markdown-embed-content,
+.internal-embed.markdown-embed .markdown-preview-view,
+.internal-embed.markdown-embed .markdown-preview-sizer {
+  padding-left: 0;
+  margin-left: 0;
+}

@@ -1,0 +1,33 @@
+/* Obrázek vlevo, text ho obtéká zprava.
+   Zapíná se slovem vlevo na konci popisu obrázku:
+   ![Popis obrázku|vlevo](Attachments/soubor.png)
+   Kde snippet chybí (web, GitHub), zobrazí se obrázek nad textem. */
+
+img[alt$="vlevo"] {
+  float: left;
+  max-width: 45%;
+  margin: 0.25em 1.5em 1em 0;
+}
+
+/* Seznam vedle obrázku zůstane celý vpravo, odrážky nevlezou do obrázku. */
+.markdown-rendered:has(img[alt$="vlevo"]) ul,
+.markdown-rendered:has(img[alt$="vlevo"]) ol {
+  display: flow-root;
+}
+
+/* Další sekce začíná až pod obrázkem. */
+.markdown-rendered h1,
+.markdown-rendered h2,
+.markdown-rendered .el-h1,
+.markdown-rendered .el-h2 {
+  clear: both;
+}
+
+/* Na úzkém okně by vedle obrázku nezbylo místo na text. */
+@media (max-width: 700px) {
+  img[alt$="vlevo"] {
+    float: none;
+    max-width: 100%;
+    margin: 0 0 1em 0;
+  }
+}
