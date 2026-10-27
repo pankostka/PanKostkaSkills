@@ -4,6 +4,7 @@
   "author": {
     "name": "Jiří Dvořák"
   },
+  "license": "MIT",
   "repository": "https://github.com/pankostka/PanKostkaSkills",
   "keywords": ["helios", "nephrite", "erp", "sql-server", "stored-procedure"]
 }

@@ -125,3 +125,7 @@ Kontrola marketplace a pluginů:
 ```bash
 claude plugin validate .
 ```
+
+## Licence
+
+[MIT](LICENSE). Obsah skillů i skripty je možné volně používat, upravovat a šířit, jen se zachováním informace o autorovi a licenci.

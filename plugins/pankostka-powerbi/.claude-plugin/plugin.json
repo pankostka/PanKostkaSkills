@@ -4,6 +4,7 @@
   "author": {
     "name": "Jiří Dvořák"
   },
+  "license": "MIT",
   "repository": "https://github.com/pankostka/PanKostkaSkills",
   "keywords": ["power-bi", "pbip", "tmdl", "pbir", "dax", "semantic-model"]
 }
