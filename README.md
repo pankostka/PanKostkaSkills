@@ -9,6 +9,7 @@ Obsah skillů je česky.
 | Plugin | Co dělá | Volání |
 |---|---|---|
 | `pankostka-tsql` | Zásady psaní T-SQL pro MS SQL Server a kontrola souborů `.sql` | `/pankostka-tsql [soubor \| adresář \| --changed]` |
+| `pankostka-md` | Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů `.md` | `/pankostka-md [soubor \| adresář \| --changed]` |
 
 ## Plánované skilly
 
@@ -17,14 +18,14 @@ Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v proje
 | Plugin | Skill | Obsah | Zdroj |
 |---|---|---|---|
 | `pankostka-tsql` | `pankostka-tsql` | hotovo | `sql_JD.md` |
-| `pankostka-md` | `pankostka-md` | jazyk a znaky, článek, umístění, přílohy, názvy souborů, odkazy, frontmatter, tagy, callouty, publikace na web | `dokumentace_JD.md`, část `dokumentace.md` |
+| `pankostka-md` | `pankostka-md` | hotovo | `dokumentace_JD.md`, část `dokumentace.md` |
 | `pankostka-obsidian` | `pankostka-obsidian` | vault na repo, kořen vaultu, co z `.obsidian` verzovat (z `plugins/` se ignoruje jen `main.js` a `styles.css`), nastavení, šablona konfigurace | `dokumentace.md` |
 | `pankostka-powerbi` | `pankostka-powerbi` | PBIP, konvence TMDL, velikost modelu, míry a časové tokeny, DAX, field parameters, RLS, Excel. Kontrola reportu přes `validate_pbir.py` | `powerbi_JD.md` |
 | `pankostka-powerbi` | `pankostka-powerbi-wiki` | dokumentace modelu pro uživatele, `Wiki<Kostka>/`, osnovy článků, postup aktualizace. Jako jediný skill do souborů zapisuje | `dwh_dokumentace_JD.md` |
 | `pankostka-dwh` | `pankostka-dwh` | vrstvy 10/20/30, pořadí plnění, jmenné konvence, `Key = -1` | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md` |
 | `pankostka-nephrite` | `pankostka-nephrite` | objekty v Heliosu: schéma `lcs`, vlastní tabulky, NSP procedury, formuláře, pojmy Heliosu | `helios_objekty_JD.md` |
 | `pankostka-tasks` | `pankostka-tasks` | adresář `tasks/`, rozcestník, článek na úkol, průběžný zápis, mazání po dokončení | `tasks_JD.md` |
-| `pankostka-git` | `pankostka-git` | commit zpráva, kdy commitovat, jak volat git, kódování, `-TMP`, hooky | `git_JD.md` |
+| `pankostka-git` | `pankostka-git` | commit zpráva, kdy commitovat, jak volat git, kódování, hooky, sufixy `-VZOR`, `-DRAFT` a `-TMP` v názvech souborů a adresářů | `git_JD.md`, sufixy z `ProjektDWH/CLAUDE.md` |
 
 Slovník zkratek se rozdělí podle domén do skillů `pankostka-nephrite`, `pankostka-dwh` a `pankostka-powerbi`, každý ho bude mít jako soubor, který čte jen při potřebě.
 
@@ -59,15 +60,16 @@ claude plugin marketplace update pankostka
 
 ## Použití
 
-Bez argumentu se skill načte sám, když Claude píše nebo upravuje SQL. Ručně ho spustíš s cestou ke kontrole:
+Bez argumentu se skill načte sám, když Claude píše nebo upravuje soubor, kterého se týká. Ručně ho spustíš s cestou ke kontrole:
 
 ```
 /pankostka-tsql 20_dim/nsp20DimUcet.sql
 /pankostka-tsql 20_dim
 /pankostka-tsql --changed
+/pankostka-md docs
 ```
 
-`--changed` zkontroluje jen soubory `.sql`, které git hlásí jako změněné nebo nové. Výsledkem je seznam neshod se soubory, řádky a návrhy oprav; nic se neopravuje bez odsouhlasení.
+`--changed` zkontroluje jen soubory skillu (`.sql`, `.md` a přílohy), které git hlásí jako změněné nebo nové. Výsledkem je seznam neshod se soubory, řádky a návrhy oprav; nic se neopravuje bez odsouhlasení.
 
 ## Vývoj
 
@@ -75,6 +77,10 @@ Testy kontrolního skriptu:
 
 ```bash
 python tests/pankostka-tsql/run.py
+```
+
+```bash
+python tests/pankostka-md/run.py
 ```
 
 Kontrola marketplace a pluginů:

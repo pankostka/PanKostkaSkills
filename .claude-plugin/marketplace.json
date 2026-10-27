@@ -9,6 +9,11 @@
       "name": "pankostka-tsql",
       "source": "./plugins/pankostka-tsql",
       "description": "Zásady psaní T-SQL pro MS SQL Server a kontrola souborů .sql proti nim"
+    },
+    {
+      "name": "pankostka-md",
+      "source": "./plugins/pankostka-md",
+      "description": "Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů .md proti nim"
     }
   ]
 }

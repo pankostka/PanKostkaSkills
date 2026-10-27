@@ -1,0 +1,4 @@
+---
+tags: [OBSIDIAN]
+---
+C.
