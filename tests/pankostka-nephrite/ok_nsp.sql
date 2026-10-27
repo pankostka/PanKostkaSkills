@@ -1,4 +1,4 @@
-USE [HGFirmaOstra] -- SQLSRV1
+USE [HGFirmaOstra] -- SQLSRVX
 --USE [HGFirmaTest]
 GO
 /*

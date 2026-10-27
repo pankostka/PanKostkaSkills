@@ -13,7 +13,7 @@ Doplněk skillu `pankostka-nephrite`. Platí pro skripty, které zakládají neb
 **Skript začíná `USE [<databáze>]`.** V Heliosu bývají vedle sebe databáze víc společností, často na různých serverech, a spuštění nad špatnou z nich znamená založení objektu v cizí produkci. Za `USE` patří poznámka, na kterém serveru databáze je:
 
 ```sql
-USE [HGFirmaOstra] -- SQLSRV3
+USE [HGFirmaOstra] -- SQLSRVX
 GO
 ```
 
