@@ -39,6 +39,11 @@
       "name": "pankostka-tasks",
       "source": "./plugins/pankostka-tasks",
       "description": "Zásady pro adresář tasks/ s rozpracovanými úkoly a kontrola rozcestníku a článků"
+    },
+    {
+      "name": "pankostka-git",
+      "source": "./plugins/pankostka-git",
+      "description": "Zásady práce s gitem - commit zpráva, kdy commitovat, kódování, sufixy -VZOR, -DRAFT a -TMP, hooky - a kontrola repa proti nim"
     }
   ]
 }

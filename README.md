@@ -15,6 +15,7 @@ Obsah skillů je česky.
 | `pankostka-dwh` | Datový sklad v MS SQL Server: vrstvy stage, star a mart, pořadí plnění, struktura repa, jmenné konvence. Kontrola názvů procedur, odkazů mezi vrstvami a klíčů | `/pankostka-dwh [soubor \| adresář \| --changed]` |
 | `pankostka-nephrite` | Databáze ERP Helios Nephrite: schéma `lcs`, datový model, vlastní tabulky, NSP procedury, formuláře, nasazení skriptů. Kontrola skriptů nasazovaných do Heliosu | `/pankostka-nephrite [soubor \| adresář \| --changed]` |
 | `pankostka-tasks` | Adresář `tasks/` s rozpracovanými úkoly: rozcestník, článek na úkol, průběžný zápis, pomocné soubory, mazání po dokončení. Kontrola rozcestníku a článků | `/pankostka-tasks [adresář]` |
+| `pankostka-git` | Práce s gitem: commit zpráva a její předání shellu, kdy commitovat, kódování, sufixy `-VZOR`, `-DRAFT` a `-TMP`, hooky. Kontrola `.gitignore`, sufixů, BOM a commit zpráv | `/pankostka-git [adresář repa]` |
 | `pankostka-powerbi` | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
 
 ## Plánované skilly
@@ -31,7 +32,7 @@ Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v proje
 | `pankostka-dwh` | `pankostka-dwh` | hotovo, nesrovnalosti zdroje zatím převzaté beze změny | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md`, pojmy DWH ze `slovnik_zkratek_JD.md` |
 | `pankostka-nephrite` | `pankostka-nephrite` | hotovo | `helios_objekty_JD.md`, obecné části `EMGDWH/05_source_helios/CLAUDE.md` a `ProjektHelios/CLAUDE.md`, pojmy Heliosu ze `slovnik_zkratek_JD.md` |
 | `pankostka-tasks` | `pankostka-tasks` | hotovo | `tasks_JD.md`, praxe v `tasks/` v ProjektDWH a EMGDWH |
-| `pankostka-git` | `pankostka-git` | commit zpráva, kdy commitovat, jak volat git, kódování, hooky, sufixy `-VZOR`, `-DRAFT` a `-TMP` v názvech souborů a adresářů | `git_JD.md`, sufixy z `ProjektDWH/CLAUDE.md` |
+| `pankostka-git` | `pankostka-git` | hotovo | `git_JD.md`, sufixy z `ProjektDWH/CLAUDE.md` |
 
 Slovník zkratek se rozdělí podle domén do skillů `pankostka-nephrite`, `pankostka-dwh` a `pankostka-powerbi`, každý ho bude mít jako soubor, který čte jen při potřebě.
 
@@ -113,6 +114,10 @@ python tests/pankostka-nephrite/run.py
 
 ```bash
 python tests/pankostka-tasks/run.py
+```
+
+```bash
+python tests/pankostka-git/run.py
 ```
 
 Kontrola marketplace a pluginů:
