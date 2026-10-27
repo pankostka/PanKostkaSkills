@@ -1,0 +1,9 @@
+{
+  "name": "pankostka-tasks",
+  "description": "Zásady pro adresář tasks/ s rozpracovanými úkoly a kontrola rozcestníku a článků",
+  "author": {
+    "name": "Jiří Dvořák"
+  },
+  "repository": "https://github.com/pankostka/PanKostkaSkills",
+  "keywords": ["tasks", "worklog", "markdown", "obsidian"]
+}

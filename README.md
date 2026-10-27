@@ -14,6 +14,7 @@ Obsah skillů je česky.
 | `pankostka-powerbi` | Sémantický model a report Power BI v PBIP: TMDL, PBIR, názvy měr, DAX, field parameters, role. Kontrola modelu a mrtvých odkazů v reportech | `/pankostka-powerbi [adresář \| soubor.tmdl \| --changed]` |
 | `pankostka-dwh` | Datový sklad v MS SQL Server: vrstvy stage, star a mart, pořadí plnění, struktura repa, jmenné konvence. Kontrola názvů procedur, odkazů mezi vrstvami a klíčů | `/pankostka-dwh [soubor \| adresář \| --changed]` |
 | `pankostka-nephrite` | Databáze ERP Helios Nephrite: schéma `lcs`, datový model, vlastní tabulky, NSP procedury, formuláře, nasazení skriptů. Kontrola skriptů nasazovaných do Heliosu | `/pankostka-nephrite [soubor \| adresář \| --changed]` |
+| `pankostka-tasks` | Adresář `tasks/` s rozpracovanými úkoly: rozcestník, článek na úkol, průběžný zápis, pomocné soubory, mazání po dokončení. Kontrola rozcestníku a článků | `/pankostka-tasks [adresář]` |
 | `pankostka-powerbi` | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
 
 ## Plánované skilly
@@ -29,7 +30,7 @@ Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v proje
 | `pankostka-powerbi` | `pankostka-powerbi-wiki` | hotovo | `dwh_dokumentace_JD.md`, rozhodnutí o tabulce ukazatelů z `ProjektDWH/TODO 🌐.md`, `wiki_ukazatele.py` z `ProjektDWH/00_common/pbi` |
 | `pankostka-dwh` | `pankostka-dwh` | hotovo, nesrovnalosti zdroje zatím převzaté beze změny | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md`, pojmy DWH ze `slovnik_zkratek_JD.md` |
 | `pankostka-nephrite` | `pankostka-nephrite` | hotovo | `helios_objekty_JD.md`, obecné části `EMGDWH/05_source_helios/CLAUDE.md` a `ProjektHelios/CLAUDE.md`, pojmy Heliosu ze `slovnik_zkratek_JD.md` |
-| `pankostka-tasks` | `pankostka-tasks` | adresář `tasks/`, rozcestník, článek na úkol, průběžný zápis, mazání po dokončení | `tasks_JD.md` |
+| `pankostka-tasks` | `pankostka-tasks` | hotovo | `tasks_JD.md`, praxe v `tasks/` v ProjektDWH a EMGDWH |
 | `pankostka-git` | `pankostka-git` | commit zpráva, kdy commitovat, jak volat git, kódování, hooky, sufixy `-VZOR`, `-DRAFT` a `-TMP` v názvech souborů a adresářů | `git_JD.md`, sufixy z `ProjektDWH/CLAUDE.md` |
 
 Slovník zkratek se rozdělí podle domén do skillů `pankostka-nephrite`, `pankostka-dwh` a `pankostka-powerbi`, každý ho bude mít jako soubor, který čte jen při potřebě.
@@ -108,6 +109,10 @@ python tests/pankostka-dwh/run.py
 
 ```bash
 python tests/pankostka-nephrite/run.py
+```
+
+```bash
+python tests/pankostka-tasks/run.py
 ```
 
 Kontrola marketplace a pluginů:

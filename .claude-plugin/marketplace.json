@@ -34,6 +34,11 @@
       "name": "pankostka-nephrite",
       "source": "./plugins/pankostka-nephrite",
       "description": "Zásady pro databázi ERP Helios Nephrite - schéma lcs, datový model, vlastní tabulky, NSP procedury, nasazení skriptů - a kontrola skriptů proti nim"
+    },
+    {
+      "name": "pankostka-tasks",
+      "source": "./plugins/pankostka-tasks",
+      "description": "Zásady pro adresář tasks/ s rozpracovanými úkoly a kontrola rozcestníku a článků"
     }
   ]
 }
