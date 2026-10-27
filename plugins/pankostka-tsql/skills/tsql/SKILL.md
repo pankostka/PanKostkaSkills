@@ -29,12 +29,12 @@ Delší komentář se dělí podle **obsahu**, ne podle šířky. Nová řádka 
 
 ## Čitelnost dotazu
 
-`tsql/where-one-equals-one` **Podmínku začínej `WHERE 1=1`** a každou skutečnou podmínku připoj níž jako `AND`. Důvod je praktický: každý filtr je pak samostatná řádka, kterou lze zakomentovat nebo přesunout bez toho, aby zbytek dotazu přestal být syntakticky správný. Bez toho je první podmínka výsadní - zakomentovat ji znamená sáhnout i na tu druhou.
+`tsql/where-one-equals-one` **Podmínku začínej `WHERE 1=1`** a každou skutečnou podmínku připoj níž jako `AND`, zarovnané pod `WHERE` bez odsazení. Důvod je praktický: každý filtr je pak samostatná řádka, kterou lze zakomentovat nebo přesunout bez toho, aby zbytek dotazu přestal být syntakticky správný. Bez toho je první podmínka výsadní - zakomentovat ji znamená sáhnout i na tu druhou.
 
 ```sql
 WHERE 1=1
-    AND datum >= @od
-    --AND spolecnost = @spolecnost
+AND datum >= @od
+--AND spolecnost = @spolecnost
 ```
 
 **Výjimkou je jediná podmínka celá na řádku s `WHERE`**, třeba `... FROM s20.DimZdroj_AD WHERE DimZdrojID <> -1` v řadě `UNION ALL` nebo `WHERE SourceSRV IS NOT NULL` v kurzoru. Tam není co zakomentovat bez sáhnutí na `WHERE` a `1=1` by řádku jen prodloužilo. Jakmile podmínka pokračuje na další řádek nebo obsahuje `AND` či `OR`, `1=1` je povinné. `BETWEEN ... AND` se za složenou podmínku nepočítá.
