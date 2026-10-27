@@ -6,7 +6,7 @@ Obsah skillů je česky.
 
 ## Pluginy
 
-| Plugin | Co dělá | Volání |
+| Skill | Co dělá | Volání |
 |---|---|---|
 | `pankostka-tsql` | Zásady psaní T-SQL pro MS SQL Server a kontrola souborů `.sql` | `/pankostka-tsql [soubor \| adresář \| --changed]` |
 | `pankostka-md` | Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů `.md` | `/pankostka-md [soubor \| adresář \| --changed]` |
@@ -16,7 +16,9 @@ Obsah skillů je česky.
 | `pankostka-nephrite` | Databáze ERP Helios Nephrite: schéma `lcs`, datový model, vlastní tabulky, NSP procedury, formuláře, nasazení skriptů. Kontrola skriptů nasazovaných do Heliosu | `/pankostka-nephrite [soubor \| adresář \| --changed]` |
 | `pankostka-tasks` | Adresář `tasks/` s rozpracovanými úkoly: rozcestník, článek na úkol, průběžný zápis, pomocné soubory, mazání po dokončení. Kontrola rozcestníku a článků | `/pankostka-tasks [adresář]` |
 | `pankostka-git` | Práce s gitem: commit zpráva a její předání shellu, kdy commitovat, kódování, sufixy `-VZOR`, `-DRAFT` a `-TMP`, hooky. Kontrola `.gitignore`, sufixů, BOM a commit zpráv | `/pankostka-git [adresář repa]` |
-| `pankostka-powerbi` | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
+| `pankostka-powerbi-wiki` | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
+
+Plugin se jmenuje stejně jako skill, jen `pankostka-powerbi-wiki` je druhý skill v pluginu `pankostka-powerbi`.
 
 ## Instalace do Claude Code
 
