@@ -10,6 +10,35 @@ Obsah skillů je česky.
 |---|---|---|
 | `pankostka-tsql` | Zásady psaní T-SQL pro MS SQL Server a kontrola souborů `.sql` | `/pankostka-tsql [soubor \| adresář \| --changed]` |
 
+## Plánované skilly
+
+Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v projektech. Pořadí v tabulce je pořadí převodu. Po převodu všech souborů se `_JDStandards` archivuje.
+
+| Plugin | Skill | Obsah | Zdroj |
+|---|---|---|---|
+| `pankostka-tsql` | `pankostka-tsql` | hotovo | `sql_JD.md` |
+| `pankostka-md` | `pankostka-md` | jazyk a znaky, článek, umístění, přílohy, názvy souborů, odkazy, frontmatter, tagy, callouty, publikace na web | `dokumentace_JD.md`, část `dokumentace.md` |
+| `pankostka-obsidian` | `pankostka-obsidian` | vault na repo, kořen vaultu, co z `.obsidian` verzovat (z `plugins/` se ignoruje jen `main.js` a `styles.css`), nastavení, šablona konfigurace | `dokumentace.md` |
+| `pankostka-powerbi` | `pankostka-powerbi` | PBIP, konvence TMDL, velikost modelu, míry a časové tokeny, DAX, field parameters, RLS, Excel. Kontrola reportu přes `validate_pbir.py` | `powerbi_JD.md` |
+| `pankostka-powerbi` | `pankostka-powerbi-wiki` | dokumentace modelu pro uživatele, `Wiki<Kostka>/`, osnovy článků, postup aktualizace. Jako jediný skill do souborů zapisuje | `dwh_dokumentace_JD.md` |
+| `pankostka-dwh` | `pankostka-dwh` | vrstvy 10/20/30, pořadí plnění, jmenné konvence, `Key = -1` | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md` |
+| `pankostka-nephrite` | `pankostka-nephrite` | objekty v Heliosu: schéma `lcs`, vlastní tabulky, NSP procedury, formuláře, pojmy Heliosu | `helios_objekty_JD.md` |
+| `pankostka-tasks` | `pankostka-tasks` | adresář `tasks/`, rozcestník, článek na úkol, průběžný zápis, mazání po dokončení | `tasks_JD.md` |
+| `pankostka-git` | `pankostka-git` | commit zpráva, kdy commitovat, jak volat git, kódování, `-TMP`, hooky | `git_JD.md` |
+
+Slovník zkratek se rozdělí podle domén do skillů `pankostka-nephrite`, `pankostka-dwh` a `pankostka-powerbi`, každý ho bude mít jako soubor, který čte jen při potřebě.
+
+Mimo toto repo:
+
+- `PanKostkaSkillsAD` a `PanKostkaSkillsEMG`: organizační pravidla, tedy zkratky společností, servery a databáze. Soukromá repa.
+- `PanKostkaSkillsJD`: osobní prostředí (seznam vaultů, `PKVault`) a záznamy rozhodnutí z `_JDStandards/ProjektBIDoc/`. Soukromé repo.
+- Git pravidla pro mě: `~/.claude/CLAUDE.md`, protože musí platit v každé session, ne jen na vyžádání.
+
+Při převodu platí:
+
+- Odkaz na `_Standards/*` v `CLAUDE.md` projektu se přepíše na skill, až když je skill hotový a ověřený. Do té doby platí obojí.
+- Repo, které skilly používá, má v `.claude/settings.json` položky `extraKnownMarketplaces` a `enabledPlugins`. Kdo repo naklonuje, dostane nabídku instalace a pravidla mu nezmizí s koncem `_Standards/`.
+
 ## Instalace do Claude Code
 
 Přidat marketplace a nainstalovat plugin:
