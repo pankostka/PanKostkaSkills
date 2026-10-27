@@ -79,7 +79,7 @@ Platí, jen když argument výše není prázdný. Argument je adresář repa.
    python ${CLAUDE_SKILL_DIR}/scripts/check_git.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
    - `gitignore`: `.gitignore` neignoruje soubor nebo adresář se sufixem `-TMP`,
    - `tracked`: git verzuje soubor se sufixem `-TMP`,
    - `suffix`: sufix z velkých písmen, který není `-VZOR`, `-DRAFT` ani `-TMP`,

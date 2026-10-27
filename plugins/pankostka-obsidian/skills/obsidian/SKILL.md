@@ -121,7 +121,7 @@ Platí, jen když argument výše není prázdný. Argument je adresář vaultu.
    python ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
    - `vault`: adresář není vault, nebo vnořený vault nemá nastavení souborů shodné s nadřazeným,
    - `settings`: chybné nebo chybějící povinné nastavení v `app.json`, glob v `userIgnoreFilters`,
    - `gitignore`: chybí řádky z `gitignore.txt`, nebo se ignoruje celé `plugins/`. Neplatí, když je `.obsidian` v `.git/info/exclude`,

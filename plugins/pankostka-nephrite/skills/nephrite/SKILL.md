@@ -127,7 +127,7 @@ Platí, jen když argument výše není prázdný. Argument je soubor `.sql`, ad
    python ${CLAUDE_SKILL_DIR}/scripts/check_nephrite.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
    - `schema`: objekt založený mimo schéma `lcs`,
    - `use`: skript zakládá objekt, ale nezačíná `USE`,
    - `nsp`: procedura s `@System_InputRecordNumber` bez kontroly toho parametru, bez `RAISERROR(..., 18, 1)` nebo bez `GRANT EXECUTE`,

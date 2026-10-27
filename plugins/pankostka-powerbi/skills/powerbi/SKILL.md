@@ -82,7 +82,7 @@ Platí, jen když argument výše není prázdný. Argument je adresář (proch�
    python ${CLAUDE_SKILL_DIR}/scripts/check_powerbi.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
    - `table`: název tabulky s diakritikou,
    - `key`: přejmenovaný klíč `Dim<Entita>ID`,
    - `hierarchy`: hierarchie bez `@`, zbytečné apostrofy kolem názvu bez mezery,

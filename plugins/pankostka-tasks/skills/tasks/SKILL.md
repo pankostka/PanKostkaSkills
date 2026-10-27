@@ -55,7 +55,7 @@ Platí, jen když argument výše není prázdný. Argument je adresář repa (k
    python ${CLAUDE_SKILL_DIR}/scripts/check_tasks.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
    - `index`: chybí `tasks/tasks.md`,
    - `orphan`: článek v `tasks/`, na který v `tasks.md` nevede odkaz,
    - `dead`: odkaz v `tasks.md` na článek, který v `tasks/` není,

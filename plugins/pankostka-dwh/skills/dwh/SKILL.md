@@ -145,7 +145,7 @@ Platí, jen když argument výše není prázdný. Argument je soubor `.sql`, ad
    python ${CLAUDE_SKILL_DIR}/scripts/check_dwh.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
    - `name`: název objektu v `CREATE` se liší od názvu souboru před první pomlčkou, nebo prefix procedury nesedí na vrstvu,
    - `layer`: nižší vrstva odkazuje na schéma vyšší vrstvy, nebo mart odkazuje na schéma jiného martu (kontroluje se i dynamické SQL v řetězcích),
    - `constraint`: název primárního nebo cizího klíče mimo konvenci vrstvy.

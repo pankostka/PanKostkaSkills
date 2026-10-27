@@ -126,7 +126,7 @@ Platí, jen když argument výše není prázdný. Prvním slovem argumentu je n
    python ${CLAUDE_SKILL_DIR}/scripts/check_wiki.py <Kostka>
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript nic nezapisuje. Výstup je jedna řádka na nález ve tvaru `soubor:řádek: [pravidlo] zpráva`:
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript nic nezapisuje. Výstup je jedna řádka na nález ve tvaru `soubor:řádek: [pravidlo] zpráva`:
    - `missing`: viditelná tabulka nebo report bez článku, chybí rozcestník,
    - `orphan`: článek s předponou kostky, ke kterému v modelu ani v reportech nic není (údržba s tagem `Údržba` se nehlásí),
    - `frontmatter`: chybí `title`, `date` nebo `tags`, `title` neodpovídá názvu v modelu,

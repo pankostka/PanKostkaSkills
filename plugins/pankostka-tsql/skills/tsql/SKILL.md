@@ -100,7 +100,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    python ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER` a víceřádkový nebo složený `WHERE` bez `1=1`. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER` a víceřádkový nebo složený `WHERE` bez `1=1`. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
    - sargable predikáty,
