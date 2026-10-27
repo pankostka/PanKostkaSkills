@@ -1,0 +1,9 @@
+{
+  "name": "pankostka-obsidian",
+  "description": "Zásady pro vault v Obsidianu nad git repem, šablona konfigurace a kontrola vaultu",
+  "author": {
+    "name": "Jiří Dvořák"
+  },
+  "repository": "https://github.com/pankostka/PanKostkaSkills",
+  "keywords": ["obsidian", "vault", "gitignore", "documentation"]
+}

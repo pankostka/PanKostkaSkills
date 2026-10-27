@@ -14,6 +14,11 @@
       "name": "pankostka-md",
       "source": "./plugins/pankostka-md",
       "description": "Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů .md proti nim"
+    },
+    {
+      "name": "pankostka-obsidian",
+      "source": "./plugins/pankostka-obsidian",
+      "description": "Zásady pro vault v Obsidianu nad git repem, šablona konfigurace a kontrola vaultu"
     }
   ]
 }

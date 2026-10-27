@@ -1,0 +1,17 @@
+{
+  "alwaysUpdateLinks": true,
+  "readableLineLength": false,
+  "foldHeading": true,
+  "promptDelete": false,
+  "newFileLocation": "current",
+  "attachmentFolderPath": "./Attachments",
+  "newLinkFormat": "shortest",
+  "showUnsupportedFiles": false,
+  "pdfExportSettings": {
+    "includeName": false,
+    "pageSize": "A4",
+    "landscape": true,
+    "margin": "2",
+    "downscalePercent": 80
+  }
+}

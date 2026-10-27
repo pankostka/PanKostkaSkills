@@ -1,0 +1,15 @@
+# --- OBSIDIAN nastavení vaultu se verzuje
+# Verzuje se ROZHODNUTÍ, ne stažený balík: který plugin, v jaké verzi, s jakým
+# nastavením (community-plugins.json, manifest.json, data.json) a jaké téma.
+# Kód pluginů a témat je cizí JS a CSS, které se ze store stáhne dvěma
+# kliknutími. Díky tomu zkoušení pluginu nezanechá v gitu vůbec nic.
+**/.obsidian/plugins/*/main.js
+**/.obsidian/plugins/*/styles.css
+**/.obsidian/themes/
+# Výjimka: plugin, který ve store není (BRAT, beta, vlastní), sem patří celý -
+# po git clone už není odkud ho vzít. Zapiš ho pak jako !.obsidian/plugins/<id>/*
+#
+# Layout a stav oken, mění se při každém zavření aplikace
+# Vzory mají předponu **/, protože vzor s lomítkem uprostřed platí jen od kořene repa. Vnořený vault by jinak nebyl pokrytý.
+**/.obsidian/workspace.json
+**/.obsidian/workspaces.json

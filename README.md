@@ -10,6 +10,7 @@ Obsah skillů je česky.
 |---|---|---|
 | `pankostka-tsql` | Zásady psaní T-SQL pro MS SQL Server a kontrola souborů `.sql` | `/pankostka-tsql [soubor \| adresář \| --changed]` |
 | `pankostka-md` | Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů `.md` | `/pankostka-md [soubor \| adresář \| --changed]` |
+| `pankostka-obsidian` | Vault v Obsidianu nad git repem: nastavení, co verzovat, šablona konfigurace, kontrola vaultu | `/pankostka-obsidian [adresář vaultu]` |
 
 ## Plánované skilly
 
@@ -19,7 +20,7 @@ Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v proje
 |---|---|---|---|
 | `pankostka-tsql` | `pankostka-tsql` | hotovo | `sql_JD.md` |
 | `pankostka-md` | `pankostka-md` | hotovo | `dokumentace_JD.md`, část `dokumentace.md` |
-| `pankostka-obsidian` | `pankostka-obsidian` | vault na repo, kořen vaultu, co z `.obsidian` verzovat (z `plugins/` se ignoruje jen `main.js` a `styles.css`), nastavení, šablona konfigurace | `dokumentace.md` |
+| `pankostka-obsidian` | `pankostka-obsidian` | hotovo | `dokumentace.md`, šablona z `_JDStandards/.obsidian` |
 | `pankostka-powerbi` | `pankostka-powerbi` | PBIP, konvence TMDL, velikost modelu, míry a časové tokeny, DAX, field parameters, RLS, Excel. Kontrola reportu přes `validate_pbir.py` | `powerbi_JD.md` |
 | `pankostka-powerbi` | `pankostka-powerbi-wiki` | dokumentace modelu pro uživatele, `Wiki<Kostka>/`, osnovy článků, postup aktualizace. Jako jediný skill do souborů zapisuje | `dwh_dokumentace_JD.md` |
 | `pankostka-dwh` | `pankostka-dwh` | vrstvy 10/20/30, pořadí plnění, jmenné konvence, `Key = -1` | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md` |
@@ -81,6 +82,10 @@ python tests/pankostka-tsql/run.py
 
 ```bash
 python tests/pankostka-md/run.py
+```
+
+```bash
+python tests/pankostka-obsidian/run.py
 ```
 
 Kontrola marketplace a pluginů:
