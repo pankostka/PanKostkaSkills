@@ -17,7 +17,7 @@ Argument: `$ARGUMENTS`
 
 ## Komentáře
 
-[`tsql/comment-no-wrap`] **Text komentáře nezalamuj kolem sta znaků.** Věta patří na jednu řádku a zalomit se má teprve tam, kde by řádka přesáhla **200 znaků**. Zalomení po stovce trhá souvětí na kusy, které se čtou jako samostatné body: komentář je dvakrát vyšší, než musí být, a v proceduře zabírá místo, které mělo patřit kódu. Dvě stě znaků se na široký monitor vejde; hranice je tu jen proto, že editor SQL řádku nezalamuje sám.
+`tsql/comment-no-wrap` **Text komentáře nezalamuj kolem sta znaků.** Věta patří na jednu řádku a zalomit se má teprve tam, kde by řádka přesáhla **200 znaků**. Zalomení po stovce trhá souvětí na kusy, které se čtou jako samostatné body: komentář je dvakrát vyšší, než musí být, a v proceduře zabírá místo, které mělo patřit kódu. Dvě stě znaků se na široký monitor vejde; hranice je tu jen proto, že editor SQL řádku nezalamuje sám.
 
 Delší komentář se dělí podle **obsahu**, ne podle šířky. Nová řádka začíná novou myšlenkou, nikoli pokračováním rozpůlené věty.
 
