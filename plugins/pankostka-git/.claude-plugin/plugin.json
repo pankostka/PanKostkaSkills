@@ -2,7 +2,8 @@
   "name": "pankostka-git",
   "description": "Zásady práce s gitem - commit zpráva, kdy commitovat, kódování, sufixy -VZOR, -DRAFT a -TMP, hooky - a kontrola repa proti nim",
   "author": {
-    "name": "Jiří Dvořák"
+    "name": "Jiří Dvořák",
+    "url": "https://pankostka.cz"
   },
   "license": "MIT",
   "repository": "https://github.com/pankostka/PanKostkaSkills",

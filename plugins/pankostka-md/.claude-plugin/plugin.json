@@ -2,7 +2,8 @@
   "name": "pankostka-md",
   "description": "Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů .md proti nim",
   "author": {
-    "name": "Jiří Dvořák"
+    "name": "Jiří Dvořák",
+    "url": "https://pankostka.cz"
   },
   "license": "MIT",
   "repository": "https://github.com/pankostka/PanKostkaSkills",
