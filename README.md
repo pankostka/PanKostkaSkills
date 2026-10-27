@@ -18,35 +18,6 @@ Obsah skillů je česky.
 | `pankostka-git` | Práce s gitem: commit zpráva a její předání shellu, kdy commitovat, kódování, sufixy `-VZOR`, `-DRAFT` a `-TMP`, hooky. Kontrola `.gitignore`, sufixů, BOM a commit zpráv | `/pankostka-git [adresář repa]` |
 | `pankostka-powerbi` | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
 
-## Plánované skilly
-
-Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v projektech. Pořadí v tabulce je pořadí převodu. Po převodu všech souborů se `_JDStandards` archivuje.
-
-| Plugin | Skill | Obsah | Zdroj |
-|---|---|---|---|
-| `pankostka-tsql` | `pankostka-tsql` | hotovo | `sql_JD.md` |
-| `pankostka-md` | `pankostka-md` | hotovo | `dokumentace_JD.md`, část `dokumentace.md` |
-| `pankostka-obsidian` | `pankostka-obsidian` | hotovo | `dokumentace.md`, šablona z `_JDStandards/.obsidian` |
-| `pankostka-powerbi` | `pankostka-powerbi` | hotovo | `powerbi_JD.md`, obecná část Vrstvy 30 z `ProjektDWH/CLAUDE.md`, validátory z `ProjektDWH/00_common/pbi` |
-| `pankostka-powerbi` | `pankostka-powerbi-wiki` | hotovo | `dwh_dokumentace_JD.md`, rozhodnutí o tabulce ukazatelů z `ProjektDWH/TODO 🌐.md`, `wiki_ukazatele.py` z `ProjektDWH/00_common/pbi` |
-| `pankostka-dwh` | `pankostka-dwh` | hotovo, nesrovnalosti zdroje zatím převzaté beze změny | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md`, pojmy DWH ze `slovnik_zkratek_JD.md` |
-| `pankostka-nephrite` | `pankostka-nephrite` | hotovo | `helios_objekty_JD.md`, obecné části `EMGDWH/05_source_helios/CLAUDE.md` a `ProjektHelios/CLAUDE.md`, pojmy Heliosu ze `slovnik_zkratek_JD.md` |
-| `pankostka-tasks` | `pankostka-tasks` | hotovo | `tasks_JD.md`, praxe v `tasks/` v ProjektDWH a EMGDWH |
-| `pankostka-git` | `pankostka-git` | hotovo | `git_JD.md`, sufixy z `ProjektDWH/CLAUDE.md` |
-
-Slovník zkratek se rozdělí podle domén do skillů `pankostka-nephrite`, `pankostka-dwh` a `pankostka-powerbi`, každý ho bude mít jako soubor, který čte jen při potřebě.
-
-Mimo toto repo:
-
-- `PanKostkaSkillsAD` a `PanKostkaSkillsEMG`: organizační pravidla, tedy zkratky společností, servery a databáze. Soukromá repa.
-- `PanKostkaSkillsJD`: osobní prostředí (seznam vaultů, `PKVault`) a záznamy rozhodnutí z `_JDStandards/ProjektBIDoc/`. Soukromé repo.
-- Git pravidla pro mě: `~/.claude/CLAUDE.md`, protože musí platit v každé session, ne jen na vyžádání.
-
-Při převodu platí:
-
-- Odkaz na `_Standards/*` v `CLAUDE.md` projektu se přepíše na skill, až když je skill hotový a ověřený. Do té doby platí obojí.
-- Repo, které skilly používá, má v `.claude/settings.json` položky `extraKnownMarketplaces` a `enabledPlugins`. Kdo repo naklonuje, dostane nabídku instalace a pravidla mu nezmizí s koncem `_Standards/`.
-
 ## Instalace do Claude Code
 
 Přidat marketplace a nainstalovat plugin:
