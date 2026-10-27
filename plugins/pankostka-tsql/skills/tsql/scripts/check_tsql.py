@@ -18,6 +18,9 @@ RE_WHERE = re.compile(r"\bWHERE\b", re.IGNORECASE)
 RE_ONE_EQ_ONE = re.compile(r"\s*1\s*=\s*1\b")
 RE_AND_OR = re.compile(r"\b(AND|OR)\b", re.IGNORECASE)
 RE_BETWEEN = re.compile(r"\bBETWEEN\b.*?\bAND\b", re.IGNORECASE)
+# INNER HASH JOIN a OUTER APPLY se nechytí, mezi slovem a JOIN je hint, nebo tam JOIN vůbec není
+RE_REDUNDANT_JOIN = re.compile(r"\b(INNER|OUTER)\s+JOIN\b", re.IGNORECASE)
+RE_RIGHT_JOIN = re.compile(r"\bRIGHT\s+(?:OUTER\s+)?JOIN\b", re.IGNORECASE)
 
 
 def keep_newlines(s):
@@ -114,6 +117,18 @@ def check_file(path):
     for m in RE_WHERE.finditer(code):
         if not RE_ONE_EQ_ONE.match(code, m.end()) and not is_single_line_condition(code, m.end()):
             findings.append((line_of(code, m.start()), "where", "víceřádková nebo složená podmínka nezačíná WHERE 1=1, podmínky připoj níž jako AND"))
+
+    for m in RE_REDUNDANT_JOIN.finditer(code):
+        word = m.group(1).upper()
+        findings.append((line_of(code, m.start()), "join", f"{word} JOIN: slovo {word} je nadbytečné, piš jen JOIN, LEFT JOIN nebo FULL JOIN"))
+
+    lines = text.split("\n")
+    for m in RE_RIGHT_JOIN.finditer(code):
+        line = line_of(code, m.start())
+        original = lines[line - 1]
+        comment = original[original.find("--"):] if "--" in original else ""
+        if not re.search(r"\bRIGHT\s+JOIN\b", comment, re.IGNORECASE):
+            findings.append((line, "right", "RIGHT JOIN: přepiš na LEFT JOIN s prohozenými tabulkami, nebo ho zdůvodni komentářem -- RIGHT JOIN ... na stejném řádku"))
 
     findings.sort()
     return findings

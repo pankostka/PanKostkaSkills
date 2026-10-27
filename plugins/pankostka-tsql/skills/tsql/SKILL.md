@@ -1,6 +1,6 @@
 ---
 name: pankostka-tsql
-description: Zásady psaní T-SQL pro MS SQL Server - WHERE 1=1, JOIN na jednom řádku, sargable predikáty, CREATE OR ALTER, sekce v těle procedury s dvojitým END, hlavička procedury, kódování UTF-8. Použij vždy, když píšeš, upravuješ nebo kontroluješ SQL dotaz, uloženou proceduru (stored procedure), funkci nebo skript .sql. S argumentem (soubor, adresář nebo --changed) zkontroluje soubory proti zásadám a vypíše neshody.
+description: Zásady psaní T-SQL pro MS SQL Server - WHERE 1=1, JOIN na jednom řádku bez INNER a OUTER, žádný RIGHT JOIN, sargable predikáty, CREATE OR ALTER, sekce v těle procedury s dvojitým END, hlavička procedury, kódování UTF-8. Použij vždy, když píšeš, upravuješ nebo kontroluješ SQL dotaz, uloženou proceduru (stored procedure), funkci nebo skript .sql. S argumentem (soubor, adresář nebo --changed) zkontroluje soubory proti zásadám a vypíše neshody.
 argument-hint: "[soubor | adresář | --changed]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py *)
 ---
@@ -40,6 +40,14 @@ WHERE 1=1
 **Výjimkou je jediná podmínka celá na řádku s `WHERE`**, třeba `... FROM s20.DimZdroj_AD WHERE DimZdrojID <> -1` v řadě `UNION ALL` nebo `WHERE SourceSRV IS NOT NULL` v kurzoru. Tam není co zakomentovat bez sáhnutí na `WHERE` a `1=1` by řádku jen prodloužilo. Jakmile podmínka pokračuje na další řádek nebo obsahuje `AND` či `OR`, `1=1` je povinné. `BETWEEN ... AND` se za složenou podmínku nepočítá.
 
 **Každý JOIN piš na jednu řádku**, tedy tabulku i podmínku spojení pohromadě. Seznam joinů se tak dá přečíst svisle a je vidět, kolik tabulek dotaz spojuje. Když se podmínka na jednu řádku nevejde, je to obvykle signál, že spojení je složitější, než se zdá, a zaslouží komentář.
+
+**Nepiš `INNER` ani `OUTER` u `JOIN`.** Jsou to nadbytečná slova: `JOIN` je vždy vnitřní a `LEFT`, `RIGHT` a `FULL` jsou vždy vnější. Piš tedy `JOIN`, `LEFT JOIN`, `FULL JOIN`. Kratší zápis drží typ spojení na začátku řádky a joiny pod sebou se čtou rychleji. Výjimky, kde slovo nadbytečné není: `OUTER APPLY`, což je jiná konstrukce než `JOIN`, a join hint (`INNER HASH JOIN`, `INNER LOOP JOIN`, `INNER MERGE JOIN`), kde T-SQL `INNER` vyžaduje.
+
+**Nepoužívej `RIGHT JOIN`.** Dotaz se čte shora dolů od hlavní tabulky ve `FROM` a `RIGHT JOIN` ten směr obrací: rozhodující tabulka je najednou ta připojená a čtenář musí přeskládat celý dotaz v hlavě. Totéž jde vždy zapsat jako `LEFT JOIN` s prohozenými tabulkami. Když je `RIGHT JOIN` výjimečně opravdu čitelnější, napiš na stejný řádek komentář, který ho jmenuje i s důvodem:
+
+```sql
+RIGHT JOIN s20.DimUcet u ON u.DimUcetID = d.DimUcetID -- RIGHT JOIN záměrně: všechny účty i bez pohybu
+```
 
 ## Výkon
 
@@ -100,7 +108,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    python ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER` a víceřádkový nebo složený `WHERE` bez `1=1`. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER`, víceřádkový nebo složený `WHERE` bez `1=1`, nadbytečné `INNER` a `OUTER` u `JOIN` (pravidlo `join`) a `RIGHT JOIN` bez komentáře, který ho na stejném řádku zdůvodní (pravidlo `right`). Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
    - sargable predikáty,
