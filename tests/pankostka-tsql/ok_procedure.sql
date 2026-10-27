@@ -1,10 +1,10 @@
 /*
-Vzorová procedura, na které check.py nesmí nic hlásit.
+Vzorová procedura, na které check_tsql.py nesmí nic hlásit.
 Obsahuje záměrně věci, které vypadají jako porušení, ale jsou v komentáři nebo v řetězci:
 CREATE PROCEDURE bez OR ALTER v tomhle komentáři, WHERE bez 1=1 taky.
 
 --********** POPIS
-Testovací procedura pro check.py.
+Testovací procedura pro check_tsql.py.
 
 --********** SPUSTENI
 exec dbo.nspTestOk --0:01 (2026-10-26-1400)

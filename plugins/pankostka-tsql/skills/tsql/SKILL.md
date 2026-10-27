@@ -2,7 +2,7 @@
 name: pankostka-tsql
 description: Zásady psaní T-SQL pro MS SQL Server - WHERE 1=1, JOIN na jednom řádku, sargable predikáty, CREATE OR ALTER, sekce v těle procedury s dvojitým END, hlavička procedury, kódování UTF-8. Použij vždy, když píšeš, upravuješ nebo kontroluješ SQL dotaz, uloženou proceduru (stored procedure), funkci nebo skript .sql. S argumentem (soubor, adresář nebo --changed) zkontroluje soubory proti zásadám a vypíše neshody.
 argument-hint: "[soubor | adresář | --changed]"
-allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check.py *)
+allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py *)
 ---
 
 # T-SQL - zásady
@@ -97,7 +97,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
 1. **Spusť skript** na mechanická pravidla, s argumentem beze změny:
 
    ```
-   python ${CLAUDE_SKILL_DIR}/scripts/check.py $ARGUMENTS
+   python ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py $ARGUMENTS
    ```
 
    Když `python` neexistuje, použij `python3`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER` a víceřádkový nebo složený `WHERE` bez `1=1`. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.

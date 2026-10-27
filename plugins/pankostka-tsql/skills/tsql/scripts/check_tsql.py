@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Kontrola mechanických pravidel T-SQL ze skillu pankostka-tsql.
 
-Použití: check.py <soubor|adresář>... | --changed
+Použití: check_tsql.py <soubor|adresář>... | --changed
 Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 

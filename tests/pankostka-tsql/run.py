@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Testy check.py ze skillu pankostka-tsql.
+"""Testy check_tsql.py ze skillu pankostka-tsql.
 
 Soubory ok_*.sql nesmí mít žádnou neshodu.
 Soubory ko_<pravidlo>_*.sql musí mít jen neshody toho pravidla a právě tolik, kolik říká text `celkem N` v souboru (bez něj 1).
@@ -11,7 +11,7 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CHECK = os.path.join(HERE, "..", "..", "plugins", "pankostka-tsql", "skills", "tsql", "scripts", "check.py")
+CHECK = os.path.join(HERE, "..", "..", "plugins", "pankostka-tsql", "skills", "tsql", "scripts", "check_tsql.py")
 
 spec = importlib.util.spec_from_file_location("check", CHECK)
 check = importlib.util.module_from_spec(spec)

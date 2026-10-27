@@ -16,6 +16,7 @@ Všechno, co uživatel píše, začíná `pankostka-`, a volání je v Claude Co
 - Plugin: `pankostka-<téma>`, adresář `plugins/pankostka-<téma>/`.
 - `name` v `SKILL.md`: `pankostka-<téma>`. Na claude.ai je to jediný název skillu.
 - Adresář skillu: jen `<téma>`, tedy `plugins/pankostka-tsql/skills/tsql/`. **Nesmí se jmenovat stejně jako `name`.** Claude Code povoluje volání bez prefixu pluginu jen u skillu, jehož `name` se liší od adresáře. Se stejným názvem by zbylo jen `/pankostka-tsql:pankostka-tsql`.
+- Kontrolní skript: `scripts/check_<téma>.py`, tedy `check_tsql.py`. Přípona tématu ho odliší od skriptů ostatních skillů.
 - Testy: `tests/pankostka-<téma>/`.
 
 ## Zásady
