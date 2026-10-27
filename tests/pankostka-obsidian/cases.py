@@ -52,7 +52,7 @@ CASES = {
             "menu.md": "Lišta.\n",
         },
     },
-    "ko_vault_nested": {
+    "ko_nested-same-settings": {
         "count": 2,
         "files": {
             ".obsidian/app.json": GOOD_APP,
@@ -61,22 +61,33 @@ CASES = {
             "Wiki/Wiki.md": "Wiki.\n",
         },
     },
-    "ko_vault_none": {
+    "ko_one-vault-per-repo": {
         "count": 1,
         "files": {"README.md": "Bez vaultu.\n"},
     },
-    "ko_settings": {
-        "count": 4,
+    "ko_app-settings": {
+        "count": 3,
         "files": {
             ".obsidian/app.json": json.dumps({
                 "attachmentFolderPath": "/",
                 "showUnsupportedFiles": True,
+                "userIgnoreFilters": ["StaticResources/", "/-TMP/"],
+            }, indent=2),
+            "README.md": "Rozcestník.\n",
+        },
+    },
+    "ko_ignore-filter-no-glob": {
+        "count": 1,
+        "files": {
+            ".obsidian/app.json": json.dumps({
+                "alwaysUpdateLinks": True,
+                "attachmentFolderPath": "./Attachments",
                 "userIgnoreFilters": ["*-TMP", "StaticResources/", "/-TMP/"],
             }, indent=2),
             "README.md": "Rozcestník.\n",
         },
     },
-    "ko_gitignore": {
+    "ko_gitignore-plugin-code": {
         # celé plugins/ ignorované, chybí themes/ a workspaces.json
         "count": 3,
         "git": True,
@@ -86,7 +97,7 @@ CASES = {
             "README.md": "Rozcestník.\n",
         },
     },
-    "ko_tracked": {
+    "ko_no-tracked-plugin-code": {
         "count": 2,
         "git": True,
         "force": [".obsidian/workspace.json", ".obsidian/plugins/plugin/main.js"],
@@ -99,7 +110,7 @@ CASES = {
             "README.md": "Rozcestník.\n",
         },
     },
-    "ko_root": {
+    "ko_root-readme": {
         "count": 3,
         "files": {
             ".obsidian/app.json": GOOD_APP,
@@ -107,7 +118,7 @@ CASES = {
             "home.md": "Rozcestník.\n",
         },
     },
-    "ko_root_menu": {
+    "ko_menu-embed": {
         "count": 1,
         "files": {
             ".obsidian/app.json": GOOD_APP,

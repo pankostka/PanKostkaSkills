@@ -26,10 +26,10 @@ Posun v čase: **jeden krok zpět je `L<jednotka>`, dva a více kroků `<jednotk
 
 ## Pravidla pro DAX
 
-1. **TI míra se vždy píše jako `CALCULATE([základní míra], <časová funkce>)`.** Nikdy nekopíruj tělo základní míry, jinak se pozdější změna základu do variant nepropíše.
+1. `powerbi/ti-calculate` **TI míra se vždy píše jako `CALCULATE([základní míra], <časová funkce>)`.** Nikdy nekopíruj tělo základní míry, jinak se pozdější změna základu do variant nepropíše.
 2. **`△` a `%` se počítají z těch dvou měr**, ne znovu z faktovky. `%` se odvozuje z už existujícího `△`.
-3. **V `%` je ve jmenovateli `ABS()`.** Ukazatele jako HV mohou být záporné. Bez `ABS` by ztráta zlepšená z -100 na -50 vyšla jako -50 %, tedy opačně, než jaká je skutečnost. `DIVIDE` vrátí BLANK při nulovém jmenovateli, takže se dělení nulou neřeší zvlášť.
-4. **Na posuny používej `DATEADD`, ne `PREVIOUSMONTH` a `PREVIOUSYEAR`.** `PREVIOUSMONTH` vrátí celý předchozí měsíc bez ohledu na zvolenou granularitu, `DATEADD(..., -1, MONTH)` posune to, co je v kontextu. Pro rok je `DATEADD(..., -1, YEAR)` totéž co `SAMEPERIODLASTYEAR`, takže jedna funkce pokryje všechny posuny.
+3. `powerbi/ti-abs-denominator` **V `%` je ve jmenovateli `ABS()`.** Ukazatele jako HV mohou být záporné. Bez `ABS` by ztráta zlepšená z -100 na -50 vyšla jako -50 %, tedy opačně, než jaká je skutečnost. `DIVIDE` vrátí BLANK při nulovém jmenovateli, takže se dělení nulou neřeší zvlášť.
+4. `powerbi/ti-dateadd` **Na posuny používej `DATEADD`, ne `PREVIOUSMONTH` a `PREVIOUSYEAR`.** `PREVIOUSMONTH` vrátí celý předchozí měsíc bez ohledu na zvolenou granularitu, `DATEADD(..., -1, MONTH)` posune to, co je v kontextu. Pro rok je `DATEADD(..., -1, YEAR)` totéž co `SAMEPERIODLASTYEAR`, takže jedna funkce pokryje všechny posuny.
 5. **Účetní rok předpokládej totožný s kalendářním**, pokud uživatel fiskální rok výslovně nezmíní. Pokud totožný není, patří do `DATESYTD` druhý parametr s koncem účetního roku.
 6. **Nedokončené období.** `YTD LY` sebere celý loňský měsíc, i když letos jsou data jen k dnešku, a srovnání je pak systematicky pesimistické. Řeší se filtrem na příznak v date table (typicky `DimDatum[Bude] = "Bylo"`), případně odříznutím LY varianty na stejný den. V mírách to zabudované není, hlídá se to v reportu.
 
@@ -50,7 +50,7 @@ X LY%     = DIVIDE([X LY△], ABS([X LY]))
 
 ## Explicitní míry, nebo calculation groups
 
-**Time intelligence piš jako explicitní míry, i kdyby jich byly stovky.** Model to nebolí: míra je metadata, nevyhodnocuje se, dokud ji někdo nepoužije, a nemá vliv na velikost modelu ani na refresh. Přehlednost pro uživatele řeší display foldery. Jediná skutečná cena je délka souboru `.tmdl`.
+`powerbi/ti-explicit-measures` **Time intelligence piš jako explicitní míry, i kdyby jich byly stovky.** Model to nebolí: míra je metadata, nevyhodnocuje se, dokud ji někdo nepoužije, a nemá vliv na velikost modelu ani na refresh. Přehlednost pro uživatele řeší display foldery. Jediná skutečná cena je délka souboru `.tmdl`.
 
 Calculation group na TI **nepoužívej**. Její hlavní přínos je administrativní (ušetří ruční psaní desítek měr) a to neplatí, když míry generuje AI. Cena přitom zůstává: v celém modelu se vypnou implicitní míry (nikdo nepřetáhne surový sloupec do vizuálu a nenechá ho sečíst, což rozbije testovací sešity, které tenhle způsob předpokládají) a calculation item není adresovatelný jménem, musí být na ose, v legendě nebo ve sliceru.
 

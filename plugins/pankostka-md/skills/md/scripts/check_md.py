@@ -2,11 +2,12 @@
 """Kontrola mechanických pravidel Markdownu ze skillu pankostka-md.
 
 Použití: check_md.py <soubor|adresář>... | --changed
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Bloky kódu, inline kód a HTML komentáře se nekontrolují. Oslovení čtenáře, umístění a názvy článků posuzuje model.
-Pravidla tag a publish porovnávají články mezi sebou, cíle odkazů hledá publish v celém vaultu.
+Pravidla md/tag-one-variant a md/no-link-to-private porovnávají články mezi sebou, cíle odkazů se hledají v celém vaultu.
+Řádek s výjimkou <!-- pankostka: allow <identifikátor>, <důvod> --> na něm nebo nad ním se nehlásí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
 import os
@@ -49,6 +50,7 @@ RE_MD_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_KEY = re.compile(r"([A-Za-z_][\w-]*)\s*:(.*)$")
 RE_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 RE_ATTACHMENT = re.compile(r"[a-z0-9_]+(\.[a-z0-9]+)+")
+RE_ALLOW = re.compile(r"pankostka:\s*allow\s+([a-z]+/[a-z0-9-]+(?:\s*,\s*[a-z]+/[a-z0-9-]+)*)\s*,\s*[^\s-]", re.IGNORECASE)
 
 
 def is_tmp(name):
@@ -60,15 +62,15 @@ def read_text(path, findings):
     with open(path, "rb") as f:
         data = f.read()
     if data[:2] in (b"\xff\xfe", b"\xfe\xff") or b"\x00" in data[:4096]:
-        findings.append((1, "encoding", "soubor je v UTF-16, nic v něm neupravuj, nejdřív ho převeď do UTF-8 bez BOM"))
+        findings.append((1, "md/utf8-no-bom", "soubor je v UTF-16, nic v něm neupravuj, nejdřív ho převeď do UTF-8 bez BOM"))
         return None
     if data[:3] == b"\xef\xbb\xbf":
-        findings.append((1, "encoding", "UTF-8 s BOM, ulož bez BOM"))
+        findings.append((1, "md/utf8-no-bom", "UTF-8 s BOM, ulož bez BOM"))
         data = data[3:]
     try:
         return data.decode("utf-8")
     except UnicodeDecodeError as e:
-        findings.append((data.count(b"\n", 0, e.start) + 1, "encoding", "soubor není v UTF-8, nic v něm neupravuj, nejdřív ho převeď"))
+        findings.append((data.count(b"\n", 0, e.start) + 1, "md/utf8-no-bom", "soubor není v UTF-8, nic v něm neupravuj, nejdřív ho převeď"))
         return None
 
 
@@ -159,7 +161,7 @@ def check_wrap(lines, fm_end, skip, findings):
         continues = kind == "text" and prev in ("text", "item") and not (quote and not prev_quote) and not hard_break(lines[i - 1]) and not ends_sentence(lines[i - 1])
         if continues:
             if not reported:
-                findings.append((start + 1, "wrap", "odstavec je zalomený uprostřed věty, spoj ho do jednoho řádku"))
+                findings.append((start + 1, "md/no-hard-wrap", "odstavec je zalomený uprostřed věty, spoj ho do jednoho řádku"))
                 reported = True
         else:
             start, reported = i, False
@@ -175,7 +177,7 @@ def check_chars(lines, skip, findings):
             if ch in FORBIDDEN and FORBIDDEN[ch] not in found:
                 found.append(FORBIDDEN[ch])
         for msg in found:
-            findings.append((i + 1, "chars", f"zakázaný znak: {msg}"))
+            findings.append((i + 1, "md/keyboard-chars", f"zakázaný znak: {msg}"))
 
 
 def check_images(lines, fm_end, skip, findings):
@@ -185,15 +187,15 @@ def check_images(lines, fm_end, skip, findings):
         line = clean(lines[i])
         for m in RE_WIKI.finditer(line):
             if m.group(1) and os.path.splitext(m.group(2).strip())[1].lower() in IMAGE_EXT:
-                findings.append((i + 1, "image", f"obrázek jako ![[{m.group(2).strip()}]], použij ![Popis](Attachments/soubor.png)"))
+                findings.append((i + 1, "md/image-markdown-alt", f"obrázek jako ![[{m.group(2).strip()}]], použij ![Popis](Attachments/soubor.png)"))
         for m in RE_MD_IMAGE.finditer(line):
             alt, target = m.group(1).strip(), unquote(m.group(2).strip("<>"))
             if not alt:
-                findings.append((i + 1, "image", f"obrázek {target} nemá popis"))
+                findings.append((i + 1, "md/image-markdown-alt", f"obrázek {target} nemá popis"))
             if re.match(r"[a-z][a-z0-9+.-]*:", target, re.IGNORECASE) or target.startswith("#"):
                 continue
             if not target.replace("\\", "/").lstrip("./").startswith("Attachments/"):
-                findings.append((i + 1, "image", f"obrázek {target} neleží v Attachments/ vedle článku"))
+                findings.append((i + 1, "md/attachments-folder", f"obrázek {target} neleží v Attachments/ vedle článku"))
 
 
 def parse_tags(raw):
@@ -220,18 +222,18 @@ def check_frontmatter(lines, fm_end, findings):
         if m:
             key, value = m.group(1), m.group(2)
             if key.lower() in OLD_KEYS:
-                findings.append((i + 1, "frontmatter", OLD_KEYS[key.lower()]))
+                findings.append((i + 1, "md/frontmatter-keys", OLD_KEYS[key.lower()]))
             if key == "date":
                 v = value.strip().strip("'\"")
                 if v and not RE_DATE.fullmatch(v):
-                    findings.append((i + 1, "frontmatter", f"date {v} není ve tvaru RRRR-MM-DD"))
+                    findings.append((i + 1, "md/frontmatter-keys", f"date {v} není ve tvaru RRRR-MM-DD"))
             if key == "tags":
                 tags.extend((i + 1, t) for t in parse_tags(value))
         elif key == "tags" and line.strip().startswith("- "):
             tags.extend((i + 1, t) for t in parse_tags(line.strip()[2:]))
     for line, tag in tags:
         if not is_pascal(tag):
-            findings.append((line, "frontmatter", f"tag {tag} není v PascalCase"))
+            findings.append((line, "md/tag-pascal-case", f"tag {tag} není v PascalCase"))
     return tags
 
 
@@ -256,9 +258,9 @@ def links_of(lines, fm_end, skip):
 def check_attachment(path):
     name = os.path.basename(path)
     if name.startswith("Pasted image"):
-        return [(1, "attachment", "nepřejmenovaný obrázek z Obsidianu, přejmenuj ho malými písmeny s podtržítky")]
+        return [(1, "md/attachment-name", "nepřejmenovaný obrázek z Obsidianu, přejmenuj ho malými písmeny s podtržítky")]
     if os.path.basename(os.path.dirname(path)) == "Attachments" and not RE_ATTACHMENT.fullmatch(name):
-        return [(1, "attachment", "název přílohy smí mít jen malá písmena bez diakritiky, číslice a podtržítka")]
+        return [(1, "md/attachment-name", "název přílohy smí mít jen malá písmena bez diakritiky, číslice a podtržítka")]
     return []
 
 
@@ -278,6 +280,7 @@ def vault_index(root):
 def check_paths(paths, root):
     """Vrátí {cesta: [(řádek, pravidlo, zpráva)]} pro všechny soubory včetně pravidel mezi články."""
     results = {}
+    texts = {}
     tags = {}
     public = []
     for path in paths:
@@ -290,6 +293,7 @@ def check_paths(paths, root):
         if text is None:
             continue
         lines, fm_end, skip = split_lines(text)
+        texts[path] = lines
         check_chars(lines, skip, findings)
         check_wrap(lines, fm_end, skip, findings)
         check_images(lines, fm_end, skip, findings)
@@ -305,7 +309,7 @@ def check_paths(paths, root):
         for variant, places in variants.items():
             if variant != main:
                 for path, line in places:
-                    results[path].append((line, "tag", f"tag {variant} má i variantu {main} ({len(variants[main])}x), sjednoť je"))
+                    results[path].append((line, "md/tag-one-variant", f"tag {variant} má i variantu {main} ({len(variants[main])}x), sjednoť je"))
 
     if public:
         index = vault_index(root)
@@ -314,11 +318,22 @@ def check_paths(paths, root):
                 key = target.lower()
                 names = index.get(key) or [n for k, v in index.items() if k.endswith("/" + key) for n in v]
                 if names and not any(MARKER in n for n in names):
-                    results[path].append((line, "publish", f"veřejný článek odkazuje na neveřejný [[{target}]]"))
+                    results[path].append((line, "md/no-link-to-private", f"veřejný článek odkazuje na neveřejný [[{target}]]"))
 
-    for findings in results.values():
-        findings.sort()
+    for path, findings in results.items():
+        lines = texts.get(path, [])
+        findings[:] = sorted(f for f in findings if not allowed(lines, f[0], f[1]))
     return results
+
+
+def allowed(lines, line, rule):
+    """Výjimka komentářem <!-- pankostka: allow <identifikátor>, <důvod> --> na řádku nálezu nebo nad ním. Bez důvodu neplatí."""
+    for i in (line - 1, line - 2):
+        if 0 <= i < len(lines):
+            m = RE_ALLOW.search(lines[i])
+            if m and rule in [r.strip().lower() for r in m.group(1).split(",")]:
+                return True
+    return False
 
 
 def wanted(path, rel):

@@ -1,2 +1,2 @@
--- celkem 4
+-- celkem 1
 CREATE OR ALTER PROCEDURE nsp10HN_Kurz AS SELECT 1

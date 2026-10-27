@@ -15,7 +15,7 @@ Argument: `$ARGUMENTS`
 
 ## Vrstvy
 
-Postupuje se striktně po vrstvách:
+`dwh/load-order` Postupuje se striktně po vrstvách:
 
 - **10 - STAGE**: načtená data ze zdrojů.
 - **20 - STAR**: star schémata. Plní se **dimenze, pak faktovky**. Dimenze jsou obecné a mohou obsahovat řádky, které ve faktovkách nejsou.
@@ -23,7 +23,7 @@ Postupuje se striktně po vrstvách:
 
 Vrstvy plní uložené procedury MSSQL, spouští je (orchestruje) job manager.
 
-**Nižší vrstva nikdy nesmí číst z vyšší.** Ve vrstvě 10 se tedy nesmí použít tabulky vrstvy 20, natož 30.
+`dwh/no-read-up` **Nižší vrstva nikdy nesmí číst z vyšší.** Ve vrstvě 10 se tedy nesmí použít tabulky vrstvy 20, natož 30.
 
 ## Struktura repa
 
@@ -58,11 +58,11 @@ Procedury tady nemají prefix `nsp<vrstva>`, protože do žádné vrstvy nepatř
 
 Adresář `10_stage`, podadresáře **po zdrojích**. Každý zdroj má zkratku (SourceCode), která se používá v názvech procedur a tabulek.
 
-- **Jen potřebné řádky a sloupce. Minimum joinů.** Hlavní priorita je neohrozit funkčnost zdrojů.
-- Tabulky se plní přes `DROP TABLE IF EXISTS ... SELECT ... INTO ...`, ne přes `TRUNCATE`. Výjimka jsou větší tabulky.
+- `dwh/stage-minimal` **Jen potřebné řádky a sloupce. Minimum joinů.** Hlavní priorita je neohrozit funkčnost zdrojů.
+- `dwh/stage-select-into` Tabulky se plní přes `DROP TABLE IF EXISTS ... SELECT ... INTO ...`, ne přes `TRUNCATE`. Výjimka jsou větší tabulky.
 - Žádná velká transformační logika.
 
-Tady se nerozlišují dimenzní a faktové tabulky.
+`dwh/proc-prefix` Tady se nerozlišují dimenzní a faktové tabulky.
 
 | Co | Vzor | Příklad | Poznámka |
 | --- | --- | --- | --- |
@@ -77,7 +77,9 @@ Tady se nerozlišují dimenzní a faktové tabulky.
 
 Adresáře `20_dim` a `20_fact`. Plní se **nejdřív dimenze, pak faktovky**. Faktovky při plnění dimenze používají.
 
-Dimenze mají většinou řádek pro neznámou hodnotu (`Key = -1`), aby faktovky nepotřebovaly outer join. Neplatí to pro fixní dimenze (třeba dimenze společností) nebo pokud je hodnota ve faktovce vždy vyplněná (třeba datum).
+`dwh/unknown-member` Dimenze mají většinou řádek pro neznámou hodnotu (`Key = -1`), aby faktovky nepotřebovaly outer join. Neplatí to pro fixní dimenze (třeba dimenze společností) nebo pokud je hodnota ve faktovce vždy vyplněná (třeba datum).
+
+`dwh/proc-prefix` a `dwh/key-names` Názvy ve vrstvě 20:
 
 | Co | Vzor | Příklad |
 | --- | --- | --- |
@@ -94,9 +96,11 @@ Tabulky `s20.Dim<Entita>_<SpolZkratka>` (pro jednu společnost) jsou platné, tr
 
 ## Vrstva 30 - MART
 
-Adresář `30_mart`, pod ním jednotlivé marty. **Každý mart je samostatný**, star schéma. Plní se **faktovky, pak dimenze**. Faktovky jsou typicky grupované a v dimenzích jsou jen prvky, které jsou ve faktovkách.
+`dwh/mart-standalone` Adresář `30_mart`, pod ním jednotlivé marty. **Každý mart je samostatný**, star schéma. Plní se **faktovky, pak dimenze**. Faktovky jsou typicky grupované a v dimenzích jsou jen prvky, které jsou ve faktovkách.
 
-Mart slouží jako zdroj dat pro sémantický model v Power BI. **Celý mart vytváří jedna procedura.** Cizí klíče kontrolují vazby: na začátku procedury se všechny dropnou a po naplnění se vytvoří znovu. Součástí martu je model PBIP, nikdy `.pbix`, viz skill `pankostka-powerbi`.
+Mart slouží jako zdroj dat pro sémantický model v Power BI. `dwh/mart-one-proc` **Celý mart vytváří jedna procedura.** Cizí klíče kontrolují vazby: na začátku procedury se všechny dropnou a po naplnění se vytvoří znovu. Součástí martu je model PBIP, nikdy `.pbix`, viz skill `pankostka-powerbi`.
+
+`dwh/proc-prefix` a `dwh/key-names` Názvy ve vrstvě 30:
 
 | Co | Vzor | Příklad |
 | --- | --- | --- |
@@ -115,25 +119,36 @@ Sémantický model se jmenuje `Kostka<Mart>`. Pokud je celý mart určen jen pro
 
 - Pro systémové věci anglická zažitá zkratka (suffix, prefix). **Názvy objektů česky, ale bez diakritiky.** Diakritika jen v datech a komentářích.
 - Jednotné číslo. **PascalCase**, podtržítka a pomlčky jen v konkrétních významech (podtržítko před zkratkou společnosti, pomlčka před sufixem `-VZOR`, `-DRAFT`, `-TMP`).
-- **Unikátní názvy tabulek i sloupců**, aby šly fulltextově najít. Dimenzní a faktové tabulky používají pro názvy sloupců zkratku entity.
-- **Vždy uváděj schéma.** `s20.FactDenik`, nikdy jen `FactDenik`.
-- **Název objektu v databázi je vše před první pomlčkou** v názvu souboru: `nsp10HN_Denik-VZOR.sql` obsahuje proceduru `nsp10HN_Denik`.
-- **Pozor na obecné názvy sloupců.** Jakmile se použije obecný název (`Cena`, `Ks`), nejde už udělat ukazatel se stejným názvem. Vhodné jsou dvouslovné názvy, tedy `CenaMj`, v Power BI pak `Cena mj`.
+- `dwh/unique-names` **Unikátní názvy tabulek i sloupců**, aby šly fulltextově najít. Dimenzní a faktové tabulky používají pro názvy sloupců zkratku entity.
+- `dwh/always-schema` **Vždy uváděj schéma.** `s20.FactDenik`, nikdy jen `FactDenik`.
+- `dwh/name-before-dash` **Název objektu v databázi je vše před první pomlčkou** v názvu souboru: `nsp10HN_Denik-VZOR.sql` obsahuje proceduru `nsp10HN_Denik`.
+- `dwh/unique-names` **Pozor na obecné názvy sloupců.** Jakmile se použije obecný název (`Cena`, `Ks`), nejde už udělat ukazatel se stejným názvem. Vhodné jsou dvouslovné názvy, tedy `CenaMj`, v Power BI pak `Cena mj`.
 
-**Konfigurační tabulky** mají prefix `config` malými písmeny a název entity: `dbo.configHeliosDB`, `dbo.configSPOL`. Jsou vždy ve schématu `dbo` a nepatří do žádné vrstvy, plní se ručně. Do gitu patří jen jejich DDL, nikdy `INSERT` s hodnotami, v konfiguraci bývají hesla a connection stringy.
+`dwh/config-ddl-only` **Konfigurační tabulky** mají prefix `config` malými písmeny a název entity: `dbo.configHeliosDB`, `dbo.configSPOL`. Jsou vždy ve schématu `dbo` a nepatří do žádné vrstvy, plní se ručně. Do gitu patří jen jejich DDL, nikdy `INSERT` s hodnotami, v konfiguraci bývají hesla a connection stringy.
 
-**Více společností.** Tabulka nebo procedura jen pro jednu společnost má na konci `_<SpolZkratka>`. Platí to i ve vyšších vrstvách, pokud je objekt specifický pro jednu společnost a další společnost v budoucnu přibýt nemůže. Hojně se používá dynamické SQL (řetězec a `EXEC`), aby kód nemusel být pro každou společnost zvlášť.
+`dwh/company-suffix` **Více společností.** Tabulka nebo procedura jen pro jednu společnost má na konci `_<SpolZkratka>`. Platí to i ve vyšších vrstvách, pokud je objekt specifický pro jednu společnost a další společnost v budoucnu přibýt nemůže. Hojně se používá dynamické SQL (řetězec a `EXEC`), aby kód nemusel být pro každou společnost zvlášť.
 
 ## Zásady
 
-- **Při zakládání procedury vyjdi z procedury `-VZOR` ve stejném adresáři.** Vzorů může být víc, třeba ve stage jeden s `OPENQUERY` a druhý bez. Když nevíš, který použít, zeptej se.
+- `dwh/start-from-vzor` **Při zakládání procedury vyjdi z procedury `-VZOR` ve stejném adresáři.** Vzorů může být víc, třeba ve stage jeden s `OPENQUERY` a druhý bez. Když nevíš, který použít, zeptej se.
 - **Podívej se na sousední soubory ve stejné vrstvě** a napodob jejich styl. Konzistence s existujícím kódem je důležitější než vlastní preference.
-- **Nikdy nepoužívej jednotkové ceny.** Vždy množství a cenu celkem. Jednotková cena se počítá až v DAX podílem.
-- **Míry se neukládají jako sloupec.** Faktovka drží jen hrubou hodnotu na úrovni zrnitosti (`DenikKc`), míry (`MD`, `DAL`, `Obrat`) se počítají výhradně v DAX.
+- `dwh/no-unit-price` **Nikdy nepoužívej jednotkové ceny.** Vždy množství a cenu celkem. Jednotková cena se počítá až v DAX podílem.
+- `dwh/no-stored-measures` **Míry se neukládají jako sloupec.** Faktovka drží jen hrubou hodnotu na úrovni zrnitosti (`DenikKc`), míry (`MD`, `DAL`, `Obrat`) se počítají výhradně v DAX.
 - **Nepřejmenovávej existující objekty bez potvrzení.** Visí na nich sémantické modely, které se tím tiše rozbijí.
 - **Necommituj hesla, tokeny, klíče ani connection stringy s přihlašovacími údaji.** Název serveru a databáze ano, v M partition PBIP modelů být musí.
 
-**Minimální logování.** Pokud je databáze v recovery modelu SIMPLE (nebo BULK_LOGGED), jsou `SELECT ... INTO` a `INSERT ... WITH (TABLOCK)` do prázdné tabulky minimálně logované a transakční log zůstává malý i u stomilionových faktovek. Když se tahle vlastnost poruší, například `INSERT` do tabulky, která už řádky má, log naroste řádově a obvykle jde o chybu v návrhu, ne v nastavení. Jaký recovery model databáze má, patří do `CLAUDE.md` repa.
+`dwh/minimal-logging` **Minimální logování.** Pokud je databáze v recovery modelu SIMPLE (nebo BULK_LOGGED), jsou `SELECT ... INTO` a `INSERT ... WITH (TABLOCK)` do prázdné tabulky minimálně logované a transakční log zůstává malý i u stomilionových faktovek. Když se tahle vlastnost poruší, například `INSERT` do tabulky, která už řádky má, log naroste řádově a obvykle jde o chybu v návrhu, ne v nastavení. Jaký recovery model databáze má, patří do `CLAUDE.md` repa.
+
+## Výjimka z pravidla
+
+Vědomé porušení pravidla zapiš komentářem na řádek nálezu nebo na řádek nad ním. Komentář jmenuje identifikátor pravidla a za čárkou důvod:
+
+```sql
+-- pankostka: allow dwh/no-read-up, kontrola součtů proti martu, nic neplní
+SELECT SUM(m.DenikKc) FROM s30EKO.FactDenik AS m
+```
+
+Identifikátorů může být víc, oddělených čárkou. **Důvod je povinný**, bez něj skript nález hlásí dál.
 
 ## Kontrola
 
@@ -145,15 +160,17 @@ Platí, jen když argument výše není prázdný. Argument je soubor `.sql`, ad
    python ${CLAUDE_SKILL_DIR}/scripts/check_dwh.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
-   - `name`: název objektu v `CREATE` se liší od názvu souboru před první pomlčkou, nebo prefix procedury nesedí na vrstvu,
-   - `layer`: nižší vrstva odkazuje na schéma vyšší vrstvy, nebo mart odkazuje na schéma jiného martu (kontroluje se i dynamické SQL v řetězcích),
-   - `constraint`: název primárního nebo cizího klíče mimo konvenci vrstvy.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`, řádek s výjimkou `pankostka: allow` a důvodem se nehlásí. Pravidla:
+   - `dwh/name-before-dash`: název procedury v `CREATE` se liší od názvu souboru před první pomlčkou,
+   - `dwh/proc-prefix`: prefix procedury nesedí na vrstvu,
+   - `dwh/no-read-up`: nižší vrstva odkazuje na schéma vyšší vrstvy (kontroluje se i dynamické SQL v řetězcích),
+   - `dwh/mart-standalone`: mart odkazuje na schéma jiného martu,
+   - `dwh/key-names`: název primárního nebo cizího klíče mimo konvenci vrstvy.
 
    Soubory a adresáře se sufixem `-TMP` skript přeskočí.
 
-2. **Projdi soubory sám** na to, co skript nepozná: odkazy na tabulky bez schématu (procedury samotné se zakládají tak, jak to dělají sousední soubory), řádek `Key = -1` v dimenzi, pořadí plnění v procedurách `_RUN`, transformační logiku ve stage, jednotkové ceny, uložené míry a obecné názvy sloupců. Pravidla T-SQL kontroluje skill `pankostka-tsql`.
+2. **Projdi soubory sám** na to, co skript nepozná: `dwh/always-schema` (odkazy na tabulky bez schématu, procedury samotné se zakládají tak, jak to dělají sousední soubory), `dwh/unknown-member`, `dwh/load-order` v procedurách `_RUN`, `dwh/stage-minimal`, `dwh/no-unit-price`, `dwh/no-stored-measures` a `dwh/unique-names`. Pravidla T-SQL kontroluje skill `pankostka-tsql`.
 
-3. **Vypiš výsledek** po souborech, u každé neshody konkrétní návrh opravy, na konci souhrn.
+3. **Vypiš výsledek** po souborech, u každé neshody identifikátor pravidla a konkrétní návrh opravy, na konci souhrn.
 
 4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování procedury nebo tabulky jen navrhni, visí na ní job a modely.

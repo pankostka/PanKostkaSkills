@@ -2,10 +2,11 @@
 """Kontrola skriptů nasazovaných do Heliosu Nephrite ze skillu pankostka-nephrite.
 
 Použití: check_nephrite.py <soubor|adresář>... | --changed
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Pravidla se kontrolují jen v kódu mimo komentáře a řetězce, dynamické SQL proto posuzuje model.
+Řádek s výjimkou pankostka: allow <identifikátor>, <důvod> na něm nebo nad ním nehlásí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
 import os
@@ -18,6 +19,7 @@ RE_WRITE = re.compile(r"\b(INSERT\s+(?:INTO\s+)?|UPDATE\s+|DELETE\s+(?:FROM\s+)?
 RE_NONSUBJ = re.compile(r"\[?cislo_nonsubjektu\]?\s+\[?int\]?\s+(?:NOT\s+NULL\s+)?IDENTITY", re.IGNORECASE)
 RE_FK = re.compile(r"\b(FOREIGN\s+KEY|REFERENCES)\b", re.IGNORECASE)
 SYSTEM = {"subjekty", "organizace", "uhrady", "poradace"}
+RE_ALLOW = re.compile(r"pankostka:\s*allow\s+([a-z]+/[a-z0-9-]+(?:\s*,\s*[a-z]+/[a-z0-9-]+)*)\s*,\s*\S", re.IGNORECASE)
 SKIP_DIRS = {".git", "node_modules", "__pycache__"}
 
 
@@ -96,50 +98,62 @@ def check_file(path):
 
     m = re.search(r"/\*{6} Object:", text)
     if m:
-        findings.append((line_of(text, m.start()), "dump", "zbytek dumpu ze SSMS s časovým razítkem, řádek smaž"))
+        findings.append((line_of(text, m.start()), "nephrite/clean-dump", "zbytek dumpu ze SSMS s časovým razítkem, řádek smaž"))
 
     objects = [m for m in RE_CREATE.finditer(code) if not m.group(4).startswith("#")]
     if objects:
         first = re.search(r"\S+", code)
         if not first or first.group().upper() != "USE":
-            findings.append((1, "use", "skript zakládá objekt v Heliosu, ale nezačíná USE [<databáze>] s poznámkou o serveru"))
+            findings.append((1, "nephrite/use-header", "skript zakládá objekt v Heliosu, ale nezačíná USE [<databáze>] s poznámkou o serveru"))
 
     for m in objects:
         kind, schema, name = m.group(1).upper(), (m.group(3) or ""), m.group(4)
         line = line_of(code, m.start())
         if schema.lower() != "lcs":
             where = f"je ve schématu {schema}" if schema else "nemá schéma"
-            findings.append((line, "schema", f"{kind} {name} {where}, objekty Heliosu patří do schématu lcs"))
+            findings.append((line, "nephrite/schema-lcs", f"{kind} {name} {where}, objekty Heliosu patří do schématu lcs"))
 
         if kind.startswith("PROC") and "@system_inputrecordnumber" in code[m.end():m.end() + 400].lower():
             body = code[m.end():]
             if not re.search(r"\bIF\b[^\n]*@System_InputRecordNumber", body, re.IGNORECASE):
-                findings.append((line, "nsp", f"NSP procedura {name} nekontroluje @System_InputRecordNumber, chybí odmítnutí spuštění nad jedním záznamem (nebo nad celým přehledem)"))
+                findings.append((line, "nephrite/nsp-input-check", f"NSP procedura {name} nekontroluje @System_InputRecordNumber, chybí odmítnutí spuštění nad jedním záznamem (nebo nad celým přehledem)"))
             if not re.search(r"\bRAISERROR\s*\([^)]*,\s*18\s*,", body, re.IGNORECASE):
-                findings.append((line, "nsp", f"NSP procedura {name} nehlásí chybu přes RAISERROR(..., 18, 1)"))
+                findings.append((line, "nephrite/nsp-raiserror", f"NSP procedura {name} nehlásí chybu přes RAISERROR(..., 18, 1)"))
             if not re.search(rf"\bGRANT\s+EXECUTE\s+ON\s+(?:OBJECT::)?\[?lcs\]?\s*\.\s*\[?{re.escape(name)}\]?", code, re.IGNORECASE):
-                findings.append((line, "nsp", f"NSP procedura {name} nemá na konci GRANT EXECUTE, uživateli nepojede"))
+                findings.append((line, "nephrite/nsp-grant", f"NSP procedura {name} nemá na konci GRANT EXECUTE, uživateli nepojede"))
 
         if kind == "TABLE" and schema.lower() == "lcs":
             if not RE_NONSUBJ.search(code[m.end():statement_end(code, m.end()) + 2000]):
-                findings.append((line, "table", f"vlastní tabulka {name} nemá primární klíč cislo_nonsubjektu INT IDENTITY, Helios ji na přehled nenapojí"))
+                findings.append((line, "nephrite/own-table-pk", f"vlastní tabulka {name} nemá primární klíč cislo_nonsubjektu INT IDENTITY, Helios ji na přehled nenapojí"))
             fk = RE_FK.search(code)
             if fk:
-                findings.append((line_of(code, fk.start()), "table", f"vlastní tabulka {name} má cizí klíč, zablokoval by zápis Heliosu"))
+                findings.append((line_of(code, fk.start()), "nephrite/no-fk", f"vlastní tabulka {name} má cizí klíč, zablokoval by zápis Heliosu"))
 
     for m in RE_WRITE.finditer(code):
         table = m.group(2).lower()
         line = line_of(code, m.start())
         verb = m.group(1).split()[0].upper()
         if table in SYSTEM or table.startswith("qn_"):
-            findings.append((line, "write", f"{verb} do systémové tabulky lcs.{table}, do systémových tabulek Heliosu se nezapisuje"))
+            findings.append((line, "nephrite/no-write-system", f"{verb} do systémové tabulky lcs.{table}, do systémových tabulek Heliosu se nezapisuje"))
         elif table == "noris_gs_main" and verb == "UPDATE":
             stmt = code[m.start():statement_end(code, m.end())]
             if not re.search(r"\bexpression\s+like\b", stmt, re.IGNORECASE):
-                findings.append((line, "write", "UPDATE lcs.noris_gs_main bez omezení na vlastní sloupce (and expression like ...), přepsal by sloupce Heliosu"))
+                findings.append((line, "nephrite/grid-own-columns", "UPDATE lcs.noris_gs_main bez omezení na vlastní sloupce (and expression like ...), přepsal by sloupce Heliosu"))
 
+    lines = text.split("\n")
+    findings = [f for f in findings if not allowed(lines, f[0], f[1])]
     findings.sort()
     return findings
+
+
+def allowed(lines, line, rule):
+    """Výjimka komentářem pankostka: allow <identifikátor>, <důvod> na řádku nálezu nebo nad ním. Bez důvodu neplatí."""
+    for i in (line - 1, line - 2):
+        if 0 <= i < len(lines):
+            m = RE_ALLOW.search(lines[i])
+            if m and rule in [r.strip().lower() for r in m.group(1).split(",")]:
+                return True
+    return False
 
 
 def wanted(path, rel):

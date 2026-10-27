@@ -6,7 +6,7 @@ Field parameter (parametr polí) je kalkulovaná tabulka, ze které si uživatel
 
 ## Pojmenování
 
-**`Select[Dim]<Rozsah>[_TI][A|B]`**: PascalCase, bez diakritiky, bez pomlčky (pomlčka je vyhrazená pro sufixy `-VZOR`, `-DRAFT` a `-TMP`).
+`powerbi/select-name` **`Select[Dim]<Rozsah>[_TI][A|B]`**: PascalCase, bez diakritiky, bez pomlčky (pomlčka je vyhrazená pro sufixy `-VZOR`, `-DRAFT` a `-TMP`).
 
 | Část | Význam | Příklad |
 | --- | --- | --- |
@@ -19,6 +19,8 @@ Field parameter (parametr polí) je kalkulovaná tabulka, ze které si uživatel
 **Sufix `All` nepoužívej.** "Všechno" je slib, který nejde dodržet: každý seznam je kurátorovaný, otázka je jen *pro co*. Rozsah pojmenuj podle reportu nebo tématu, tím seznam dostane vlastníka.
 
 ## Obsah
+
+`powerbi/select-content`
 
 - **Strop asi 30 položek.** Delší dropdown je nepoužitelný. Když je potřeba víc, rozděl seznam podle tématu.
 - **Jen viditelné, smysluplné atributy.** Nikdy surrogátní klíče ani skryté sloupce. Z dimenze jeden reprezentant na úroveň: `Účet ČísNáz`, ne Číslo, Název a ČísNáz zvlášť.

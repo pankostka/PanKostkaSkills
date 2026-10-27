@@ -93,18 +93,29 @@ Text a pod ním čára.
 ---
 """)
 
-# --- ko_chars
-w("ko_chars/Článek.md", """<!-- celkem 4 -->
+# --- ok_allow: vědomá výjimka komentářem s důvodem
+w("ok_allow/Článek.md", """Citace dodavatele „doslova“ <!-- pankostka: allow md/keyboard-chars, citace dodavatele beze změny -->
+
+<!-- pankostka: allow md/no-hard-wrap, adresa po řádcích -->
+Firma s.r.o.
+Ulice 1
+""")
+
+# --- ko_keyboard-chars
+w("ko_keyboard-chars/Článek.md", """<!-- celkem 5 -->
 Věta — s dlouhou pomlčkou.
+
 Odstavec s „uvozovkami“.
 
 Tři… tečky.
 
 Rozměr 2×3 a `—` v kódu.
-""".replace("pomlčkou.\nOdstavec", "pomlčkou.\n\nOdstavec"))
 
-# --- ko_wrap
-w("ko_wrap/Článek.md", """<!-- celkem 4 -->
+Výjimka bez důvodu — <!-- pankostka: allow md/keyboard-chars -->
+""")
+
+# --- ko_no-hard-wrap
+w("ko_no-hard-wrap/Článek.md", """<!-- celkem 4 -->
 První odstavec
 zalomený na dva řádky.
 
@@ -120,56 +131,69 @@ na tři řádky.
 > druhý řádek calloutu
 """)
 
-# --- ko_image
-w("ko_image/Článek.md", """<!-- celkem 5 -->
+# --- ko_image-markdown-alt
+w("ko_image-markdown-alt/Článek.md", """<!-- celkem 3 -->
 ![[obrazek.png]]
 
 ![](Attachments/bez_popisu.png)
 
-![Popis](img/jinde.png)
-
-![](jinde_bez_popisu.png)
+![](Attachments/taky_bez_popisu.png)
 
 ![[Jiný článek]] se nehlásí, je to vložený článek.
 """)
 
-# --- ko_frontmatter
-w("ko_frontmatter/Článek.md", """---
+# --- ko_attachments-folder
+w("ko_attachments-folder/Článek.md", """<!-- celkem 2 -->
+![Popis](img/jinde.png)
+
+![Popis](jinde_vedle.png)
+""")
+
+# --- ko_frontmatter-keys
+w("ko_frontmatter-keys/Článek.md", """---
 titul: Starý titulek
 datum: 2026-10-27
 publish: true
 date: 27.10.2026
-tags: [obsidian, Power BI, _KostkaEKO, Údržba]
+tags: [Obsidian, _KostkaEKO, Údržba]
 ---
-<!-- celkem 6 -->
+<!-- celkem 4 -->
 Text.
 """)
 
-# --- ko_attachment
-w("ko_attachment/Článek.md", """<!-- celkem 2 -->
+# --- ko_tag-pascal-case
+w("ko_tag-pascal-case/Článek.md", """---
+tags: [obsidian, Power BI, _KostkaEKO]
+---
+<!-- celkem 2 -->
+Text.
+""")
+
+# --- ko_attachment-name
+w("ko_attachment-name/Článek.md", """<!-- celkem 2 -->
 ![Vložený obrázek](Attachments/Pasted%20image%2020260727145759.png)
 
 ![Schéma](Attachments/Schema-Krok1.png)
 """)
-w("ko_attachment/Attachments/Pasted image 20260727145759.png", "")
-w("ko_attachment/Attachments/Schema-Krok1.png", "")
+w("ko_attachment-name/Attachments/Pasted image 20260727145759.png", "")
+w("ko_attachment-name/Attachments/Schema-Krok1.png", "")
 
-# --- ko_tag
-w("ko_tag/A.md", "---\ntags: [Obsidian]\n---\n<!-- celkem 1 -->\nA.\n")
-w("ko_tag/B.md", "---\ntags:\n  - Obsidian\n---\nB.\n")
-w("ko_tag/C.md", "---\ntags: [OBSIDIAN]\n---\nC.\n")
+# --- ko_tag-one-variant
+w("ko_tag-one-variant/A.md", "---\ntags: [Obsidian]\n---\n<!-- celkem 1 -->\nA.\n")
+w("ko_tag-one-variant/B.md", "---\ntags:\n  - Obsidian\n---\nB.\n")
+w("ko_tag-one-variant/C.md", "---\ntags: [OBSIDIAN]\n---\nC.\n")
 
-# --- ko_publish
-w(f"ko_publish/Veřejný {G}.md", f"""<!-- celkem 3 -->
+# --- ko_no-link-to-private
+w(f"ko_no-link-to-private/Veřejný {G}.md", f"""<!-- celkem 3 -->
 Odkaz na [[Interní]] a na [[Druhý {G}]].
 
 ![[Interní]]
 
 Markdown odkaz na [interní článek](Interní.md).
 """)
-w("ko_publish/Interní.md", f"Interní článek smí odkazovat na [[Veřejný {G}]].\n")
-w(f"ko_publish/Druhý {G}.md", "Veřejný.\n")
+w("ko_no-link-to-private/Interní.md", f"Interní článek smí odkazovat na [[Veřejný {G}]].\n")
+w(f"ko_no-link-to-private/Druhý {G}.md", "Veřejný.\n")
 
-# --- ko_encoding
-w("ko_encoding/S BOM.md", "<!-- celkem 2 -->\nČlánek s BOM.\n", bom=True)
-w("ko_encoding/Cp1250.md", "Článek v kódování Windows-1250.\n", enc="cp1250")
+# --- ko_utf8-no-bom
+w("ko_utf8-no-bom/S BOM.md", "<!-- celkem 2 -->\nČlánek s BOM.\n", bom=True)
+w("ko_utf8-no-bom/Cp1250.md", "Článek v kódování Windows-1250.\n", enc="cp1250")

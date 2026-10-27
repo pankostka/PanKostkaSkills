@@ -26,14 +26,24 @@ Všechno, co uživatel píše, začíná `pankostka-`, a volání je v Claude Co
 - S argumentem (soubor, adresář, `--changed`, název objektu) skill kontroluje a vypisuje neshody s návrhy. **Nic nezapisuje.**
 - Zápis povoluje jen přepínač `--make`, a jen u skillu, který ho v `argument-hint` uvádí. Dnes je to `pankostka-powerbi-wiki`. Pokyn slovy, který o zápis výslovně žádá (třeba `Aktualizuj wiki`), znamená totéž co `--make`.
 
+## Identifikátory pravidel
+
+Každé normativní pravidlo (co se má nebo nesmí) má identifikátor **`<téma>/<krátký-popis>`**, třeba `tsql/no-right-join`, `md/no-hard-wrap`. Téma je `name` skillu bez `pankostka-`, u dalšího skillu v pluginu jen podtéma (`wiki/`). Popis je anglicky, malými písmeny s pomlčkami, `no-` na začátku znamená zákaz. Identifikátor se nečísluje a nemění: nové pravidlo se nikam neřadí a smazané nenechá díru.
+
+- V `SKILL.md` stojí identifikátor v zpětných apostrofech na začátku pravidla: `` `tsql/no-right-join` **Nepoužívej `RIGHT JOIN`.** ``
+- Skript ho vypisuje jako pravidlo nálezu: `soubor:řádek: [tsql/no-right-join] zpráva`.
+- Test se jmenuje `ko_<popis>` nebo `ko_<popis>_<varianta>`, tedy `ko_no-right-join.sql`. Jeden test `ko_` hlásí jen jeden identifikátor.
+
+**Výjimka komentářem.** Vědomé porušení pravidla se zapíše komentářem na řádku nálezu nebo na řádku nad ním: `-- pankostka: allow tsql/no-right-join, důvod` v SQL, `<!-- pankostka: allow md/keyboard-chars, důvod -->` v Markdownu. Identifikátorů může být víc, oddělených čárkou, **důvod je povinný**, bez něj skript nález hlásí dál. Výjimku umí skripty, jejichž nálezy se vážou k řádku textu: `tsql`, `md`, `dwh`, `nephrite`, `wiki` a `tasks`. V `obsidian` (JSON), `git` (repo) a `powerbi` (TMDL nemá komentáře) není.
+
 ## Zásady
 
 - Názvy souborů a adresářů anglicky, obsah česky včetně diakritiky.
 - `SKILL.md` je zdroj pravidel, ne výtah z jiného dokumentu. Odůvodnění pravidel v něm zůstávají.
 - Skilly musí fungovat i samostatně jako zip pro claude.ai: žádné odkazy mimo adresář skillu a žádné `${CLAUDE_PLUGIN_ROOT}`, jen `${CLAUDE_SKILL_DIR}`.
 - Skripty jen se standardní knihovnou Pythonu.
-- Mechanická pravidla kontroluje skript, úsudek model. Nové pravidlo ve skriptu potřebuje test `ko_<pravidlo>_*`.
-- Testy: `ok_*` nesmí mít neshodu, `ko_<pravidlo>_*` jen neshody toho pravidla, počet podle textu `celkem N` v testu. Test je soubor, nebo adresář, když pravidlo porovnává soubory mezi sebou (`pankostka-md`: přílohy, tagy, odkazy). Testy `ko_` porušují pravidla záměrně, kontrola skillu na ně nemíří.
+- Mechanická pravidla kontroluje skript, úsudek model. Nové pravidlo ve skriptu potřebuje test `ko_<popis>`.
+- Testy: `ok_*` nesmí mít neshodu, `ko_<popis>_*` jen neshody pravidla s tím popisem, počet podle textu `celkem N` v testu. Test je soubor, nebo adresář, když pravidlo porovnává soubory mezi sebou (`pankostka-md`: přílohy, tagy, odkazy). Testy `ko_` porušují pravidla záměrně, kontrola skillu na ně nemíří.
 - Po každé změně spusť testy (`python tests/<plugin>/run.py`) a `claude plugin validate .`.
 - Textové soubory v UTF-8 bez BOM. Výjimkou jsou testy kódování, ty mají BOM nebo jiné kódování záměrně.
 - Testy, které potřebují zakázané znaky, mezery na konci řádku nebo jiné kódování, se generují skriptem v Pythonu, třeba `tests/pankostka-md/make_cases.py`. Editor i nástroje AI je při zápisu tiše opraví, mezery na konci řádku umaže už nástroj Write.

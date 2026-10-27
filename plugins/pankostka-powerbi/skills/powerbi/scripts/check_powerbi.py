@@ -2,7 +2,7 @@
 """Kontrola mechanických pravidel sémantického modelu v TMDL ze skillu pankostka-powerbi.
 
 Použití: check_powerbi.py <adresář|soubor.tmdl>... | --changed
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Čte jen soubory .tmdl, každý samostatně. Reporty PBIR kontrolují validate_pbir.py a validate_pbir_corpus.py.
@@ -57,36 +57,36 @@ def check_member(table, m, findings):
     if m.kind == "column":
         src = p.get("sourceColumn", "").strip("[]")
         if RE_KEY.fullmatch(src) and m.name != src:
-            findings.append((m.line, "key", f"klíč {src} je přejmenovaný na {m.name}, klíč si drží fyzický název"))
+            findings.append((m.line, "powerbi/key-keep-name", f"klíč {src} je přejmenovaný na {m.name}, klíč si drží fyzický název"))
         hidden = "isHidden" in p and p["isHidden"].lower() != "false"
         if table and table.name.startswith("Fact") and hidden and p.get("isAvailableInMdx", "").lower() != "false":
-            findings.append((m.line, "mdx", f"skrytý sloupec {m.name} faktovky nemá isAvailableInMdx: false (zapiš ho za formatString)"))
+            findings.append((m.line, "powerbi/fact-hidden-no-mdx", f"skrytý sloupec {m.name} faktovky nemá isAvailableInMdx: false (zapiš ho za formatString)"))
         if "ParameterMetadata" in p.get("extendedProperty", "") and table:
             table.is_param = True
     elif m.kind == "measure":
         if "formatString" not in p and "formatStringDefinition" not in p:
-            findings.append((m.line, "measure", f"míra {m.name} nemá formatString (textová míra ho nepotřebuje)"))
+            findings.append((m.line, "powerbi/measure-format-folder", f"míra {m.name} nemá formatString (textová míra ho nepotřebuje)"))
         if "displayFolder" not in p:
-            findings.append((m.line, "measure", f"míra {m.name} není v display folderu"))
+            findings.append((m.line, "powerbi/measure-format-folder", f"míra {m.name} není v display folderu"))
         if RE_OP_BEFORE.search(m.name):
-            findings.append((m.line, "measure", f"míra {m.name}: operátor △ nebo % patří za časový token, třeba HV LY△"))
+            findings.append((m.line, "powerbi/measure-token-order", f"míra {m.name}: operátor △ nebo % patří za časový token, třeba HV LY△"))
         if RE_SHIFT_FIRST.search(m.name):
-            findings.append((m.line, "measure", f"míra {m.name}: nejdřív kumulace, pak posun, třeba HV YTD LY"))
+            findings.append((m.line, "powerbi/measure-token-order", f"míra {m.name}: nejdřív kumulace, pak posun, třeba HV YTD LY"))
     elif m.kind == "hierarchy":
         if not m.name.startswith("@"):
-            findings.append((m.line, "hierarchy", f"hierarchie {m.name} nemá prefix @"))
+            findings.append((m.line, "powerbi/hierarchy-at", f"hierarchie {m.name} nemá prefix @"))
         elif m.quoted and re.fullmatch(r"@\w+", m.name):
-            findings.append((m.line, "hierarchy", f"hierarchie '{m.name}' má zbytečné apostrofy, piš je jen při mezeře v názvu"))
+            findings.append((m.line, "powerbi/hierarchy-at", f"hierarchie '{m.name}' má zbytečné apostrofy, piš je jen při mezeře v názvu"))
 
 
 def check_table(t, findings):
     if not t.name.isascii():
-        findings.append((t.line, "table", f"tabulka {t.name} má v názvu diakritiku"))
+        findings.append((t.line, "powerbi/table-no-diacritics", f"tabulka {t.name} má v názvu diakritiku"))
     if t.is_param:
         if not RE_SELECT.fullmatch(t.name.rstrip("AB")) and not RE_SELECT.fullmatch(t.name):
-            findings.append((t.line, "select", f"field parameter {t.name} není ve tvaru Select[Dim]<Rozsah>[_TI][A|B]"))
+            findings.append((t.line, "powerbi/select-name", f"field parameter {t.name} není ve tvaru Select[Dim]<Rozsah>[_TI][A|B]"))
         elif re.search(r"All(_TI)?[AB]?$", t.name):
-            findings.append((t.line, "select", f"field parameter {t.name} má sufix All, pojmenuj rozsah podle reportu nebo tématu"))
+            findings.append((t.line, "powerbi/select-name", f"field parameter {t.name} má sufix All, pojmenuj rozsah podle reportu nebo tématu"))
 
 
 def check_file(path):
@@ -99,7 +99,7 @@ def check_file(path):
     try:
         text = data.decode("utf-8")
     except UnicodeDecodeError:
-        return [(1, "encoding", "soubor není v UTF-8")]
+        return [(1, "powerbi/utf8-no-bom", "soubor není v UTF-8")]
     table = member = None
     member_indent = 0
     in_fence = False
@@ -129,7 +129,7 @@ def check_file(path):
             elif word == "role":
                 name, _ = parse_name(rest)
                 if not RE_ROLE.fullmatch(name):
-                    findings.append((i + 1, "role", f"role {name} není ve tvaru Role<Model><Skupina>"))
+                    findings.append((i + 1, "powerbi/role-name", f"role {name} není ve tvaru Role<Model><Skupina>"))
             continue
         if word in MEMBERS and table and (member is None or ind <= member_indent):
             if member:

@@ -19,3 +19,6 @@ WHERE cislo_sablony = 123
 	and expression like '%where 1=1%'
 
 INSERT INTO lcs.FirmaTab (OrgCS) SELECT 1
+
+-- pankostka: allow nephrite/no-write-system, oprava dat schválená dodavatelem Heliosu
+UPDATE lcs.organizace SET nazev_subjektu = 'X' WHERE cislo_subjektu = 1

@@ -2,7 +2,7 @@
 """Kontrola vaultu v Obsidianu ze skillu pankostka-obsidian.
 
 Použití: check_obsidian.py <adresář vaultu>...
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Kontroluje vault, jeho vnořené vaulty a jejich řádky v .gitignore. Vzory v .gitignore vyhodnocuje git sám (git check-ignore), bez gitu se pravidla gitignore a tracked přeskočí.
@@ -73,7 +73,7 @@ def load_app(vault, findings):
     try:
         return json.loads(text), text
     except ValueError:
-        findings.append((path, 1, "settings", "app.json není platný JSON"))
+        findings.append((path, 1, "obsidian/app-settings", "app.json není platný JSON"))
         return {}, text
 
 
@@ -97,14 +97,14 @@ def check_settings(vault, app, text, parent_app, findings):
     for key, (default, wanted) in REQUIRED.items():
         value = effective(app, key)
         if parent_app is not None and key in FILE_KEYS and value != effective(parent_app, key):
-            findings.append((path, line_of_key(text, key), "vault", f"vnořený vault má {key} {fmt(value)}, nadřazený {fmt(effective(parent_app, key))}, nastav stejně"))
+            findings.append((path, line_of_key(text, key), "obsidian/nested-same-settings", f"vnořený vault má {key} {fmt(value)}, nadřazený {fmt(effective(parent_app, key))}, nastav stejně"))
             continue
         if value != wanted:
             how = f"chybí, výchozí je {fmt(default)}" if key not in app else f"je {fmt(value)}"
-            findings.append((path, line_of_key(text, key), "settings", f"{key} {how}, nastav {fmt(wanted)}"))
+            findings.append((path, line_of_key(text, key), "obsidian/app-settings", f"{key} {how}, nastav {fmt(wanted)}"))
     for flt in app.get("userIgnoreFilters", []):
         if "*" in flt and not (flt.startswith("/") and flt.endswith("/") and len(flt) > 1):
-            findings.append((path, line_of_key(text, "userIgnoreFilters"), "settings", f"filtr {flt} je glob, userIgnoreFilters zná jen cestu nebo /regulární výraz/"))
+            findings.append((path, line_of_key(text, "userIgnoreFilters"), "obsidian/ignore-filter-no-glob", f"filtr {flt} je glob, userIgnoreFilters zná jen cestu nebo /regulární výraz/"))
 
 
 def git(cwd, *args):
@@ -141,14 +141,14 @@ def check_git(vault, findings):
         for probe, should, label in IGNORE_PROBES:
             source = ignored(top, prefix + ".obsidian/" + probe)
             if should and not source:
-                findings.append((gitignore, 1, "gitignore", f"neignoruje se {label}, doplň řádky z gitignore.txt"))
+                findings.append((gitignore, 1, "obsidian/gitignore-plugin-code", f"neignoruje se {label}, doplň řádky z gitignore.txt"))
             elif not should and source:
-                findings.append((source if os.path.isabs(source) else os.path.join(top, source), 1, "gitignore", f"ignoruje se {label}, verzuj nastavení a ignoruj jen kód pluginů, témata a stav oken"))
+                findings.append((source if os.path.isabs(source) else os.path.join(top, source), 1, "obsidian/gitignore-plugin-code", f"ignoruje se {label}, verzuj nastavení a ignoruj jen kód pluginů, témata a stav oken"))
 
     tracked = git(top, "ls-files", "--", prefix + ".obsidian").stdout.splitlines()
     for rel in tracked:
         if re.search(r"\.obsidian/(plugins/[^/]+/(main\.js|styles\.css)|themes/|workspaces?\.json$)", rel) and ignored(top, rel):
-            findings.append((os.path.join(top, rel), 1, "tracked", "git soubor verzuje, i když ho .gitignore ignoruje, odstraň ho z indexu přes git rm --cached"))
+            findings.append((os.path.join(top, rel), 1, "obsidian/no-tracked-plugin-code", "git soubor verzuje, i když ho .gitignore ignoruje, odstraň ho z indexu přes git rm --cached"))
 
 
 def first_content_line(path):
@@ -165,12 +165,12 @@ def check_root(vault, nested, findings):
     names = {n.lower(): n for n in os.listdir(vault)}
     readme = os.path.join(vault, names.get("readme.md", "README.md"))
     if "readme.md" not in names and not nested:
-        findings.append((readme, 1, "root", "chybí README.md jako rozcestník vaultu"))
+        findings.append((readme, 1, "obsidian/root-readme", "chybí README.md jako rozcestník vaultu"))
     for other in ("index.md", "home.md"):
         if other in names:
-            findings.append((os.path.join(vault, names[other]), 1, "root", f"{names[other]} jako rozcestník, použij README.md"))
+            findings.append((os.path.join(vault, names[other]), 1, "obsidian/root-readme", f"{names[other]} jako rozcestník, použij README.md"))
     if "menu.md" in names and "readme.md" in names and first_content_line(readme) != "![[menu]]":
-        findings.append((readme, 1, "root", "menu.md existuje, ale README.md ho nevkládá prvním řádkem ![[menu]]"))
+        findings.append((readme, 1, "obsidian/menu-embed", "menu.md existuje, ale README.md ho nevkládá prvním řádkem ![[menu]]"))
 
 
 def check_vault(vault, parent):
@@ -189,7 +189,7 @@ def check_dir(arg):
     """Zkontroluje vault, do kterého patří adresář, a vaulty v něm vnořené."""
     vault = find_vault(arg)
     if not vault:
-        return [(os.path.abspath(arg), 1, "vault", "adresář ani žádný nadřazený není vault, chybí .obsidian")]
+        return [(os.path.abspath(arg), 1, "obsidian/one-vault-per-repo", "adresář ani žádný nadřazený není vault, chybí .obsidian")]
     findings = []
     parent = find_vault(os.path.dirname(vault))
     for v in [vault] + nested_vaults(vault):

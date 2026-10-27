@@ -2,7 +2,7 @@
 
 Doplněk skillu `pankostka-powerbi-wiki`.
 
-Sekce se píšou v uvedeném pořadí. Sekce označená jako volitelná se vynechá, když k ní není co napsat, prázdný nadpis v článku nezůstává. Každá sekce má pár vět nebo krátký seznam, ne odstavce. Článek se píše z pohledu uživatele, věcně a bez oslovení, jak vyžaduje `pankostka-md`.
+`wiki/outline` Sekce se píšou v uvedeném pořadí. Sekce označená jako volitelná se vynechá, když k ní není co napsat, prázdný nadpis v článku nezůstává. Každá sekce má pár vět nebo krátký seznam, ne odstavce. Článek se píše z pohledu uživatele, věcně a bez oslovení, jak vyžaduje `pankostka-md`.
 
 ## Kostka
 

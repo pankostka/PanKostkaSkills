@@ -10,7 +10,7 @@ Doplněk skillu `pankostka-nephrite`. Platí pro skripty, které zakládají neb
 
 ## Hlavička USE
 
-**Skript začíná `USE [<databáze>]`.** V Heliosu bývají vedle sebe databáze víc společností, často na různých serverech, a spuštění nad špatnou z nich znamená založení objektu v cizí produkci. Za `USE` patří poznámka, na kterém serveru databáze je:
+`nephrite/use-header` **Skript začíná `USE [<databáze>]`.** V Heliosu bývají vedle sebe databáze víc společností, často na různých serverech, a spuštění nad špatnou z nich znamená založení objektu v cizí produkci. Za `USE` patří poznámka, na kterém serveru databáze je:
 
 ```sql
 USE [HGFirmaOstra] -- SQLSRVX
@@ -29,7 +29,7 @@ Zakomentovaný `USE` na testovací databázi je běžný a nech ho tam. Když ob
 
 ## Víc databází
 
-- **Jeden soubor na objekt, obsah pro všechny databáze shodný.** Rozdíl mezi verzemi v různých databázích je **chyba k opravě**, ne stav k zachycení, proto se nezavádí ani sufix podle databáze. Verze se ladí zvlášť přímo v produkci a rozejdou se tiše. Než u objektu ve víc databázích cokoli změníš, ověř, že soubor v repu odpovídá všem.
+- `nephrite/one-file-all-dbs` **Jeden soubor na objekt, obsah pro všechny databáze shodný.** Rozdíl mezi verzemi v různých databázích je **chyba k opravě**, ne stav k zachycení, proto se nezavádí ani sufix podle databáze. Verze se ladí zvlášť přímo v produkci a rozejdou se tiše. Než u objektu ve víc databázích cokoli změníš, ověř, že soubor v repu odpovídá všem.
 - **Odlišnosti mezi firmami řeš podmínkou v kódu, ne kopií souboru**, třeba `if db_name() like '%Firma%' BEGIN ... END` pro části, které jinde neexistují.
 - **Čísla objektů v Heliosu (pořadače, funkce, šablony) se mezi databázemi liší.** V kódu a v hlášeních je uváděj s popisem, ne nahým číslem: `pořadač CF Pohyby (č.p. 10981)`. Seznam čísel patří do `CLAUDE.md` nebo `CLAUDE_Project.md` repa.
 - **Dotazy přes víc databází jdou přes linked servery** (`server.databaze.lcs.<tabulka>`). Jsou na porovnávací a diagnostické selecty, ne do produkčních procedur.
@@ -40,7 +40,7 @@ Zakomentovaný `USE` na testovací databázi je běžný a nech ho tam. Když ob
 
 ## Dump ze SSMS
 
-Skript vygenerovaný přes *Script Stored Procedure as* není hotový soubor. Než ho položíš do repa:
+`nephrite/clean-dump` Skript vygenerovaný přes *Script Stored Procedure as* není hotový soubor. Než ho položíš do repa:
 
 1. **Smaž řádek `/****** Object: ... Script Date: ... ******/`.** Je v něm časové razítko, takže by každý nový dump vyrobil diff i bez jediné změny kódu.
 2. **Přepiš `CREATE PROCEDURE` na `CREATE OR ALTER PROCEDURE`.** Bez toho skript není idempotentní a druhé spuštění spadne.
@@ -52,10 +52,10 @@ Syrové dumpy pro srovnání drž v adresáři se sufixem `-TMP`, mimo git, a ne
 
 ## DDL tabulky
 
-**Skript s DDL existující tabulky se nesmí dát spustit celý.** Tabulka už existuje a má data. `CREATE TABLE` a pozdější `ALTER TABLE ADD` v souboru jsou **historie vzniku**, ne spustitelný skript. Proto je hned za `USE` řádek `SPADNI`: úmyslná syntaktická chyba, aby F5 nad celým souborem spadl a člověk musel označit jen sekci, kterou chce pustit. **Tuhle zábranu nikdy neodstraňuj** a v nových souborech s DDL ji zachovej.
+`nephrite/ddl-spadni` **Skript s DDL existující tabulky se nesmí dát spustit celý.** Tabulka už existuje a má data. `CREATE TABLE` a pozdější `ALTER TABLE ADD` v souboru jsou **historie vzniku**, ne spustitelný skript. Proto je hned za `USE` řádek `SPADNI`: úmyslná syntaktická chyba, aby F5 nad celým souborem spadl a člověk musel označit jen sekci, kterou chce pustit. **Tuhle zábranu nikdy neodstraňuj** a v nových souborech s DDL ji zachovej.
 
 ## Úpravy dat
 
-Nad výkonným `UPDATE`, `DELETE` nebo `INSERT` nech **zakomentovaný `-- select *`** se stejným `FROM`, aby se dal jedním odkomentováním zkontrolovat dopad.
+`nephrite/select-before-update` Nad výkonným `UPDATE`, `DELETE` nebo `INSERT` nech **zakomentovaný `-- select *`** se stejným `FROM`, aby se dal jedním odkomentováním zkontrolovat dopad.
 
 Mezikroky dělej přes `DROP TABLE IF EXISTS #x` a `SELECT ... INTO #x`, ne přes tabulkové proměnné. Dají se po běhu prohlédnout.

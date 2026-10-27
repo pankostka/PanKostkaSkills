@@ -2,10 +2,11 @@
 """Kontrola mechanických pravidel T-SQL ze skillu pankostka-tsql.
 
 Použití: check_tsql.py <soubor|adresář>... | --changed
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Pravidla kontroluje jen v kódu mimo komentáře a řetězce. Dynamické SQL uvnitř řetězců proto neprojde a musí ho posoudit model.
+Řádek s výjimkou pankostka: allow <identifikátor>, <důvod> na něm nebo nad ním nehlásí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
 import os
@@ -21,6 +22,17 @@ RE_BETWEEN = re.compile(r"\bBETWEEN\b.*?\bAND\b", re.IGNORECASE)
 # INNER HASH JOIN a OUTER APPLY se nechytí, mezi slovem a JOIN je hint, nebo tam JOIN vůbec není
 RE_REDUNDANT_JOIN = re.compile(r"\b(INNER|OUTER)\s+JOIN\b", re.IGNORECASE)
 RE_RIGHT_JOIN = re.compile(r"\bRIGHT\s+(?:OUTER\s+)?JOIN\b", re.IGNORECASE)
+RE_ALLOW = re.compile(r"pankostka:\s*allow\s+([a-z]+/[a-z0-9-]+(?:\s*,\s*[a-z]+/[a-z0-9-]+)*)\s*,\s*\S", re.IGNORECASE)
+
+
+def allowed(lines, line, rule):
+    """Výjimka komentářem pankostka: allow <identifikátor>, <důvod> na řádku nálezu nebo nad ním. Bez důvodu neplatí."""
+    for i in (line - 1, line - 2):
+        if 0 <= i < len(lines):
+            m = RE_ALLOW.search(lines[i])
+            if m and rule in [r.strip().lower() for r in m.group(1).split(",")]:
+                return True
+    return False
 
 
 def keep_newlines(s):
@@ -91,15 +103,15 @@ def read_text(path, findings):
     with open(path, "rb") as f:
         data = f.read()
     if data[:2] in (b"\xff\xfe", b"\xfe\xff") or b"\x00" in data[:4096]:
-        findings.append((1, "encoding", "soubor je v UTF-16, nic v něm neupravuj, nejdřív ho převeď do UTF-8 bez BOM"))
+        findings.append((1, "tsql/utf8-no-bom", "soubor je v UTF-16, nic v něm neupravuj, nejdřív ho převeď do UTF-8 bez BOM"))
         return None
     if data[:3] == b"\xef\xbb\xbf":
-        findings.append((1, "encoding", "UTF-8 s BOM, ulož bez BOM"))
+        findings.append((1, "tsql/utf8-no-bom", "UTF-8 s BOM, ulož bez BOM"))
         data = data[3:]
     try:
         return data.decode("utf-8")
     except UnicodeDecodeError as e:
-        findings.append((data.count(b"\n", 0, e.start) + 1, "encoding", "soubor není v UTF-8, nic v něm neupravuj, nejdřív ho převeď"))
+        findings.append((data.count(b"\n", 0, e.start) + 1, "tsql/utf8-no-bom", "soubor není v UTF-8, nic v něm neupravuj, nejdřív ho převeď"))
         return None
 
 
@@ -112,24 +124,21 @@ def check_file(path):
     code = blank_comments_and_strings(text)
 
     for m in RE_CREATE.finditer(code):
-        findings.append((line_of(code, m.start()), "create", f"CREATE {m.group(1).upper()} bez OR ALTER, použij CREATE OR ALTER"))
+        findings.append((line_of(code, m.start()), "tsql/create-or-alter", f"CREATE {m.group(1).upper()} bez OR ALTER, použij CREATE OR ALTER"))
 
     for m in RE_WHERE.finditer(code):
         if not RE_ONE_EQ_ONE.match(code, m.end()) and not is_single_line_condition(code, m.end()):
-            findings.append((line_of(code, m.start()), "where", "víceřádková nebo složená podmínka nezačíná WHERE 1=1, podmínky připoj níž jako AND"))
+            findings.append((line_of(code, m.start()), "tsql/where-one-equals-one", "víceřádková nebo složená podmínka nezačíná WHERE 1=1, podmínky připoj níž jako AND"))
 
     for m in RE_REDUNDANT_JOIN.finditer(code):
         word = m.group(1).upper()
-        findings.append((line_of(code, m.start()), "join", f"{word} JOIN: slovo {word} je nadbytečné, piš jen JOIN, LEFT JOIN nebo FULL JOIN"))
+        findings.append((line_of(code, m.start()), "tsql/no-inner-outer", f"{word} JOIN: slovo {word} je nadbytečné, piš jen JOIN, LEFT JOIN nebo FULL JOIN"))
+
+    for m in RE_RIGHT_JOIN.finditer(code):
+        findings.append((line_of(code, m.start()), "tsql/no-right-join", "RIGHT JOIN: přepiš na LEFT JOIN s prohozenými tabulkami, nebo zapiš výjimku -- pankostka: allow tsql/no-right-join, důvod"))
 
     lines = text.split("\n")
-    for m in RE_RIGHT_JOIN.finditer(code):
-        line = line_of(code, m.start())
-        original = lines[line - 1]
-        comment = original[original.find("--"):] if "--" in original else ""
-        if not re.search(r"\bRIGHT\s+JOIN\b", comment, re.IGNORECASE):
-            findings.append((line, "right", "RIGHT JOIN: přepiš na LEFT JOIN s prohozenými tabulkami, nebo ho zdůvodni komentářem -- RIGHT JOIN ... na stejném řádku"))
-
+    findings = [f for f in findings if not allowed(lines, f[0], f[1])]
     findings.sort()
     return findings
 

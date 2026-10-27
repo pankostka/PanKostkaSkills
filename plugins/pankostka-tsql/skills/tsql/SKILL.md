@@ -17,19 +17,19 @@ Argument: `$ARGUMENTS`
 
 ## Komentáře
 
-**Text komentáře nezalamuj kolem sta znaků.** Věta patří na jednu řádku a zalomit se má teprve tam, kde by řádka přesáhla **200 znaků**. Zalomení po stovce trhá souvětí na kusy, které se čtou jako samostatné body: komentář je dvakrát vyšší, než musí být, a v proceduře zabírá místo, které mělo patřit kódu. Dvě stě znaků se na široký monitor vejde; hranice je tu jen proto, že editor SQL řádku nezalamuje sám.
+`tsql/comment-no-wrap` **Text komentáře nezalamuj kolem sta znaků.** Věta patří na jednu řádku a zalomit se má teprve tam, kde by řádka přesáhla **200 znaků**. Zalomení po stovce trhá souvětí na kusy, které se čtou jako samostatné body: komentář je dvakrát vyšší, než musí být, a v proceduře zabírá místo, které mělo patřit kódu. Dvě stě znaků se na široký monitor vejde; hranice je tu jen proto, že editor SQL řádku nezalamuje sám.
 
 Delší komentář se dělí podle **obsahu**, ne podle šířky. Nová řádka začíná novou myšlenkou, nikoli pokračováním rozpůlené věty.
 
 ## Idempotence
 
-**Opakované spuštění skriptu nesmí nic rozbít.** Skript se spouští znovu po chybě, po nasazení do dalšího prostředí a při vývoji desítky krát - když je výsledek závislý na tom, kolikrát už proběhl, nedá se rozdělaná práce dokončit a chyba se hledá jinde, než je.
+`tsql/idempotent` **Opakované spuštění skriptu nesmí nic rozbít.** Skript se spouští znovu po chybě, po nasazení do dalšího prostředí a při vývoji desítky krát - když je výsledek závislý na tom, kolikrát už proběhl, nedá se rozdělaná práce dokončit a chyba se hledá jinde, než je.
 
-Procedury proto zakládej přes `CREATE OR ALTER PROCEDURE`. Vzor `IF OBJECT_ID(...) IS NOT NULL DROP PROCEDURE` s následným `CREATE` má dvě vady: mezi `DROP` a `CREATE` procedura neexistuje, a `DROP` zahodí oprávnění přidělená na objekt. Totéž platí pro funkce, pohledy a triggery.
+`tsql/create-or-alter` Procedury proto zakládej přes `CREATE OR ALTER PROCEDURE`. Vzor `IF OBJECT_ID(...) IS NOT NULL DROP PROCEDURE` s následným `CREATE` má dvě vady: mezi `DROP` a `CREATE` procedura neexistuje, a `DROP` zahodí oprávnění přidělená na objekt. Totéž platí pro funkce, pohledy a triggery.
 
 ## Čitelnost dotazu
 
-**Podmínku začínej `WHERE 1=1`** a každou skutečnou podmínku připoj níž jako `AND`. Důvod je praktický: každý filtr je pak samostatná řádka, kterou lze zakomentovat nebo přesunout bez toho, aby zbytek dotazu přestal být syntakticky správný. Bez toho je první podmínka výsadní - zakomentovat ji znamená sáhnout i na tu druhou.
+`tsql/where-one-equals-one` **Podmínku začínej `WHERE 1=1`** a každou skutečnou podmínku připoj níž jako `AND`. Důvod je praktický: každý filtr je pak samostatná řádka, kterou lze zakomentovat nebo přesunout bez toho, aby zbytek dotazu přestal být syntakticky správný. Bez toho je první podmínka výsadní - zakomentovat ji znamená sáhnout i na tu druhou.
 
 ```sql
 WHERE 1=1
@@ -39,19 +39,19 @@ WHERE 1=1
 
 **Výjimkou je jediná podmínka celá na řádku s `WHERE`**, třeba `... FROM s20.DimZdroj_AD WHERE DimZdrojID <> -1` v řadě `UNION ALL` nebo `WHERE SourceSRV IS NOT NULL` v kurzoru. Tam není co zakomentovat bez sáhnutí na `WHERE` a `1=1` by řádku jen prodloužilo. Jakmile podmínka pokračuje na další řádek nebo obsahuje `AND` či `OR`, `1=1` je povinné. `BETWEEN ... AND` se za složenou podmínku nepočítá.
 
-**Každý JOIN piš na jednu řádku**, tedy tabulku i podmínku spojení pohromadě. Seznam joinů se tak dá přečíst svisle a je vidět, kolik tabulek dotaz spojuje. Když se podmínka na jednu řádku nevejde, je to obvykle signál, že spojení je složitější, než se zdá, a zaslouží komentář.
+`tsql/join-one-line` **Každý JOIN piš na jednu řádku**, tedy tabulku i podmínku spojení pohromadě. Seznam joinů se tak dá přečíst svisle a je vidět, kolik tabulek dotaz spojuje. Když se podmínka na jednu řádku nevejde, je to obvykle signál, že spojení je složitější, než se zdá, a zaslouží komentář.
 
-**Nepiš `INNER` ani `OUTER` u `JOIN`.** Jsou to nadbytečná slova: `JOIN` je vždy vnitřní a `LEFT`, `RIGHT` a `FULL` jsou vždy vnější. Piš tedy `JOIN`, `LEFT JOIN`, `FULL JOIN`. Kratší zápis drží typ spojení na začátku řádky a joiny pod sebou se čtou rychleji. Výjimky, kde slovo nadbytečné není: `OUTER APPLY`, což je jiná konstrukce než `JOIN`, a join hint (`INNER HASH JOIN`, `INNER LOOP JOIN`, `INNER MERGE JOIN`), kde T-SQL `INNER` vyžaduje.
+`tsql/no-inner-outer` **Nepiš `INNER` ani `OUTER` u `JOIN`.** Jsou to nadbytečná slova: `JOIN` je vždy vnitřní a `LEFT`, `RIGHT` a `FULL` jsou vždy vnější. Piš tedy `JOIN`, `LEFT JOIN`, `FULL JOIN`. Kratší zápis drží typ spojení na začátku řádky a joiny pod sebou se čtou rychleji. Výjimky, kde slovo nadbytečné není: `OUTER APPLY`, což je jiná konstrukce než `JOIN`, a join hint (`INNER HASH JOIN`, `INNER LOOP JOIN`, `INNER MERGE JOIN`), kde T-SQL `INNER` vyžaduje.
 
-**Nepoužívej `RIGHT JOIN`.** Dotaz se čte shora dolů od hlavní tabulky ve `FROM` a `RIGHT JOIN` ten směr obrací: rozhodující tabulka je najednou ta připojená a čtenář musí přeskládat celý dotaz v hlavě. Totéž jde vždy zapsat jako `LEFT JOIN` s prohozenými tabulkami. Když je `RIGHT JOIN` výjimečně opravdu čitelnější, napiš na stejný řádek komentář, který ho jmenuje i s důvodem:
+`tsql/no-right-join` **Nepoužívej `RIGHT JOIN`.** Dotaz se čte shora dolů od hlavní tabulky ve `FROM` a `RIGHT JOIN` ten směr obrací: rozhodující tabulka je najednou ta připojená a čtenář musí přeskládat celý dotaz v hlavě. Totéž jde vždy zapsat jako `LEFT JOIN` s prohozenými tabulkami. Když je `RIGHT JOIN` výjimečně opravdu čitelnější, zapiš výjimku komentářem s důvodem, viz [Výjimka z pravidla](#výjimka-z-pravidla):
 
 ```sql
-RIGHT JOIN s20.DimUcet u ON u.DimUcetID = d.DimUcetID -- RIGHT JOIN záměrně: všechny účty i bez pohybu
+RIGHT JOIN s20.DimUcet u ON u.DimUcetID = d.DimUcetID -- pankostka: allow tsql/no-right-join, všechny účty i bez pohybu
 ```
 
 ## Výkon
 
-**Predikáty musí být sargable**, tedy takové, aby na ně server mohl použít index. Nebal sloupec do funkce na levé straně podmínky - tím se index zahodí a z hledání se stane průchod celou tabulkou. Rozdíl je jen v zápisu, výsledek je stejný:
+`tsql/sargable` **Predikáty musí být sargable**, tedy takové, aby na ně server mohl použít index. Nebal sloupec do funkce na levé straně podmínky - tím se index zahodí a z hledání se stane průchod celou tabulkou. Rozdíl je jen v zápisu, výsledek je stejný:
 
 | Špatně | Správně |
 |---|---|
@@ -63,7 +63,7 @@ Platí to jen pro levou stranu. Funkce nad parametrem nebo konstantou je v poř�
 
 ## Sekce v těle procedury
 
-Delší procedura se dělí na **sekce**. Zápis je závazný, protože se podle něj kód sbaluje:
+`tsql/section-double-end` Delší procedura se dělí na **sekce**. Zápis je závazný, protože se podle něj kód sbaluje:
 
 ```sql
 --********** NÁZEV SEKCE **********
@@ -84,19 +84,29 @@ Nadpis sekce se píše velkými písmeny mezi hvězdičkami, aby šel najít hle
 
 ## Hlavička a konec procedury
 
-Procedura začíná **komentářovým blokem** s klíči `POPIS`, `SPUSTENI` a `VYSTUPNI TABULKY`. Za nimi mohou být zakomentované testovací dotazy pro rychlé ověření výstupu - kdo proceduru otevře po roce, potřebuje spustit něco, co ukáže, jestli je výsledek správný, a vymýšlet to znovu je zbytečná práce.
+`tsql/proc-header` Procedura začíná **komentářovým blokem** s klíči `POPIS`, `SPUSTENI` a `VYSTUPNI TABULKY`. Za nimi mohou být zakomentované testovací dotazy pro rychlé ověření výstupu - kdo proceduru otevře po roce, potřebuje spustit něco, co ukáže, jestli je výsledek správný, a vymýšlet to znovu je zbytečná práce.
 
 Na konci procedury bývá **měření doby běhu** (`SELECT ... AS Trvani`). Bez čísla se u pomalého nápočtu jen hádá, která část ho zdržela.
 
-**Naměřenou dobu běhu připiš komentářem na řádek `exec` v bloku `SPUSTENI`**, nejnovější hned za `--`, starší za ní. Formát je `m:ss (RRRR-MM-DD-hhmm)`; datum stačí u měření, na kterém záleží, a za datum se dá připsat okolnost, která čas ovlivnila. Číslo je orientační, slouží k odhadu, kolik bude stát spuštění, a k tomu, aby bylo vidět zpomalení. Přesnou historii nenahrazuje.
+`tsql/run-time-comment` **Naměřenou dobu běhu připiš komentářem na řádek `exec` v bloku `SPUSTENI`**, nejnovější hned za `--`, starší za ní. Formát je `m:ss (RRRR-MM-DD-hhmm)`; datum stačí u měření, na kterém záleží, a za datum se dá připsat okolnost, která čas ovlivnila. Číslo je orientační, slouží k odhadu, kolik bude stát spuštění, a k tomu, aby bylo vidět zpomalení. Přesnou historii nenahrazuje.
 
 Konkrétní podoba hlavičky se zatím sjednocuje. Než bude ustálená, drž se toho, co je v proceduře nejblíž té upravované.
 
 ## Kódování souborů
 
-**Soubory `.sql` drž v UTF-8 bez BOM.** Pokud narazíš na soubor v jiném kódování (typicky UTF-16 LE, jak ho ukládá SSMS), **nic v něm neupravuj a nahlas to.** Soubor se musí nejdřív převést. Editace v původním kódování rozsype diakritiku a v diffu je pak celý soubor jako změněný, takže skutečná úprava zmizí v šumu a nedá se zkontrolovat.
+`tsql/utf8-no-bom` **Soubory `.sql` drž v UTF-8 bez BOM.** Pokud narazíš na soubor v jiném kódování (typicky UTF-16 LE, jak ho ukládá SSMS), **nic v něm neupravuj a nahlas to.** Soubor se musí nejdřív převést. Editace v původním kódování rozsype diakritiku a v diffu je pak celý soubor jako změněný, takže skutečná úprava zmizí v šumu a nedá se zkontrolovat.
 
 BOM je neviditelný, takže se neohlásí chybou, ale důsledkem: soubor se tváří jako změněný, i když se v něm nic nezměnilo, nebo nástroj načte první řádek i s hlavičkou.
+
+## Výjimka z pravidla
+
+Vědomé porušení pravidla zapiš komentářem na řádek nálezu nebo na řádek nad ním. Komentář jmenuje identifikátor pravidla a za čárkou důvod:
+
+```sql
+RIGHT JOIN s20.DimUcet u ON u.DimUcetID = d.DimUcetID -- pankostka: allow tsql/no-right-join, všechny účty i bez pohybu
+```
+
+Identifikátorů může být víc, oddělených čárkou. **Důvod je povinný**, bez něj skript nález hlásí dál. Výjimku používej jen tam, kde pravidlo opravdu nedává smysl, a vždy jen na jedno místo, ne na celý soubor.
 
 ## Kontrola
 
@@ -108,19 +118,20 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    python ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Kontroluje kódování, `CREATE` bez `OR ALTER`, víceřádkový nebo složený `WHERE` bez `1=1`, nadbytečné `INNER` a `OUTER` u `JOIN` (pravidlo `join`) a `RIGHT JOIN` bez komentáře, který ho na stejném řádku zdůvodní (pravidlo `right`). Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`. Kontroluje `tsql/utf8-no-bom`, `tsql/create-or-alter`, `tsql/where-one-equals-one`, `tsql/no-inner-outer` a `tsql/no-right-join`. Řádek s výjimkou `pankostka: allow` a důvodem nehlásí. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
-   - sargable predikáty,
-   - JOIN rozdělený na více řádků,
-   - sekce: nadpis mezi hvězdičkami, `IF 1=1 BEGIN`, dvojité `END` s názvem sekce,
-   - hlavička procedury s `POPIS`, `SPUSTENI`, `VYSTUPNI TABULKY` a měření doby běhu,
-   - komentáře zalomené kolem sta znaků nebo rozdělené podle šířky místo obsahu,
+   - `tsql/sargable`: sargable predikáty,
+   - `tsql/join-one-line`: JOIN rozdělený na více řádků,
+   - `tsql/section-double-end`: nadpis mezi hvězdičkami, `IF 1=1 BEGIN`, dvojité `END` s názvem sekce,
+   - `tsql/proc-header` a `tsql/run-time-comment`: hlavička procedury s `POPIS`, `SPUSTENI`, `VYSTUPNI TABULKY` a měření doby běhu,
+   - `tsql/comment-no-wrap`: komentáře zalomené kolem sta znaků nebo rozdělené podle šířky místo obsahu,
+   - `tsql/idempotent`: skript, který po druhém spuštění spadne nebo udělá něco jiného,
    - **dynamické SQL v řetězcích**: skript řetězce přeskakuje, takže `WHERE` a `CREATE` uvnitř `'...'` posuď ty.
 
    Soubor, který skript nahlásil jako UTF-16 nebo mimo UTF-8, nečti a nekontroluj.
 
-3. **Vypiš výsledek** po souborech. U každé neshody `soubor:řádek`, porušené pravidlo a konkrétní návrh opravy. Neshody ze skriptu a z vlastní kontroly slouč do jednoho seznamu a u sporných případů napiš, proč jsou sporné. Na konec dej souhrn: kolik souborů, kolik neshod podle pravidel.
+3. **Vypiš výsledek** po souborech. U každé neshody `soubor:řádek`, identifikátor porušeného pravidla a konkrétní návrh opravy. Neshody ze skriptu a z vlastní kontroly slouč do jednoho seznamu a u sporných případů napiš, proč jsou sporné. Na konec dej souhrn: kolik souborů, kolik neshod podle pravidel.
 
 4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí.
 

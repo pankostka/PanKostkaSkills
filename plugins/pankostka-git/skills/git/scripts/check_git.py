@@ -2,7 +2,7 @@
 """Kontrola repa proti zásadám práce s gitem ze skillu pankostka-git.
 
 Použití: check_git.py <adresář repa>...
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Vzory v .gitignore vyhodnocuje git sám (git check-ignore). Sufix se kontroluje jen na konci názvu souborů a adresářů na disku, kromě položek -TMP.
@@ -37,7 +37,7 @@ def check_repo(arg):
     """Vrátí seznam neshod (cesta, řádek, pravidlo, zpráva)."""
     code, out = git(arg, "rev-parse", "--show-toplevel")
     if code != 0:
-        return [(os.path.abspath(arg), 1, "gitignore", "adresář není git repo")]
+        sys.exit(f"adresář není git repo: {arg}")
     top = os.path.normpath(out.decode("utf-8").strip())
     findings = []
     gitignore = os.path.join(top, ".gitignore")
@@ -45,7 +45,7 @@ def check_repo(arg):
     # .gitignore pro -TMP
     for probe in PROBES:
         if git(top, "check-ignore", "-q", "--no-index", probe)[0] != 0:
-            findings.append((gitignore, 1, "gitignore", f"neignoruje se {probe}, doplň vzory *-TMP.* a *-TMP"))
+            findings.append((gitignore, 1, "git/tmp-gitignore", f"neignoruje se {probe}, doplň vzory *-TMP.* a *-TMP"))
 
     # verzované soubory
     _, raw = git(top, "ls-files", "-z")
@@ -53,13 +53,13 @@ def check_repo(arg):
     for rel in tracked:
         parts = rel.split("/")
         if any(is_tmp(p) for p in parts):
-            findings.append((os.path.join(top, rel), 1, "tracked", "git verzuje soubor se sufixem -TMP, odstraň ho z indexu přes git rm --cached"))
+            findings.append((os.path.join(top, rel), 1, "git/no-tracked-tmp", "git verzuje soubor se sufixem -TMP, odstraň ho z indexu přes git rm --cached"))
         ext = os.path.splitext(rel)[1].lower() or ("." + parts[-1].lstrip(".") if parts[-1].startswith(".") else "")
         if ext in TEXT_EXT:
             try:
                 with open(os.path.join(top, rel), "rb") as f:
                     if f.read(3) == b"\xef\xbb\xbf":
-                        findings.append((os.path.join(top, rel), 1, "bom", "soubor je v UTF-8 s BOM, ulož ho bez BOM"))
+                        findings.append((os.path.join(top, rel), 1, "git/utf8-no-bom", "soubor je v UTF-8 s BOM, ulož ho bez BOM"))
             except OSError:
                 pass
 
@@ -70,7 +70,7 @@ def check_repo(arg):
             stem = name if name in dirs else os.path.splitext(name)[0]
             m = RE_SUFFIX.search(stem)
             if m and m.group(1) not in ALLOWED:
-                findings.append((os.path.join(root, name), 1, "suffix", f"sufix -{m.group(1)} není povolený, používej jen -VZOR, -DRAFT a -TMP"))
+                findings.append((os.path.join(root, name), 1, "git/allowed-suffix", f"sufix -{m.group(1)} není povolený, používej jen -VZOR, -DRAFT a -TMP"))
 
     # commit zprávy
     _, log = git(top, "log", "-50", "--format=%h%x00%s%x01")
@@ -80,16 +80,16 @@ def check_repo(arg):
             continue
         sha, subject = entry.split("\0", 1)
         if subject.startswith("﻿"):
-            findings.append((top, 1, "message", f"commit {sha}: subject začíná BOM, zpráva šla rourou z PowerShellu, předávej ji souborem"))
+            findings.append((top, 1, "git/message-file-in-ps", f"commit {sha}: subject začíná BOM, zpráva šla rourou z PowerShellu, předávej ji souborem"))
         elif subject.startswith("@") or subject.startswith("EOF"):
-            findings.append((top, 1, "message", f"commit {sha}: subject začíná {subject[:3]}, syntaxe víceřádkového textu nesedí se shellem"))
+            findings.append((top, 1, "git/shell-syntax", f"commit {sha}: subject začíná {subject[:3]}, syntaxe víceřádkového textu nesedí se shellem"))
 
     # hooky
     hooks = os.path.join(top, "hooks")
     if os.path.isdir(hooks) and os.listdir(hooks):
         _, path = git(top, "config", "core.hooksPath")
         if path.decode("utf-8").strip().rstrip("/\\") != "hooks":
-            findings.append((hooks, 1, "hooks", "repo má hooks/, ale core.hooksPath na něj nemíří, hook se nespustí. Zapni ho: git config core.hooksPath hooks"))
+            findings.append((hooks, 1, "git/hooks-path", "repo má hooks/, ale core.hooksPath na něj nemíří, hook se nespustí. Zapni ho: git config core.hooksPath hooks"))
 
     return sorted(findings)
 

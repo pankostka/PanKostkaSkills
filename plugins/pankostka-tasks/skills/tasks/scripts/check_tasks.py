@@ -2,7 +2,7 @@
 """Kontrola adresáře tasks/ ze skillu pankostka-tasks.
 
 Použití: check_tasks.py <adresář repa | adresář tasks>...
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Odkaz z tasks.md, který míří mimo tasks/ (třeba na soubor s rozhodnutími), se hledá v celém repu. Bez gitu se pravidlo git přeskočí.
@@ -17,6 +17,7 @@ from urllib.parse import unquote
 RE_WIKI = re.compile(r"(?<!!)\[\[([^\]|#]+)[^\]]*\]\]")
 RE_MDLINK = re.compile(r"(?<!!)\[[^\]]*\]\(\s*<?([^)>]+?\.md)>?\s*\)")
 SKIP_DIRS = {".git", ".obsidian", "node_modules", "__pycache__"}
+RE_ALLOW = re.compile(r"pankostka:\s*allow\s+([a-z]+/[a-z0-9-]+(?:\s*,\s*[a-z]+/[a-z0-9-]+)*)\s*,\s*[^\s-]", re.IGNORECASE)
 
 
 def is_tmp(name):
@@ -53,7 +54,7 @@ def check_dir(arg):
     index = os.path.join(tdir, "tasks.md")
     findings = []
     if not os.path.isdir(tdir):
-        return [(tdir, 1, "index", "adresář tasks/ neexistuje")]
+        return [(tdir, 1, "tasks/index", "adresář tasks/ neexistuje")]
 
     articles = {}
     others = []
@@ -66,7 +67,7 @@ def check_dir(arg):
 
     linked = set()
     if not os.path.isfile(index):
-        findings.append((index, 1, "index", "chybí rozcestník tasks/tasks.md"))
+        findings.append((index, 1, "tasks/index", "chybí rozcestník tasks/tasks.md"))
     else:
         repo = repo_articles(os.path.dirname(tdir))
         with open(index, encoding="utf-8-sig") as f:
@@ -80,27 +81,38 @@ def check_dir(arg):
                 if t.lower() in lower:
                     linked.add(lower[t.lower()])
                 elif t.lower() not in repo:
-                    findings.append((index, i + 1, "dead", f"odkaz [[{t}]] míří na článek, který v repu není"))
+                    findings.append((index, i + 1, "tasks/index", f"odkaz [[{t}]] míří na článek, který v repu není"))
 
     if os.path.isfile(index):
         for name, path in articles.items():
             if name not in linked:
-                findings.append((path, 1, "orphan", f"na úkol {name} nevede odkaz z tasks.md, doplň odrážku"))
+                findings.append((path, 1, "tasks/article-per-task", f"na úkol {name} nevede odkaz z tasks.md, doplň odrážku"))
 
     for path in others:
         n = os.path.basename(path)
         if not any(n.lower().startswith(a.lower()) for a in articles):
-            findings.append((path, 1, "leftover", f"{n} nepatří k žádnému úkolu, nejspíš zbytek po smazaném úkolu (v gitu není, smazaný se nevrátí)"))
+            findings.append((path, 1, "tasks/tmp-naming", f"{n} nepatří k žádnému úkolu, nejspíš zbytek po smazaném úkolu (v gitu není, smazaný se nevrátí)"))
 
     known = tracked(tdir)
     if known is not None:
         for name, path in articles.items():
             if os.path.normcase(path) not in known:
-                findings.append((path, 1, "git", f"článek úkolu {name} git nesleduje, články v tasks/ patří do gitu"))
+                findings.append((path, 1, "tasks/in-git", f"článek úkolu {name} git nesleduje, články v tasks/ patří do gitu"))
         if os.path.isfile(index) and os.path.normcase(index) not in known:
-            findings.append((index, 1, "git", "rozcestník tasks.md git nesleduje"))
+            findings.append((index, 1, "tasks/in-git", "rozcestník tasks.md git nesleduje"))
 
-    return sorted(findings)
+    index_lines = lines if os.path.isfile(index) else []
+    return sorted(f for f in findings if not (f[0] == index and allowed(index_lines, f[1], f[2])))
+
+
+def allowed(lines, line, rule):
+    """Výjimka komentářem <!-- pankostka: allow <identifikátor>, <důvod> --> na řádku nálezu nebo nad ním. Bez důvodu neplatí."""
+    for i in (line - 1, line - 2):
+        if 0 <= i < len(lines):
+            m = RE_ALLOW.search(lines[i])
+            if m and rule in [r.strip().lower() for r in m.group(1).split(",")]:
+                return True
+    return False
 
 
 def display(path):

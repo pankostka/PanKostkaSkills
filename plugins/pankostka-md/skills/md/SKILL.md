@@ -13,13 +13,15 @@ Argument: `$ARGUMENTS`
 
 ## Článek
 
-Soubor `*.md` se nazývá **článek**. Nepoužívej nota, note, poznámka ani artikl. Jeden pojem, ať se dá hledat.
+`md/term-article` Soubor `*.md` se nazývá **článek**. Nepoužívej nota, note, poznámka ani artikl. Jeden pojem, ať se dá hledat.
 
 Dokumentace je věcná, krátká a srozumitelná, psaná formálním a profesionálním stylem a s jednotnou terminologií v celém článku.
 
-**Markdown nezalamuj na pevnou šířku.** Jeden odstavec je jeden řádek, jedna odrážka je jeden řádek, ať je jakkoli dlouhý. Zalamování dělá editor. Pevné zalomení jen rozhazuje text a v diffu se kvůli jednomu opravenému slovu přeskládá celý odstavec. Netýká se to bloků kódu, tabulek a nadpisů. Při úpravě stávajícího článku nepřidávej zalomení tam, kde žádné není.
+`md/no-hard-wrap` **Markdown nezalamuj na pevnou šířku.** Jeden odstavec je jeden řádek, jedna odrážka je jeden řádek, ať je jakkoli dlouhý. Zalamování dělá editor. Pevné zalomení jen rozhazuje text a v diffu se kvůli jednomu opravenému slovu přeskládá celý odstavec. Netýká se to bloků kódu, tabulek a nadpisů. Při úpravě stávajícího článku nepřidávej zalomení tam, kde žádné není.
 
 ## Jazyk
+
+`md/czech-style` Jak se píše:
 
 - Česky, včetně diakritiky.
 - Kratší věty, ne dlouhá souvětí.
@@ -27,7 +29,7 @@ Dokumentace je věcná, krátká a srozumitelná, psaná formálním a profesion
 
 ### Znaky
 
-**Piš jen znaky, které jsou na běžné klávesnici, české i anglické.** Česká diakritika je v pořádku. Nepoužívej dlouhou pomlčku (`—`), polodlouhou pomlčku (`–`), typografické uvozovky (`„ “`), výpustku (`…`) ani znak násobení (`×`). Místo dlouhé pomlčky použij spojovník (`-`), dvojtečku, závorku, nebo větu rozděl na dvě.
+`md/keyboard-chars` **Piš jen znaky, které jsou na běžné klávesnici, české i anglické.** Česká diakritika je v pořádku. Nepoužívej dlouhou pomlčku (`—`), polodlouhou pomlčku (`–`), typografické uvozovky (`„ “`), výpustku (`…`) ani znak násobení (`×`). Místo dlouhé pomlčky použij spojovník (`-`), dvojtečku, závorku, nebo větu rozděl na dvě.
 
 Důvod: text musí jít opravit a dopsat přímo v editoru bez vkládání speciálních znaků a musí vypadat stejně jako to, co do něj dopíše člověk.
 
@@ -35,7 +37,7 @@ Důvod: text musí jít opravit a dopsat přímo v editoru bez vkládání speci
 
 ### Oslovení čtenáře
 
-**Nemluv na čtenáře.** Nepoužívej sloveso ve druhé osobě (*otevřeš*, *uvidíš*, *můžeš*), rozkazovací způsob (*klikni*, *zvol*) ani zájmena *ty*, *tvůj*, *tvoje*. Popis veď zvratným trpným rodem, nebo tak, že podmětem je popisovaná věc. Tedy ne *Článek otevřeš přetažením záložky*, ale *Článek se otevře přetažením záložky*; ne *pro konfiguraci klikni na ikonu A*, ale *Ikona A zobrazí konfiguraci*.
+`md/no-addressing-reader` **Nemluv na čtenáře.** Nepoužívej sloveso ve druhé osobě (*otevřeš*, *uvidíš*, *můžeš*), rozkazovací způsob (*klikni*, *zvol*) ani zájmena *ty*, *tvůj*, *tvoje*. Popis veď zvratným trpným rodem, nebo tak, že podmětem je popisovaná věc. Tedy ne *Článek otevřeš přetažením záložky*, ale *Článek se otevře přetažením záložky*; ne *pro konfiguraci klikni na ikonu A*, ale *Ikona A zobrazí konfiguraci*.
 
 Výjimkou jsou instrukce pro AI (`CLAUDE.md`, popisy skillů), které mluví na agenta.
 
@@ -55,7 +57,7 @@ Rozhodovací otázka: **dá se ten text použít i mimo tohle repo?**
 | Ano, je to obecné know-how | do vaultu s know-how, mimo projekt |
 | Je to pravidlo platné napříč repy | do skillu nebo repa se standardy, ne do projektu |
 
-Rozsah a umístění jsou dvě různé otázky. Uvnitř repa platí:
+`md/article-location` Rozsah a umístění jsou dvě různé otázky. Uvnitř repa platí:
 
 | Článek je o čem | Kde leží | Příklad |
 | --- | --- | --- |
@@ -64,19 +66,21 @@ Rozsah a umístění jsou dvě různé otázky. Uvnitř repa platí:
 
 **Článek pojmenovaný po objektu leží u toho objektu.** Stejná logika jako u kódu: procedura neleží v centrálním `procedures/`, ale ve své vrstvě. Kdo hledá popis procedury, hledá ho tam, kde je procedura.
 
-Cenou je, že se články nedají vyjmenovat jedním výpisem `docs/`. **Rozcestník v `README.md` proto není volitelný.** Je to jediné místo, kde je vidět, co všechno je zdokumentované.
+Cenou je, že se články nedají vyjmenovat jedním výpisem `docs/`. `md/readme-index` **Rozcestník v `README.md` proto není volitelný.** Je to jediné místo, kde je vidět, co všechno je zdokumentované.
 
 ## Přílohy
 
-Příloha je soubor, který článek doplňuje, ale sám článkem není: obrázek, XML vzorek, tabulka, dokument od dodavatele. Leží ve složce **`Attachments/`** vedle článku, který ji používá. Jiný název složky nepoužívej, ani `img/`, ani `obrazky/`. Jeden pojem, jeden název.
+`md/attachments-folder` Příloha je soubor, který článek doplňuje, ale sám článkem není: obrázek, XML vzorek, tabulka, dokument od dodavatele. Leží ve složce **`Attachments/`** vedle článku, který ji používá. Jiný název složky nepoužívej, ani `img/`, ani `obrazky/`. Jeden pojem, jeden název.
 
 Pravidlo *dokumentace se píše v Markdownu* mluví o tom, co se píše, ne o tom, co někdo pošle. Přijatý soubor (Word od dodavatele, screenshot, export) je příloha a sám o sobě se do Markdownu nepřevádí. Jakmile se ale stane autoritativním popisem něčeho v repu, **převeď ho na článek**: binární dokument se nedá diffovat, hledat v něm ani publikovat. Po převodu je z něj historický podklad, ne druhý zdroj pravdy. Podklad, který už nemá funkci, dostane sufix `-TMP`, takže zůstane na disku, ale ne v gitu.
 
 Aby přílohy vznikaly na správném místě samy, má Obsidian nastavené `attachmentFolderPath` na `./Attachments`, tedy *v podsložce aktuální složky*. Bez toho ukládá vložené obrázky jinam.
 
-Vložený obrázek pojmenuje Obsidian sám jako `Pasted image 20260727145759.png`, tedy s mezerou, velkým písmenem a nic neříkajícím číslem. **Přejmenuj ho hned**, odkaz si Obsidian opraví sám.
+`md/attachment-name` Vložený obrázek pojmenuje Obsidian sám jako `Pasted image 20260727145759.png`, tedy s mezerou, velkým písmenem a nic neříkajícím číslem. **Přejmenuj ho hned**, odkaz si Obsidian opraví sám.
 
 ## Názvy souborů
+
+`md/file-names` Názvy článků, příloh a složek:
 
 | Co | Konvence | Příklad |
 | --- | --- | --- |
@@ -94,7 +98,7 @@ Složka strukturální je součást uspořádání repa nebo nástroje, složka 
 
 ## Odkazy
 
-Schválně dvě konvence, protože každá řeší jiný problém:
+`md/wikilink-articles` a `md/image-markdown-alt` Schválně dvě konvence, protože každá řeší jiný problém:
 
 | Co | Jak | Proč |
 | --- | --- | --- |
@@ -112,25 +116,41 @@ Volitelný. Článek bez frontmatteru je plnohodnotný článek.
 | `tags` | volitelně | témata |
 | `date` | volitelně | datum vydání ve tvaru `RRRR-MM-DD` |
 
-**Klíče jsou anglicky, protože je čte nástroj.** Generátor webu [obsidian2html](https://github.com/pankostka/obsidian2html) rozumí `title` a `date`. Starší české klíče `titul` a `datum` ignoruje, takže článek s `datum` dostane na webu datum souboru, které se mění při kopírování i synchronizaci.
+`md/frontmatter-keys` **Klíče jsou anglicky, protože je čte nástroj.** Generátor webu [obsidian2html](https://github.com/pankostka/obsidian2html) rozumí `title` a `date`. Starší české klíče `titul` a `datum` ignoruje, takže článek s `datum` dostane na webu datum souboru, které se mění při kopírování i synchronizaci.
 
-**Titulek je název souboru**, jako v Obsidianu. `title` je výjimka pro technický název, třeba článek pojmenovaný po objektu. **Titulek se nebere z nadpisu `# H1`.** Jediné H1 bývá titulek, ale v článku ze šablony to může být první sekce, třeba `# Popis`, a z textu se to poznat nedá.
+`md/title-from-filename` **Titulek je název souboru**, jako v Obsidianu. `title` je výjimka pro technický název, třeba článek pojmenovaný po objektu. **Titulek se nebere z nadpisu `# H1`.** Jediné H1 bývá titulek, ale v článku ze šablony to může být první sekce, třeba `# Popis`, a z textu se to poznat nedá.
 
 **Slug je název výstupního souboru, tedy i adresa na webu.** Odvozuje se z názvu článku: malá písmena, bez diakritiky, mezera na pomlčku. `Obsidian Nastavení.md` dá `obsidian-nastaveni.html`.
 
-**Tag se píše v PascalCase**, tedy `Obsidian`, `Markdown`, `PowerBI`, `AI`: každé slovo velkým, bez mezer a oddělovačů. Tak, jak je zapsaný, se zobrazí na webu, takže je to i popisek pro čtenáře.
+`md/tag-pascal-case` **Tag se píše v PascalCase**, tedy `Obsidian`, `Markdown`, `PowerBI`, `AI`: každé slovo velkým, bez mezer a oddělovačů. Tak, jak je zapsaný, se zobrazí na webu, takže je to i popisek pro čtenáře.
 
-**Jedna varianta na tag.** Obsidian páruje tagy bez ohledu na velikost písmen, takže `#Obsidian` a `#obsidian` jsou pro něj jeden tag a nekonzistence se v editoru neprojeví. Generátor webu je ale porovnává jako řetězce: vzniknou dvě stránky téhož tagu, jedna přepíše druhou a část článků ze stránky tagu zmizí, aniž by to build ohlásil.
+`md/tag-one-variant` **Jedna varianta na tag.** Obsidian páruje tagy bez ohledu na velikost písmen, takže `#Obsidian` a `#obsidian` jsou pro něj jeden tag a nekonzistence se v editoru neprojeví. Generátor webu je ale porovnává jako řetězce: vzniknou dvě stránky téhož tagu, jedna přepíše druhou a část článků ze stránky tagu zmizí, aniž by to build ohlásil.
 
 ## Publikace
 
-Co jde na web, určuje **marker 🌐 na konci názvu článku**, ne frontmatter. Chybějící marker znamená neveřejné. Než článek označíš markerem, upravíš veřejný článek nebo budeš sestavovat web či PDF, přečti si `publishing.md` v adresáři tohoto skillu (`${CLAUDE_SKILL_DIR}/publishing.md`).
+Co jde na web, určuje **marker 🌐 na konci názvu článku**, ne frontmatter. Chybějící marker znamená neveřejné. `md/no-link-to-private` Veřejný článek nesmí odkazovat na neveřejný. Než článek označíš markerem, upravíš veřejný článek nebo budeš sestavovat web či PDF, přečti si `publishing.md` v adresáři tohoto skillu (`${CLAUDE_SKILL_DIR}/publishing.md`).
 
 ## Co do dokumentace nepatří
+
+`md/no-secrets-generated`
 
 - **Hesla, tokeny, connection stringy s přihlašovacími údaji.** Názvy serverů a databází ano.
 - **Vygenerované HTML.** Zdroj je Markdown, HTML se z něj dá kdykoli vyrobit znovu.
 - **PDF bez sufixu `-TMP`**, pokud to není vědomá výjimka.
+
+`md/utf8-no-bom` **Článek je v UTF-8 bez BOM**, jako každý textový soubor, viz `pankostka-git`.
+
+## Výjimka z pravidla
+
+Vědomé porušení pravidla zapiš HTML komentářem na řádek nálezu nebo na řádek nad ním. Komentář jmenuje identifikátor pravidla a za čárkou důvod:
+
+```markdown
+<!-- pankostka: allow md/no-hard-wrap, adresa po řádcích -->
+Firma s.r.o.
+Ulice 1
+```
+
+Identifikátorů může být víc, oddělených čárkou. **Důvod je povinný**, bez něj skript nález hlásí dál. V Obsidianu ani na webu komentář vidět není.
 
 ## Kontrola
 
@@ -142,31 +162,33 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    python ${CLAUDE_SKILL_DIR}/scripts/check_md.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
-   - `encoding`: soubor není v UTF-8 bez BOM,
-   - `chars`: zakázané znaky mimo bloky kódu a inline kód,
-   - `wrap`: odstavec, odrážka nebo citace zalomená uprostřed věty, tedy na pevnou šířku,
-   - `image`: obrázek jako `![[...]]`, obrázek bez popisu, obrázek mimo `Attachments/`,
-   - `frontmatter`: klíče `titul`, `datum` a `publish`, `date` mimo tvar `RRRR-MM-DD`, tag mimo PascalCase (podtržítko na začátku je povolené),
-   - `attachment`: `Pasted image*`, příloha v `Attachments/` s jinými znaky než malá písmena, číslice a podtržítko,
-   - `tag`: tentýž tag ve více variantách velikosti písmen,
-   - `publish`: článek s markerem 🌐 odkazuje na článek bez markeru.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`, řádek s výjimkou `pankostka: allow` a důvodem nehlásí. Pravidla:
+   - `md/utf8-no-bom`: soubor není v UTF-8 bez BOM,
+   - `md/keyboard-chars`: zakázané znaky mimo bloky kódu a inline kód,
+   - `md/no-hard-wrap`: odstavec, odrážka nebo citace zalomená uprostřed věty, tedy na pevnou šířku,
+   - `md/image-markdown-alt`: obrázek jako `![[...]]`, obrázek bez popisu,
+   - `md/attachments-folder`: obrázek mimo `Attachments/`,
+   - `md/frontmatter-keys`: klíče `titul`, `datum` a `publish`, `date` mimo tvar `RRRR-MM-DD`,
+   - `md/tag-pascal-case`: tag mimo PascalCase (podtržítko na začátku je povolené),
+   - `md/attachment-name`: `Pasted image*`, příloha v `Attachments/` s jinými znaky než malá písmena, číslice a podtržítko,
+   - `md/tag-one-variant`: tentýž tag ve více variantách velikosti písmen,
+   - `md/no-link-to-private`: článek s markerem 🌐 odkazuje na článek bez markeru.
 
-   Pravidla `tag` a `publish` porovnávají články mezi sebou. `tag` vidí jen kontrolované soubory, takže je úplný jen při kontrole celého vaultu. `publish` hledá cíl odkazu v celém vaultu, tedy od nejbližšího adresáře s `.obsidian`. Soubory a adresáře se sufixem `-TMP` skript přeskakuje.
+   Pravidla `md/tag-one-variant` a `md/no-link-to-private` porovnávají články mezi sebou. `md/tag-one-variant` vidí jen kontrolované soubory, takže je úplný jen při kontrole celého vaultu. `md/no-link-to-private` hledá cíl odkazu v celém vaultu, tedy od nejbližšího adresáře s `.obsidian`. Soubory a adresáře se sufixem `-TMP` skript přeskakuje.
 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
-   - oslovení čtenáře a dlouhá souvětí,
+   - `md/no-addressing-reader` a `md/czech-style`: oslovení čtenáře a dlouhá souvětí,
    - **věty na samostatných řádcích bez prázdného řádku mezi nimi**: skript je nehlásí, protože nejde o zalomení na pevnou šířku. Obsidian je zobrazí pod sebou, jiné nástroje je ale mohou spojit do jednoho odstavce. Když jde o samostatné myšlenky, navrhni prázdný řádek mezi nimi nebo odrážky,
-   - jednotná terminologie a pojem článek,
-   - umístění článku (`docs/` nebo u objektu) a rozcestník v `README.md`,
-   - název článku a složky podle tabulky Názvy souborů,
-   - odkaz na přílohu, která není obrázek, mimo `Attachments/`,
-   - tagy zapsané v textu jako `#Tag`, skript čte jen frontmatter,
+   - `md/term-article`: jednotná terminologie a pojem článek,
+   - `md/article-location` a `md/readme-index`: umístění článku (`docs/` nebo u objektu) a rozcestník v `README.md`,
+   - `md/file-names`: název článku a složky podle tabulky Názvy souborů,
+   - `md/attachments-folder`: odkaz na přílohu, která není obrázek, mimo `Attachments/`,
+   - `md/tag-pascal-case` a `md/tag-one-variant`: tagy zapsané v textu jako `#Tag`, skript čte jen frontmatter,
    - **výjimky ze zakázaných znaků**: skript hlásí i znak v citaci nebo v diagramu mimo blok kódu, takové hlášení posuď a případně vyřaď.
 
    Soubor, který skript nahlásil jako mimo UTF-8, nečti a nekontroluj.
 
-3. **Vypiš výsledek** po souborech. U každé neshody `soubor:řádek`, porušené pravidlo a konkrétní návrh opravy. Neshody ze skriptu a z vlastní kontroly slouč do jednoho seznamu a u sporných případů napiš, proč jsou sporné. Na konec dej souhrn: kolik souborů, kolik neshod podle pravidel.
+3. **Vypiš výsledek** po souborech. U každé neshody `soubor:řádek`, identifikátor porušeného pravidla a konkrétní návrh opravy. Neshody ze skriptu a z vlastní kontroly slouč do jednoho seznamu a u sporných případů napiš, proč jsou sporné. Na konec dej souhrn: kolik souborů, kolik neshod podle pravidel.
 
 4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování přílohy nebo článku dělej v Obsidianu nebo s opravou všech odkazů, jinak se rozbijí.
 

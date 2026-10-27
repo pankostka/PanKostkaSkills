@@ -13,13 +13,13 @@ Argument: `$ARGUMENTS`
 
 ## Rozcestník
 
-Rozcestník je `tasks/tasks.md`, seznam všech úkolů. Úkol, na kterém se ještě nedělá, je tam jen odrážkou. Jakmile se na něm začne pracovat, vznikne vedle článek `tasks/<Název úkolu>.md` a odrážka na něj odkáže wikilinkem. Když úkol vzniká za běhu a v `tasks.md` ještě není, doplň tam odrážku.
+`tasks/index` Rozcestník je `tasks/tasks.md`, seznam všech úkolů. Úkol, na kterém se ještě nedělá, je tam jen odrážkou. `tasks/article-per-task` Jakmile se na něm začne pracovat, vznikne vedle článek `tasks/<Název úkolu>.md` a odrážka na něj odkáže wikilinkem. Když úkol vzniká za běhu a v `tasks.md` ještě není, doplň tam odrážku.
 
 Odrážka má za odkazem jednu až dvě věty: o co jde a v jakém je úkol stavu. Rozcestník se tak dá přečíst bez otevírání článků.
 
 ## Průběh práce
 
-**Když pracuješ na úkolu z `tasks/`, průběh piš do jeho článku, ne jen do chatu.** Patří tam zadání, zvolený postup a proč, dotčené objekty a soubory, stav testování a co zbývá ručně nasadit. Cílem je, aby se dalo navázat v jiné session bez čtení historie chatu, takže článek aktualizuj průběžně, ne až na konci.
+`tasks/write-progress` **Když pracuješ na úkolu z `tasks/`, průběh piš do jeho článku, ne jen do chatu.** Patří tam zadání, zvolený postup a proč, dotčené objekty a soubory, stav testování a co zbývá ručně nasadit. Cílem je, aby se dalo navázat v jiné session bez čtení historie chatu, takže článek aktualizuj průběžně, ne až na konci.
 
 **Doporučená osnova článku** podle toho, jak se úkoly v praxi píšou. Sekce, ke které není co napsat, se vynechá:
 
@@ -31,19 +31,23 @@ Odrážka má za odkazem jednu až dvě věty: o co jde a v jakém je úkol stav
 
 ## Pomocné soubory
 
-Testovací dotazy, výstupy měření a ukázky k úkolu leží vedle jeho článku a jmenují se **`<Název úkolu>-<co>-TMP.<přípona>`**, třeba `Intercompany v KostkaEKO-mereni-TMP.sql`. Sufix `-TMP` je drží mimo git, název úkolu na začátku říká, ke kterému úkolu patří, a po smazání úkolu je jasné, co smazat s ním.
+`tasks/tmp-naming` Testovací dotazy, výstupy měření a ukázky k úkolu leží vedle jeho článku a jmenují se **`<Název úkolu>-<co>-TMP.<přípona>`**, třeba `Intercompany v KostkaEKO-mereni-TMP.sql`. Sufix `-TMP` je drží mimo git, název úkolu na začátku říká, ke kterému úkolu patří, a po smazání úkolu je jasné, co smazat s ním.
 
 ## Git
 
-Články v `tasks/` jsou v gitu, ne `-TMP`. Bez toho je z jiného stroje ani z jiné session neuvidíš.
+`tasks/in-git` Články v `tasks/` jsou v gitu, ne `-TMP`. Bez toho je z jiného stroje ani z jiné session neuvidíš.
 
 ## Dokončení
 
-Po dokončení úkolu smaž jeho článek, jeho pomocné soubory `-TMP` a odrážku v `tasks.md`. Co má přežít, přenes do `docs/` nebo k dotčenému objektu.
+`tasks/delete-when-done` Po dokončení úkolu smaž jeho článek, jeho pomocné soubory `-TMP` a odrážku v `tasks.md`. Co má přežít, přenes do `docs/` nebo k dotčenému objektu.
 
 ## Rozhodnutí a otevřené otázky
 
 **Repo může mít vedle `tasks/` soubor s rozhodnutími a otevřenými otázkami** (v některých repech `TODO 🌐.md`). Rozdíl je životnost: tam leží vědomá rozhodnutí, která mají platit dlouhodobě a slouží k tomu, aby se stejná diskuse nevedla znovu. Do `tasks/` patří práce, která právě běží a po dokončení zmizí. Rozhodnutí z úkolu, které má přežít jeho smazání, se proto při dokončení přenese tam. Pravidla pro AI ani do jednoho nepatří, ta jsou v `CLAUDE.md`.
+
+## Výjimka z pravidla
+
+Vědomou výjimku v `tasks.md`, třeba odkaz na úkol vedený v jiném repu, zapiš HTML komentářem na řádek nálezu nebo nad něj: `<!-- pankostka: allow tasks/index, úkol je v jiném repu -->`. **Důvod je povinný**, bez něj skript nález hlásí dál.
 
 ## Kontrola
 
@@ -55,12 +59,11 @@ Platí, jen když argument výše není prázdný. Argument je adresář repa (k
    python ${CLAUDE_SKILL_DIR}/scripts/check_tasks.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [pravidlo] zpráva`. Pravidla:
-   - `index`: chybí `tasks/tasks.md`,
-   - `orphan`: článek v `tasks/`, na který v `tasks.md` nevede odkaz,
-   - `dead`: odkaz v `tasks.md` na článek, který v `tasks/` není,
-   - `leftover`: soubor `-TMP`, jehož název nezačíná názvem žádného úkolu, tedy nejspíš zbytek po smazaném úkolu,
-   - `git`: článek úkolu, který git nesleduje.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`, řádek `tasks.md` s výjimkou `pankostka: allow` a důvodem se nehlásí. Pravidla:
+   - `tasks/index`: chybí `tasks/tasks.md`, nebo odkaz v něm míří na článek, který v repu není,
+   - `tasks/article-per-task`: článek v `tasks/`, na který v `tasks.md` nevede odkaz,
+   - `tasks/tmp-naming`: soubor `-TMP`, jehož název nezačíná názvem žádného úkolu, tedy nejspíš zbytek po smazaném úkolu,
+   - `tasks/in-git`: článek úkolu, který git nesleduje.
 
 2. **Projdi články sám**: dá se podle článku navázat bez historie chatu, odpovídá stav v článku stavu v `tasks.md`, nezůstal viset dokončený úkol a nepatří část textu do `docs/` nebo do souboru s rozhodnutími.
 

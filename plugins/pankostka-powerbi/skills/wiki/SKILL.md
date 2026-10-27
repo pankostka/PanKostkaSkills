@@ -15,17 +15,17 @@ Argument: `$ARGUMENTS`
 
 ## Zásady
 
-A. **Z pohledu uživatele.** Dokumentace popisuje to, **co uživatel vidí**.
+A. `wiki/user-view` **Z pohledu uživatele.** Dokumentace popisuje to, **co uživatel vidí**.
 
-B. **Z prvků.** Prvky jsou čtyři a každý má právě jeden článek: **kostka**, **faktovka**, **dimenze** a **report**. Prvek patří vždy ke konkrétní kostce. Když stejnou dimenzi používají dvě kostky, má článek v každé z nich.
+B. `wiki/article-per-element` **Z prvků.** Prvky jsou čtyři a každý má právě jeden článek: **kostka**, **faktovka**, **dimenze** a **report**. Prvek patří vždy ke konkrétní kostce. Když stejnou dimenzi používají dvě kostky, má článek v každé z nich.
 
 K prvkům se volitelně řadí **údržba**: článek o tom, jak uživatel udržuje data ve zdrojovém systému, aby kostka počítala správně, například mapování účtů na řádky výkazu v ERP. Nepopisuje model, ale práci uživatele. Patří sem jen tehdy, když chybná nebo chybějící data mění čísla v reportu. Zdrojem může být ERP i sešit. Článek údržby se váže na faktovku nebo dimenzi, které se týká, a píše ho člověk. AI ho nezakládá, protože model o něm nic neví.
 
-C. **Jednoduchá.** Píše se jen to podstatné a to, co se z modelu nedá vyčíst. **Co je samozřejmé, se nepíše**: atribut `Číslo karty` popis nepotřebuje. Výpočet se popisuje jen tehdy, když má výjimku nebo zvláštnost. Krátký text se čte a hlavně udržuje: co se nenapíše, to nezastará.
+C. `wiki/simple` **Jednoduchá.** Píše se jen to podstatné a to, co se z modelu nedá vyčíst. **Co je samozřejmé, se nepíše**: atribut `Číslo karty` popis nepotřebuje. Výpočet se popisuje jen tehdy, když má výjimku nebo zvláštnost. Krátký text se čte a hlavně udržuje: co se nenapíše, to nezastará.
 
-D. **Vytvářená AI, upravovaná člověkem.** První verzi článku napíše AI jako koncept, **člověk ho přeformuluje** pro člověka. Po přeformulování AI jeho text nepřepisuje: drobné věcné chyby opraví, delší místa jen **navrhne** způsobem popsaným v části Aktualizace.
+D. `wiki/ai-draft-human-edit` **Vytvářená AI, upravovaná člověkem.** První verzi článku napíše AI jako koncept, **člověk ho přeformuluje** pro člověka. Po přeformulování AI jeho text nepřepisuje: drobné věcné chyby opraví, delší místa jen **navrhne** způsobem popsaným v části Aktualizace.
 
-**Výjimka ze zásad C a D je tabulka ukazatelů** v článku faktovky. Mezi jejími značkami udržuje skript `measures_table.py` sloupce Adresář a Ukazatel a výrazy DAX podle modelu, i u samozřejmých měr. Popis míry píše člověk a skript ho nemění. Jinam do článku žádný nástroj nezapisuje.
+`wiki/measures-table` **Výjimka ze zásad C a D je tabulka ukazatelů** v článku faktovky. Mezi jejími značkami udržuje skript `measures_table.py` sloupce Adresář a Ukazatel a výrazy DAX podle modelu, i u samozřejmých měr. Popis míry píše člověk a skript ho nemění. Jinam do článku žádný nástroj nezapisuje.
 
 ## Umístění a názvy
 
@@ -39,25 +39,25 @@ D. **Vytvářená AI, upravovaná člověkem.** První verzi článku napíše A
 | report | `<Kostka> <Report>.md` | `KostkaEKO Výsledovka.md` |
 | údržba | `<Kostka> <Téma>.md` | `KostkaAXMain Mapování ManČlen.md` |
 
-**Předpona kostky je povinná.** Obsidian páruje wikilinky podle názvu napříč celým vaultem a `DimDatum` je ve více kostkách. Bez předpony by `[[DimDatum]]` vedl náhodně do jedné z nich.
+`wiki/kostka-prefix` **Předpona kostky je povinná.** Obsidian páruje wikilinky podle názvu napříč celým vaultem a `DimDatum` je ve více kostkách. Bez předpony by `[[DimDatum]]` vedl náhodně do jedné z nich.
 
 **Tabulka a report se jmenují přesně jako v modelu**, včetně diakritiky, pokud ji model má. Článek se tak dá dohledat z Power BI i naopak.
 
-**Wikilink se píše s aliasem**, tedy `[[KostkaEKO DimÚčet|DimÚčet]]`. Předpona je v názvu kvůli jednoznačnosti, čtenáři nic neříká.
+`wiki/wikilink-alias` **Wikilink se píše s aliasem**, tedy `[[KostkaEKO DimÚčet|DimÚčet]]`. Předpona je v názvu kvůli jednoznačnosti, čtenáři nic neříká.
 
-**Rozcestník kostky je `<Kostka>.md`, ne `README.md`.** `README.md` je rozcestník repa a ve vaultu repa by další soubor téhož jména nebyl jednoznačný. `README.md` repa odkazuje na rozcestník každé kostky, protože články leží u kostek a jedním výpisem adresáře se vyjmenovat nedají.
+`wiki/index-article` **Rozcestník kostky je `<Kostka>.md`, ne `README.md`.** `README.md` je rozcestník repa a ve vaultu repa by další soubor téhož jména nebyl jednoznačný. `README.md` repa odkazuje na rozcestník každé kostky, protože články leží u kostek a jedním výpisem adresáře se vyjmenovat nedají.
 
 Wiki se otevírá i jako samostatný vault. Jeho nastavení souborů musí být stejné jako ve vaultu repa, viz skill `pankostka-obsidian`.
 
 ## Frontmatter a tagy
 
-**Frontmatter nese `title`, `date` a `tags`.**
+`wiki/frontmatter` **Frontmatter nese `title`, `date` a `tags`.**
 
 - `title` je název, který vidí uživatel v Power BI, tedy název tabulky nebo reportu bez předpony kostky (`DimÚčet`), u rozcestníku název modelu (`KostkaEKO`).
-- `date` je datum poslední revize článku **člověkem** ve tvaru `RRRR-MM-DD`. AI ho vyplní při založení, člověk ho přepíše, když článek zreviduje. Čtenář z něj pozná, ke kterému dni text platí, a kontrola podle něj pozná, že se model změnil později. Datum souboru TMDL se nepoužívá: git data souborů neukládá, po klonu je v něm datum klonu.
+- `wiki/revision-date` `date` je datum poslední revize článku **člověkem** ve tvaru `RRRR-MM-DD`. AI ho vyplní při založení, člověk ho přepíše, když článek zreviduje. Čtenář z něj pozná, ke kterému dni text platí, a kontrola podle něj pozná, že se model změnil později. Datum souboru TMDL se nepoužívá: git data souborů neukládá, po klonu je v něm datum klonu.
 - `tags` řadí článek do skupin.
 
-**Tagy.** Podtržítko na začátku znamená *patří do*, tag bez podtržítka znamená *je to*. Názvy tagů jsou přesně názvy z modelu, bez předpony kostky.
+`wiki/tags` **Tagy.** Podtržítko na začátku znamená *patří do*, tag bez podtržítka znamená *je to*. Názvy tagů jsou přesně názvy z modelu, bez předpony kostky.
 
 | Článek | Tagy | Příklad |
 | --- | --- | --- |
@@ -75,7 +75,7 @@ Tagy platí pro celý vault, ne pro jednu kostku. Stejná dimenze ve dvou kostk�
 
 Pokyn **Aktualizuj wiki `<Kostka>`** (synonyma `Make wiki`, `Do wiki`) srovná wiki kostky s modelem. Napsaný slovy znamená zápis, tedy totéž co `/pankostka-powerbi-wiki <Kostka> --make`. Bez `--make` se jen vypíše, co by se udělalo.
 
-**AI smí do existujícího článku zasáhnout jen dvěma způsoby.** Jinak ho nemění.
+`wiki/ai-edit-two-ways` **AI smí do existujícího článku zasáhnout jen dvěma způsoby.** Jinak ho nemění.
 
 - **Drobná věcná oprava přímo v textu.** Přejmenovaný sloupec nebo míra, mrtvý odkaz, zastaralý název, jedno slovo. Každou opravu vypiš ve tvaru `soubor, řádek, před -> po`.
 - **Návrh pro delší místo.** Odstavec, který je nesprávný, zavádějící, neúplný, zastaralý nebo v rozporu s jiným článkem. Původní odstavec **nech** a hned pod něj vlož callout:
@@ -87,7 +87,7 @@ Pokyn **Aktualizuj wiki `<Kostka>`** (synonyma `Make wiki`, `Do wiki`) srovná w
 
   Callout obsahuje navrhovaný text a **důvod**. Člověk návrh přijme tak, že smaže původní odstavec a hlavičku calloutu, a odmítne ho smazáním calloutu. Callouty `Návrh AI` smíš při dalším běhu přepsat nebo aktualizovat.
 
-**Rozeditovaný článek.** Když má článek neuložené změny (`M` v `git status`), do jeho textu nezapisuj ani drobnosti a nespouštěj v něm `measures_table.py`. I drobnosti dej jako callout, aby se úpravy nesmíchaly v diffu s člověkovými.
+`wiki/no-edit-dirty` **Rozeditovaný článek.** Když má článek neuložené změny (`M` v `git status`), do jeho textu nezapisuj ani drobnosti a nespouštěj v něm `measures_table.py`. I drobnosti dej jako callout, aby se úpravy nesmíchaly v diffu s člověkovými.
 
 Nenavrhuj čistě stylistické přeformulování a neměň `date` ve frontmatteru, protože značí revizi člověkem.
 
@@ -108,6 +108,8 @@ Postup:
 
 ## Co do wiki nepatří
 
+`wiki/not-in-wiki`
+
 - **Popis, jak je to udělané v SQL.** Uživatelská dokumentace mluví o datech, ne o procedurách.
 - **Předávací dokumentace pro vývojáře**, tedy proč je něco udělané takhle, provoz, pasti a rozpracovanost. Patří k plnicí proceduře.
 - **Skryté sloupce, skryté míry a pomocné tabulky.** Uživatel je v modelu nenajde.
@@ -115,6 +117,10 @@ Postup:
 - **Proměnlivé provozní údaje**, tedy čas posledního nápočtu, doba běhu, počty řádků a kdo report používá. Zastarají dřív, než je někdo přečte.
 
 Wiki se převádí do HTML nástrojem [obsidian2html](https://github.com/pankostka/obsidian2html) celá a bez markeru publikace. HTML se neverzuje a leží mimo repo.
+
+## Výjimka z pravidla
+
+Vědomé porušení pravidla v článku zapiš HTML komentářem na řádek nálezu nebo na řádek nad ním. Komentář jmenuje identifikátor pravidla a za čárkou důvod: `<!-- pankostka: allow wiki/wikilink-alias, celý název je tu záměrně -->`. **Důvod je povinný**, bez něj skript nález hlásí dál. Nálezy, které se netýkají řádku článku (chybějící článek, revize starší než model), se výjimkou vyřadit nedají.
 
 ## Kontrola
 
@@ -126,15 +132,16 @@ Platí, jen když argument výše není prázdný. Prvním slovem argumentu je n
    python ${CLAUDE_SKILL_DIR}/scripts/check_wiki.py <Kostka>
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript nic nezapisuje. Výstup je jedna řádka na nález ve tvaru `soubor:řádek: [pravidlo] zpráva`:
-   - `missing`: viditelná tabulka nebo report bez článku, chybí rozcestník,
-   - `orphan`: článek s předponou kostky, ke kterému v modelu ani v reportech nic není (údržba s tagem `Údržba` se nehlásí),
-   - `frontmatter`: chybí `title`, `date` nebo `tags`, `title` neodpovídá názvu v modelu,
-   - `tags`: tagy neodpovídají druhu článku nebo vazbám v `relationships.tmdl`,
-   - `sections`: chybí povinná sekce osnovy,
-   - `stale`: poslední commit TMDL tabulky nebo PBIR reportu je novější než `date` článku,
-   - `link`: wikilink na článek kostky bez aliasu,
-   - `measures`: tabulka ukazatelů neodpovídá modelu, nebo článek faktovky značky nemá.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript nic nezapisuje. Výstup je jedna řádka na nález ve tvaru `soubor:řádek: [identifikátor] zpráva`:
+   - `wiki/article-per-element`: viditelná tabulka nebo report bez článku,
+   - `wiki/index-article`: chybí rozcestník,
+   - `wiki/article-per-element`: článek s předponou kostky, ke kterému v modelu ani v reportech nic není (údržba s tagem `Údržba` se nehlásí),
+   - `wiki/frontmatter`: chybí `title`, `date` nebo `tags`, `title` neodpovídá názvu v modelu,
+   - `wiki/tags`: tagy neodpovídají druhu článku nebo vazbám v `relationships.tmdl`,
+   - `wiki/outline`: chybí povinná sekce osnovy,
+   - `wiki/revision-date`: poslední commit TMDL tabulky nebo PBIR reportu je novější než `date` článku,
+   - `wiki/wikilink-alias`: wikilink na článek kostky bez aliasu,
+   - `wiki/measures-table`: tabulka ukazatelů neodpovídá modelu, nebo článek faktovky značky nemá.
 
 2. **Projdi články sám** podle kroku 4 postupu výše: rozpor textu s modelem, nesrozumitelná místa, technické vazby s klíčem vždy `-1`, zbylé značky `⚠️` a porušení zásady C.
 

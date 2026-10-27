@@ -2,7 +2,7 @@
 """Testy check_nephrite.py ze skillu pankostka-nephrite.
 
 Soubory ok_*.sql nesmí mít žádnou neshodu.
-Soubory ko_<pravidlo>_*.sql musí mít jen neshody toho pravidla a právě tolik, kolik říká text `celkem N` v souboru (bez něj 1).
+Soubory ko_<popis>_*.sql musí mít jen neshody pravidla s tím popisem a právě tolik, kolik říká text `celkem N` v souboru (bez něj 1).
 Spuštění: python tests/pankostka-nephrite/run.py
 """
 import importlib.util
@@ -38,7 +38,7 @@ def main():
         else:
             rule = name[3:-4].split("_")[0]
             count = expected_count(path)
-            ok = len(findings) == count and all(f[1] == rule for f in findings)
+            ok = len(findings) == count and all(f[1].split("/")[-1] == rule for f in findings)
             expect = f"{count}x [{rule}]"
         print(f"{'OK  ' if ok else 'FAIL'} {name}: čekáno {expect}, nalezeno {len(findings)}")
         if not ok:

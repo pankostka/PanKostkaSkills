@@ -2,7 +2,7 @@
 """Testy check_tasks.py ze skillu pankostka-tasks.
 
 Repa popsaná v cases.py se postaví v dočasném adresáři, zkontrolují a smažou.
-Případy ok_* nesmí mít žádnou neshodu, ko_<pravidlo>_* jen neshody toho pravidla v počtu podle count.
+Případy ok_* nesmí mít žádnou neshodu, ko_<popis>_* jen neshody pravidla s tím popisem v počtu podle count.
 Spuštění: python tests/pankostka-tasks/run.py
 """
 import importlib.util
@@ -61,7 +61,7 @@ def main():
             else:
                 rule = name[3:].split("_")[0]
                 count = case.get("count", 1)
-                ok = len(findings) == count and all(f[2] == rule for f in findings)
+                ok = len(findings) == count and all(f[2].split("/")[-1] == rule for f in findings)
                 expect = f"{count}x [{rule}]"
             print(f"{'OK  ' if ok else 'FAIL'} {name}: čekáno {expect}, nalezeno {len(findings)}")
             if not ok:

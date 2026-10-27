@@ -23,10 +23,11 @@ def base():
 CASES = {
     "ok_repo": {"commits": ["Běžný commit"], "files": {"hooks/pre-commit": "#!/bin/sh\n"}, "hooks_path": True},
     # bez git add: s chybným .gitignore by se do indexu dostal i Poznamky-TMP.md a hlásil by se jako tracked
-    "ko_gitignore": {"count": 1, "files": {".gitignore": "*-TMP\n"}, "noadd": True},
-    "ko_tracked": {"count": 1, "files": {"dotaz-TMP.sql": "select 1\n"}, "force": ["dotaz-TMP.sql"]},
-    "ko_suffix": {"count": 2, "files": {"nsp20FactDenik-LAVICE.sql": "select 1\n", "Data-OLD/a.txt": "x\n"}},
-    "ko_bom": {"count": 1, "bom": ["README.md"]},
-    "ko_message": {"count": 2, "commits": ["Dobrý commit", "@'Zpráva z PowerShellu", "﻿Oprava rourou"]},
-    "ko_hooks": {"count": 1, "files": {"hooks/pre-commit": "#!/bin/sh\n"}},
+    "ko_tmp-gitignore": {"count": 1, "files": {".gitignore": "*-TMP\n"}, "noadd": True},
+    "ko_no-tracked-tmp": {"count": 1, "files": {"dotaz-TMP.sql": "select 1\n"}, "force": ["dotaz-TMP.sql"]},
+    "ko_allowed-suffix": {"count": 2, "files": {"nsp20FactDenik-LAVICE.sql": "select 1\n", "Data-OLD/a.txt": "x\n"}},
+    "ko_utf8-no-bom": {"count": 1, "bom": ["README.md"]},
+    "ko_shell-syntax": {"count": 1, "commits": ["Dobrý commit", "@'Zpráva z PowerShellu"]},
+    "ko_message-file-in-ps": {"count": 1, "commits": ["Dobrý commit", "﻿Oprava rourou"]},
+    "ko_hooks-path": {"count": 1, "files": {"hooks/pre-commit": "#!/bin/sh\n"}},
 }

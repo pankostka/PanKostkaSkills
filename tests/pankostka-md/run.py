@@ -2,7 +2,7 @@
 """Testy check_md.py ze skillu pankostka-md.
 
 Každý test je adresář, tedy malý vault. Adresáře ok_* nesmí mít žádnou neshodu.
-Adresáře ko_<pravidlo>_* musí mít jen neshody toho pravidla a právě tolik, kolik říká text `celkem N` v některém jejich článku (bez něj 1).
+Adresáře ko_<popis>_* musí mít jen neshody pravidla s tím popisem a právě tolik, kolik říká text `celkem N` v některém jejich článku (bez něj 1).
 Spuštění: python tests/pankostka-md/run.py
 """
 import importlib.util
@@ -44,7 +44,7 @@ def main():
         else:
             rule = name[3:].split("_")[0]
             count = expected_count(case)
-            ok = len(findings) == count and all(f[2] == rule for f in findings)
+            ok = len(findings) == count and all(f[2].split("/")[-1] == rule for f in findings)
             expect = f"{count}x [{rule}]"
         print(f"{'OK  ' if ok else 'FAIL'} {name}: čekáno {expect}, nalezeno {len(findings)}")
         if not ok:

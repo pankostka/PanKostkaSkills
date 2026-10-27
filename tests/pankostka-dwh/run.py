@@ -2,7 +2,7 @@
 """Testy check_dwh.py ze skillu pankostka-dwh.
 
 Každý test je adresář s malým repem rozděleným do vrstev (10_stage, 20_dim, 20_fact, 30_mart). Adresáře ok_* nesmí mít žádnou neshodu.
-Adresáře ko_<pravidlo>_* musí mít jen neshody toho pravidla a právě tolik, kolik říká text `celkem N` v některém jejich souboru (bez něj 1).
+Adresáře ko_<popis>_* musí mít jen neshody pravidla s tím popisem a právě tolik, kolik říká text `celkem N` v některém jejich souboru (bez něj 1).
 Spuštění: python tests/pankostka-dwh/run.py
 """
 import importlib.util
@@ -42,7 +42,7 @@ def main():
         else:
             rule = name[3:].split("_")[0]
             count = expected_count(case)
-            ok = len(findings) == count and all(f[2] == rule for f in findings)
+            ok = len(findings) == count and all(f[2].split("/")[-1] == rule for f in findings)
             expect = f"{count}x [{rule}]"
         print(f"{'OK  ' if ok else 'FAIL'} {name}: čekáno {expect}, nalezeno {len(findings)}")
         if not ok:

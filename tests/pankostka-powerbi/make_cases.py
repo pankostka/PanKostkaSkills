@@ -121,14 +121,14 @@ w("ok_select.tmdl", [
     "        sourceColumn: Hodnota",
 ])
 
-w("ko_table.tmdl", [
+w("ko_table-no-diacritics.tmdl", [
     "/// celkem 1",
     "table DimÚčet",
     "    column 'Účet Název'",
     "        sourceColumn: UcetNazev",
 ])
 
-w("ko_key.tmdl", [
+w("ko_key-keep-name.tmdl", [
     "/// celkem 1",
     "table DimSaldo",
     "    column 'Sld ID'",
@@ -138,7 +138,7 @@ w("ko_key.tmdl", [
     "        sourceColumn: SaldoNazev",
 ])
 
-w("ko_hierarchy.tmdl", [
+w("ko_hierarchy-at.tmdl", [
     "/// celkem 2",
     "table DimDatum",
     "    hierarchy §RTD",
@@ -150,15 +150,19 @@ w("ko_hierarchy.tmdl", [
     "            column: Třída",
 ])
 
-w("ko_measure.tmdl", [
-    "/// celkem 4",
+w("ko_measure-format-folder.tmdl", [
+    "/// celkem 2",
     "table FactProdej",
     "    measure HV = SUM ( FactProdej[ProdejKc] )",
     "        displayFolder: Výsledek",
     "",
     "    measure Obrat = SUM ( FactProdej[ProdejKc] )",
     "        formatString: #,0",
-    "",
+])
+
+w("ko_measure-token-order.tmdl", [
+    "/// celkem 2",
+    "table FactProdej",
     "    measure 'HV △LY' = [HV] - [HV LY]",
     "        formatString: #,0",
     "        displayFolder: Výsledek",
@@ -168,7 +172,7 @@ w("ko_measure.tmdl", [
     "        displayFolder: Výsledek",
 ])
 
-w("ko_mdx.tmdl", [
+w("ko_fact-hidden-no-mdx.tmdl", [
     "/// celkem 2",
     "table FactProdej",
     "    column DimUcetID",
@@ -185,7 +189,7 @@ w("ko_mdx.tmdl", [
     "        sourceColumn: ProdejPozn",
 ])
 
-w("ko_role.tmdl", [
+w("ko_role-name.tmdl", [
     "/// celkem 2",
     "role 'Prodej Uživatel'",
     "    modelPermission: read",
@@ -194,7 +198,7 @@ w("ko_role.tmdl", [
     "    modelPermission: read",
 ])
 
-w("ko_select.tmdl", [
+w("ko_select-name.tmdl", [
     "/// celkem 2",
     "table SelectProdejAll",
     "    column 'SelectProdejAll Fields'",

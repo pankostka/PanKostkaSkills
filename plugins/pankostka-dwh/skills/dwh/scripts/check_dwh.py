@@ -2,10 +2,11 @@
 """Kontrola konvencí datového skladu ze skillu pankostka-dwh.
 
 Použití: check_dwh.py <soubor|adresář>... | --changed
-Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [pravidlo] zpráva.
+Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Vrstvu souboru určuje první adresář v cestě s prefixem 00_, 10_, 20_ nebo 30_. Odkazy mezi vrstvami se hledají i v řetězcích, protože dynamické SQL je běžné, název procedury jen v kódu.
+Řádek s výjimkou pankostka: allow <identifikátor>, <důvod> na něm nebo nad ním nehlásí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
 import os
@@ -24,6 +25,7 @@ PREFIX = {
     "30": (r"nsp30", "nsp30"),
 }
 SKIP_DIRS = {".git", "node_modules", "__pycache__"}
+RE_ALLOW = re.compile(r"pankostka:\s*allow\s+([a-z]+/[a-z0-9-]+(?:\s*,\s*[a-z]+/[a-z0-9-]+)*)\s*,\s*\S", re.IGNORECASE)
 
 
 def is_tmp(name):
@@ -123,12 +125,12 @@ def check_file(path):
         if kind.startswith("PROC") and proc is None:
             proc = name
             if name != stem:
-                findings.append((line, "name", f"procedura {name} se jmenuje jinak než soubor ({stem}), název objektu je vše před první pomlčkou"))
+                findings.append((line, "dwh/name-before-dash", f"procedura {name} se jmenuje jinak než soubor ({stem}), název objektu je vše před první pomlčkou"))
             key = "20_dim" if layer_dir == "20_dim" else "20_fact" if layer_dir == "20_fact" else layer
             if key in PREFIX and not re.match(PREFIX[key][0], name):
-                findings.append((line, "name", f"procedura {name} ve vrstvě {layer_dir} nemá prefix {PREFIX[key][1]}"))
+                findings.append((line, "dwh/proc-prefix", f"procedura {name} ve vrstvě {layer_dir} nemá prefix {PREFIX[key][1]}"))
             if layer == "00" and re.match(r"nsp(10|20|30)", name):
-                findings.append((line, "name", f"procedura {name} v 00_common nepatří do žádné vrstvy, prefix nsp<vrstva> nemá mít"))
+                findings.append((line, "dwh/proc-prefix", f"procedura {name} v 00_common nepatří do žádné vrstvy, prefix nsp<vrstva> nemá mít"))
 
     # odkazy mezi vrstvami
     # vlastní mart podle adresáře Kostka<Mart> i podle procedury nsp30<Mart>, ty se mohou lišit (KostkaCashFlow a nsp30CF)
@@ -142,14 +144,14 @@ def check_file(path):
         ref_layer, schema = m.group(1), ("s" + m.group(1) + m.group(2))
         line = line_of(with_strings, m.start())
         if layer in ("10", "20") and int(ref_layer) > int(layer):
-            msg = f"vrstva {layer} čte ze schématu {schema} vyšší vrstvy"
+            rule, msg = "dwh/no-read-up", f"vrstva {layer} čte ze schématu {schema} vyšší vrstvy"
         elif own and ref_layer == "30" and schema.lower() not in own:
-            msg = f"mart {sub or proc} čte ze schématu {schema} jiného martu"
+            rule, msg = "dwh/mart-standalone", f"mart {sub or proc} čte ze schématu {schema} jiného martu"
         else:
             continue
         if (line, msg) not in seen:
             seen.add((line, msg))
-            findings.append((line, "layer", msg))
+            findings.append((line, rule, msg))
 
     # názvy klíčů
     for m in RE_CONSTRAINT.finditer(with_strings):
@@ -159,14 +161,26 @@ def check_file(path):
             continue  # název skládaný v dynamickém SQL
         line = line_of(with_strings, m.start())
         if layer == "20" and name.startswith("PK_Dim") and not name.endswith("ID"):
-            findings.append((line, "constraint", f"{name}: primární klíč dimenze ve vrstvě 20 je PK_Dim<Entita>ID"))
+            findings.append((line, "dwh/key-names", f"{name}: primární klíč dimenze ve vrstvě 20 je PK_Dim<Entita>ID"))
         if layer == "30" and name.startswith("PK_Dim") and name.endswith("ID"):
-            findings.append((line, "constraint", f"{name}: primární klíč dimenze ve vrstvě 30 je PK_Dim<Entita> bez ID na konci"))
+            findings.append((line, "dwh/key-names", f"{name}: primární klíč dimenze ve vrstvě 30 je PK_Dim<Entita> bez ID na konci"))
         if layer == "30" and name.startswith("FK_") and not re.fullmatch(r"FK_Fact\w+Dim\w+", name):
-            findings.append((line, "constraint", f"{name}: cizí klíč ve vrstvě 30 je FK_Fact<Entita>Dim<Entita2>"))
+            findings.append((line, "dwh/key-names", f"{name}: cizí klíč ve vrstvě 30 je FK_Fact<Entita>Dim<Entita2>"))
 
+    lines = text.split("\n")
+    findings = [f for f in findings if not allowed(lines, f[0], f[1])]
     findings.sort()
     return findings
+
+
+def allowed(lines, line, rule):
+    """Výjimka komentářem pankostka: allow <identifikátor>, <důvod> na řádku nálezu nebo nad ním. Bez důvodu neplatí."""
+    for i in (line - 1, line - 2):
+        if 0 <= i < len(lines):
+            m = RE_ALLOW.search(lines[i])
+            if m and rule in [r.strip().lower() for r in m.group(1).split(",")]:
+                return True
+    return False
 
 
 def wanted(path, rel):

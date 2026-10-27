@@ -27,9 +27,10 @@ def base():
 CASES = {
     "ok_tasks": {"git": True},
     "ok_nogit": {},
+    "ok_allow": {"add": {"tasks/tasks.md": INDEX + "<!-- pankostka: allow tasks/index, úkol je v jiném repu -->\n- [[Úkol jinde]] - vede se v ProjektHelios.\n"}},
     "ko_index": {"count": 1, "drop": ["tasks/tasks.md"]},
-    "ko_orphan": {"count": 1, "add": {"tasks/Nový úkol.md": "Zadání.\n"}},
-    "ko_dead": {"count": 1, "add": {"tasks/tasks.md": INDEX + "- [[Smazaný úkol]] - hotovo.\n"}},
-    "ko_leftover": {"count": 1, "add": {"tasks/Helios uroven UPDATE-TMP.sql": "update x\n"}},
-    "ko_git": {"count": 1, "git": True, "untracked": ["tasks/Report Prodej.md"]},
+    "ko_article-per-task": {"count": 1, "add": {"tasks/Nový úkol.md": "Zadání.\n"}},
+    "ko_index_dead": {"count": 1, "add": {"tasks/tasks.md": INDEX + "- [[Smazaný úkol]] - hotovo.\n"}},
+    "ko_tmp-naming": {"count": 1, "add": {"tasks/Helios uroven UPDATE-TMP.sql": "update x\n"}},
+    "ko_in-git": {"count": 1, "git": True, "untracked": ["tasks/Report Prodej.md"]},
 }

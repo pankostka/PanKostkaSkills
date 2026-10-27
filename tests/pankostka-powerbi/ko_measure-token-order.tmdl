@@ -1,11 +1,5 @@
-/// celkem 4
+/// celkem 2
 table FactProdej
-	measure HV = SUM ( FactProdej[ProdejKc] )
-		displayFolder: Výsledek
-
-	measure Obrat = SUM ( FactProdej[ProdejKc] )
-		formatString: #,0
-
 	measure 'HV △LY' = [HV] - [HV LY]
 		formatString: #,0
 		displayFolder: Výsledek

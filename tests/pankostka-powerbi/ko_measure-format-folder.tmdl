@@ -1,0 +1,7 @@
+/// celkem 2
+table FactProdej
+	measure HV = SUM ( FactProdej[ProdejKc] )
+		displayFolder: Výsledek
+
+	measure Obrat = SUM ( FactProdej[ProdejKc] )
+		formatString: #,0
