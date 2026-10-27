@@ -1,0 +1,9 @@
+{
+  "name": "pankostka-nephrite",
+  "description": "Zásady pro databázi ERP Helios Nephrite - schéma lcs, datový model, vlastní tabulky, NSP procedury, nasazení skriptů - a kontrola skriptů proti nim",
+  "author": {
+    "name": "Jiří Dvořák"
+  },
+  "repository": "https://github.com/pankostka/PanKostkaSkills",
+  "keywords": ["helios", "nephrite", "erp", "sql-server", "stored-procedure"]
+}

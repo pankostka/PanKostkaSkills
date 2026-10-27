@@ -1,0 +1,2 @@
+-- Chybí USE. celkem 1
+CREATE OR ALTER PROCEDURE lcs.FirmaProc AS SELECT 1

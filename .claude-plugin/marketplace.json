@@ -29,6 +29,11 @@
       "name": "pankostka-dwh",
       "source": "./plugins/pankostka-dwh",
       "description": "Zásady datového skladu v MS SQL Server - vrstvy stage, star a mart, jmenné konvence a kontrola procedur proti nim"
+    },
+    {
+      "name": "pankostka-nephrite",
+      "source": "./plugins/pankostka-nephrite",
+      "description": "Zásady pro databázi ERP Helios Nephrite - schéma lcs, datový model, vlastní tabulky, NSP procedury, nasazení skriptů - a kontrola skriptů proti nim"
     }
   ]
 }
