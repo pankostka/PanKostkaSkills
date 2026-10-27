@@ -1,0 +1,55 @@
+/// Faktovka bez neshod.
+table FactProdej
+	lineageTag: 1
+
+	/// Základní míra.
+	measure HV = SUM ( FactProdej[ProdejKc] )
+		formatString: #,0
+		displayFolder: Výsledek
+
+	measure 'HV LY' =
+			VAR x = CALCULATE ( [HV], DATEADD ( DimDatum[Date], -1, YEAR ) )
+			RETURN x
+		formatString: #,0
+		displayFolder: Výsledek
+
+	measure 'HV LY△' = [HV] - [HV LY]
+		formatString: #,0
+		displayFolder: Výsledek
+
+	measure 'HV YTD LY' = CALCULATE ( [HV YTD], DATEADD ( DimDatum[Date], -1, YEAR ) )
+		formatString: #,0
+		displayFolder: Výsledek
+
+	measure '#Dokladů' = COUNTROWS ( FactProdej )
+		formatString: #,0
+		displayFolder: Počty
+
+	measure 'Dynamický formát' = [HV]
+		displayFolder: Výsledek
+		formatStringDefinition = "#,0"
+
+	column DimUcetID
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		sourceColumn: DimUcetID
+
+	column ProdejKc
+		dataType: decimal
+		isHidden: true
+		isAvailableInMdx: false
+		sourceColumn: ProdejKc
+
+	column 'Prodej Poznámka'
+		dataType: string
+		sourceColumn: ProdejPozn
+
+	partition FactProdej = m
+		mode: import
+		source =
+				let
+					Zdroj = Sql.Database("server", "db")
+				in
+					Zdroj

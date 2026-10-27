@@ -1,0 +1,4 @@
+/// celkem 1
+table DimÚčet
+	column 'Účet Název'
+		sourceColumn: UcetNazev

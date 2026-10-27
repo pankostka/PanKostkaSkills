@@ -1,0 +1,15 @@
+table DimUcet
+	column DimUcetID
+		isHidden
+		sourceColumn: DimUcetID
+
+	column 'Účet Název'
+		sourceColumn: UcetNazev
+
+	hierarchy @Účet
+		level Třída
+			column: 'Účet Třída'
+
+	hierarchy '@DPrv Třída'
+		level Třída
+			column: 'DPrv Třída'

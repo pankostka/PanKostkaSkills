@@ -1,0 +1,14 @@
+/// celkem 2
+table FactProdej
+	column DimUcetID
+		isHidden
+		formatString: 0
+		sourceColumn: DimUcetID
+
+	column ProdejKc
+		isHidden
+		isAvailableInMdx: true
+		sourceColumn: ProdejKc
+
+	column 'Prodej Poznámka'
+		sourceColumn: ProdejPozn

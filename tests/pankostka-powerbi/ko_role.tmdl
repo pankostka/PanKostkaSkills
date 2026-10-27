@@ -1,0 +1,6 @@
+/// celkem 2
+role 'Prodej Uživatel'
+	modelPermission: read
+
+role RoleProdej_User
+	modelPermission: read

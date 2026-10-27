@@ -1,0 +1,9 @@
+{
+  "name": "pankostka-powerbi",
+  "description": "Zásady pro sémantický model a report Power BI v PBIP (TMDL, PBIR, DAX) a kontrola modelu a reportů",
+  "author": {
+    "name": "Jiří Dvořák"
+  },
+  "repository": "https://github.com/pankostka/PanKostkaSkills",
+  "keywords": ["power-bi", "pbip", "tmdl", "pbir", "dax", "semantic-model"]
+}

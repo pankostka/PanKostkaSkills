@@ -1,0 +1,10 @@
+/// celkem 2
+table SelectProdejAll
+	column 'SelectProdejAll Fields'
+		extendedProperty ParameterMetadata =
+				{}
+
+table ParametrProdej
+	column 'ParametrProdej Fields'
+		extendedProperty ParameterMetadata =
+				{}

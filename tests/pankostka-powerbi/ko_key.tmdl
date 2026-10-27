@@ -1,0 +1,7 @@
+/// celkem 1
+table DimSaldo
+	column 'Sld ID'
+		sourceColumn: DimSaldoID
+
+	column 'Sld Název'
+		sourceColumn: SaldoNazev

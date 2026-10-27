@@ -1,0 +1,21 @@
+table SelectDimProdejA
+	column SelectDimProdejA
+		sourceColumn: [Value1]
+
+	column 'SelectDimProdejA Fields'
+		isHidden
+		sourceColumn: [Value2]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3
+				}
+
+table SelectTrzba_TI
+	column 'SelectTrzba_TI Fields'
+		extendedProperty ParameterMetadata =
+				{}
+
+table VyberBezParametru
+	column Hodnota
+		sourceColumn: Hodnota

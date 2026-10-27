@@ -1,0 +1,9 @@
+/// celkem 2
+table DimDatum
+	hierarchy §RTD
+		level Rok
+			column: Rok
+
+	hierarchy '@Účet'
+		level Třída
+			column: Třída
