@@ -16,8 +16,15 @@ Všechno, co uživatel píše, začíná `pankostka-`, a volání je v Claude Co
 - Plugin: `pankostka-<téma>`, adresář `plugins/pankostka-<téma>/`.
 - `name` v `SKILL.md`: `pankostka-<téma>`. Na claude.ai je to jediný název skillu.
 - Adresář skillu: jen `<téma>`, tedy `plugins/pankostka-tsql/skills/tsql/`. **Nesmí se jmenovat stejně jako `name`.** Claude Code povoluje volání bez prefixu pluginu jen u skillu, jehož `name` se liší od adresáře. Se stejným názvem by zbylo jen `/pankostka-tsql:pankostka-tsql`.
-- Kontrolní skript: `scripts/check_<téma>.py`, tedy `check_tsql.py`. Přípona tématu ho odliší od skriptů ostatních skillů.
-- Testy: `tests/pankostka-<téma>/`.
+- Další skill v pluginu: `name` je `pankostka-<téma>-<podtéma>`, adresář jen `<podtéma>`, tedy `plugins/pankostka-powerbi/skills/wiki/` pro `pankostka-powerbi-wiki`.
+- Kontrolní skript: `scripts/check_<téma>.py`, tedy `check_tsql.py`, u dalšího skillu `check_<podtéma>.py`. Přípona odliší skript od skriptů ostatních skillů.
+- Testy: `tests/<name skillu>/`, tedy `tests/pankostka-tsql/`.
+
+## Argumenty skillu
+
+- Bez argumentu skill jen načte zásady.
+- S argumentem (soubor, adresář, `--changed`, název objektu) skill kontroluje a vypisuje neshody s návrhy. **Nic nezapisuje.**
+- Zápis povoluje jen přepínač `--make`, a jen u skillu, který ho v `argument-hint` uvádí. Dnes je to `pankostka-powerbi-wiki`. Pokyn slovy, který o zápis výslovně žádá (třeba `Aktualizuj wiki`), znamená totéž co `--make`.
 
 ## Zásady
 

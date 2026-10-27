@@ -12,6 +12,7 @@ Obsah skillů je česky.
 | `pankostka-md` | Zásady psaní dokumentace v Markdownu a Obsidianu a kontrola souborů `.md` | `/pankostka-md [soubor \| adresář \| --changed]` |
 | `pankostka-obsidian` | Vault v Obsidianu nad git repem: nastavení, co verzovat, šablona konfigurace, kontrola vaultu | `/pankostka-obsidian [adresář vaultu]` |
 | `pankostka-powerbi` | Sémantický model a report Power BI v PBIP: TMDL, PBIR, názvy měr, DAX, field parameters, role. Kontrola modelu a mrtvých odkazů v reportech | `/pankostka-powerbi [adresář \| soubor.tmdl \| --changed]` |
+| `pankostka-powerbi` | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
 
 ## Plánované skilly
 
@@ -23,7 +24,7 @@ Skilly postupně nahradí repo `_JDStandards` a jeho kopie `_Standards/` v proje
 | `pankostka-md` | `pankostka-md` | hotovo | `dokumentace_JD.md`, část `dokumentace.md` |
 | `pankostka-obsidian` | `pankostka-obsidian` | hotovo | `dokumentace.md`, šablona z `_JDStandards/.obsidian` |
 | `pankostka-powerbi` | `pankostka-powerbi` | hotovo | `powerbi_JD.md`, obecná část Vrstvy 30 z `ProjektDWH/CLAUDE.md`, validátory z `ProjektDWH/00_common/pbi` |
-| `pankostka-powerbi` | `pankostka-powerbi-wiki` | dokumentace modelu pro uživatele, `Wiki<Kostka>/`, osnovy článků, postup aktualizace. Jako jediný skill do souborů zapisuje | `dwh_dokumentace_JD.md` |
+| `pankostka-powerbi` | `pankostka-powerbi-wiki` | hotovo | `dwh_dokumentace_JD.md`, rozhodnutí o tabulce ukazatelů z `ProjektDWH/TODO 🌐.md`, `wiki_ukazatele.py` z `ProjektDWH/00_common/pbi` |
 | `pankostka-dwh` | `pankostka-dwh` | vrstvy 10/20/30, pořadí plnění, jmenné konvence, `Key = -1` | `ProjektDWH/CLAUDE.md`, `EMGDWH/CLAUDE.md` |
 | `pankostka-nephrite` | `pankostka-nephrite` | objekty v Heliosu: schéma `lcs`, vlastní tabulky, NSP procedury, formuláře, pojmy Heliosu | `helios_objekty_JD.md` |
 | `pankostka-tasks` | `pankostka-tasks` | adresář `tasks/`, rozcestník, článek na úkol, průběžný zápis, mazání po dokončení | `tasks_JD.md` |
@@ -73,6 +74,8 @@ Bez argumentu se skill načte sám, když Claude píše nebo upravuje soubor, kt
 
 `--changed` zkontroluje jen soubory skillu (`.sql`, `.md` a přílohy), které git hlásí jako změněné nebo nové. Výsledkem je seznam neshod se soubory, řádky a návrhy oprav; nic se neopravuje bez odsouhlasení.
 
+Zapisovat smí jen skill s přepínačem `--make`, dnes `pankostka-powerbi-wiki`: `/pankostka-powerbi-wiki KostkaEKO` jen vypíše, co by udělal, `/pankostka-powerbi-wiki KostkaEKO --make` články založí a upraví.
+
 ## Vývoj
 
 Testy kontrolního skriptu:
@@ -91,6 +94,10 @@ python tests/pankostka-obsidian/run.py
 
 ```bash
 python tests/pankostka-powerbi/run.py
+```
+
+```bash
+python tests/pankostka-powerbi-wiki/run.py
 ```
 
 Kontrola marketplace a pluginů:
