@@ -15,6 +15,7 @@ Doplněk skillu `pankostka-nephrite`. Čísla pořadačů a dalších objektů s
 | NSP | Procedura, kterou uživatel spouští jako **funkci nad přehledem**. Má povinnou signaturu `(@System_InputRecordNumber INT, @System_ResultRecordNumber INT OUTPUT)`. **Pozor na kolizi:** v datovém skladu znamená `nsp` plnicí proceduru (`nsp10`, `nsp20`, `nsp30`). |
 | Pořadač | Číselná řada v rámci třídy. Čísla pořadačů se liší mezi databázemi. |
 | PRVD | Prvotní doklad: doklad, který se účtuje, tedy z něj vzniká zápis do účetního deníku. FV, FD, interní doklad, výdejka a podobně. |
+| Stav skladu | Tabulka `lcs.stav_sk`, jeden řádek za kombinaci kmenové karty (`zdroj`) a skladu. Řídí sledování šarží a dalších dimenzí, kmenová karta pro ně nese jen výchozí hodnotu. |
 | Třída | Třída eviduje doklady stejného typu (FV, FD, výdejky). Pro třídu je buď jedna tabulka, nebo dvě u položkových tříd. Subjektová třída má ještě duplicitní řádek v tabulce `lcs.subjekty` kvůli jednoznačnosti v rámci celé databáze. |
 | UD | Účetní druh. Uživatelsky definovaný číselník v Heliosu. |
 | UDA | Uživatelsky definované atributy. Tabulka se stejným názvem jako třída, jen s prefixem `UDA_`. Zakládá je správce, ne vývojář. |

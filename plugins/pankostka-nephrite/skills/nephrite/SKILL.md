@@ -37,6 +37,8 @@ Argument: `$ARGUMENTS`
 
 **Uložená hodnota sloupce a to, co vidí uživatel, se může lišit, hledej valuaci.** `lcs.attribute_valuation_entry` mapuje fyzickou hodnotu (třeba `'O'` ve sloupci `char(1)`) na popisek, který vidí uživatel (třeba `'OK'`). Bez kontroly téhle tabulky si stavový nebo příznakový sloupec můžeš vyložit špatně.
 
+**Sledování šarží, expirace a dalších dimenzí řídí stav skladu, ne kmenová karta.** `lcs.kmenova_karta_skladu` i stav skladu `lcs.stav_sk` (vazba na kartu je sloupec `zdroj`) mají stejné sloupce `sledovat_*` a `povin_dim_*`. Hodnota z karty se na stav skladu přenese jen jako výchozí, dál rozhoduje stav skladu a obě hodnoty se mohou lišit. Kdo zjišťuje, jestli se u zboží vedou šarže, čte proto stav skladu. Při importu karet stačí nastavit výchozí hodnotu, chybu na kartě jde opravit i u karty s pohybem.
+
 ## Vlastní tabulky
 
 `nephrite/own-table-pk` **Primární klíč je `cislo_nonsubjektu INT IDENTITY(1,1)`.** Je to **požadavek Heliosu**: bez něj se tabulka nedá napojit na přehled a uživatel se k datům nedostane. Ze stejného důvodu se sloupec nesmí jmenovat jinak.
