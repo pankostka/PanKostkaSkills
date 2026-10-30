@@ -146,7 +146,7 @@ Wikilink je syntaxe Obsidianu. GitHub ho vypíše jako holý text a jiný editor
 - **Text odkazu je název článku**, nebo slova věty, ke kterým odkaz patří.
 - **Odkaz vede na článek, ne na nadpis v něm.** Kotva nadpisu má v každém nástroji jiný tvar (Obsidian `#Název%20nadpisu`, GitHub `#nazev-nadpisu`). Výjimkou je odkaz na sekci uvnitř téhož článku.
 
-`md/no-broken-link` **Odkaz míří na existující soubor.** Cenou za standardní odkaz je cesta: přesun nebo přejmenování článku ji rozbije. Obsidian odkazy při přejmenování a přesunu opraví sám, v Markře, gitem, skriptem nebo v AI se musí opravit ručně. Proto skript hlásí každý relativní odkaz a obrázek, jehož cíl neexistuje. Cíl se sufixem `-TMP` neověřuje, ten v gitu není.
+`md/no-broken-link` **Odkaz míří na existující soubor.** Cenou za standardní odkaz je cesta: přesun nebo přejmenování článku ji rozbije. Obsidian odkazy při přejmenování a přesunu opraví sám, v Markře, gitem, skriptem nebo v AI se musí opravit ručně. Proto skript hlásí každý relativní odkaz a obrázek, jehož cíl neexistuje. Cíl se sufixem `-TMP` neověřuje, ten v gitu není. Číslo řádku za cestou (`../20_dim/nsp20DimUcet.sql:179`) skript ignoruje a ověřuje jen soubor.
 
 **Převod starých wikilinků** dělá skript `convert_wikilinks.py`, jen na výslovný pokyn uživatele. Bez `--make` vypíše, co by změnil, s `--make` to zapíše:
 

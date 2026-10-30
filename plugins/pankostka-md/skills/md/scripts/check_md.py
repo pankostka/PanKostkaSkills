@@ -50,6 +50,7 @@ RE_ITEM = re.compile(r"([-*+]|\d+[.)])(\s|$)")
 RE_LINKDEF = re.compile(r"\[\^?[^\]]+\]:")
 RE_WIKI = re.compile(r"(!?)\[\[([^\]|#^]*)[^\]]*\]\]")
 RE_SCHEME = re.compile(r"[a-z][a-z0-9+.-]*:", re.IGNORECASE)
+RE_LINE_SUFFIX = re.compile(r":\d+(-\d+)?$")
 RE_MD_IMAGE = re.compile(r"!\[([^\]]*)\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_MD_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_KEY = re.compile(r"([A-Za-z_][\w-]*)\s*:(.*)$")
@@ -239,6 +240,7 @@ def check_broken(lines, fm_end, skip, path, findings):
             t = unquote(raw.strip("<>")).split("#")[0].split("?")[0].replace("\\", "/")
             if not t or RE_SCHEME.match(t) or t.startswith("/") or any(is_tmp(p) for p in t.split("/")):
                 continue
+            t = RE_LINE_SUFFIX.sub("", t)  # číslo řádku za cestou, třeba nsp20DimUcet.sql:179
             if not os.path.exists(os.path.join(base, t)):
                 findings.append((i + 1, "md/no-broken-link", f"odkaz míří na {t}, který neexistuje, oprav cestu"))
 

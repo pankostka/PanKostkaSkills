@@ -249,14 +249,17 @@ Odkaz na [[Druhý]], s aliasem na [[Druhý|druhý článek]] a na [[Neexistujíc
 """)
 a("ko_no-wikilink", "Druhý", "Druhý článek.\n")
 
-# --- ko_no-broken-link: adresa, kotva a soubor -TMP se neověřují
-a("ko_no-broken-link", "Článek", """<!-- celkem 3 -->
+# --- ko_no-broken-link: adresa, kotva, soubor -TMP a číslo řádku za existujícím souborem se nehlásí
+a("ko_no-broken-link", "Článek", """<!-- celkem 4 -->
 Odkaz na [chybějící článek](../Chybí/Chybí.md) a na [skript](<data/skript.sql>).
 
 ![Obrázek](chybi.png)
 
 Na [web](https://example.com), na [sekci](#sekce) a na [měření](mereni-TMP.sql) se nehlásí.
+
+Na [řádek dotazu](./dotaz.sql:12) a [rozsah](../Článek/dotaz.sql:12-20) se nehlásí, na [řádek chybějícího](data/jiny.sql:5) ano.
 """)
+w("ko_no-broken-link/Článek/dotaz.sql", "SELECT 1\n")
 
 # --- ko_utf8-no-bom
 a("ko_utf8-no-bom", "S BOM", "<!-- celkem 2 -->\nČlánek s BOM.\n", bom=True)
