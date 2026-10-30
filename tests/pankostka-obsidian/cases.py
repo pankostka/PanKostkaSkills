@@ -15,7 +15,7 @@ with open(GITIGNORE, encoding="utf-8") as f:
 
 GOOD_APP = json.dumps({
     "alwaysUpdateLinks": True,
-    "attachmentFolderPath": "./Attachments",
+    "attachmentFolderPath": "./",
     "newLinkFormat": "shortest",
     "showUnsupportedFiles": False,
     "userIgnoreFilters": ["StaticResources/", "/-TMP/"],
@@ -33,7 +33,7 @@ CASES = {
             "README.md": "![[menu]]\n\nRozcestník.\n",
             "menu.md": "[[README]]\n",
             # vnořený vault se stejným nastavením souborů a vlastním rozcestníkem
-            "WikiKostkaTest/.obsidian/app.json": json.dumps({"alwaysUpdateLinks": True, "attachmentFolderPath": "./Attachments", "strictLineBreaks": False}),
+            "WikiKostkaTest/.obsidian/app.json": json.dumps({"alwaysUpdateLinks": True, "attachmentFolderPath": "./", "strictLineBreaks": False}),
             "WikiKostkaTest/KostkaTest.md": "Rozcestník kostky.\n",
         },
     },
@@ -81,7 +81,7 @@ CASES = {
         "files": {
             ".obsidian/app.json": json.dumps({
                 "alwaysUpdateLinks": True,
-                "attachmentFolderPath": "./Attachments",
+                "attachmentFolderPath": "./",
                 "userIgnoreFilters": ["*-TMP", "StaticResources/", "/-TMP/"],
             }, indent=2),
             "README.md": "Rozcestník.\n",

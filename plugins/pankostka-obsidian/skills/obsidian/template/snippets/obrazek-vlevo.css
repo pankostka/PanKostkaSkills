@@ -1,6 +1,6 @@
 /* Obrázek vlevo, text ho obtéká zprava.
    Zapíná se slovem vlevo na konci popisu obrázku:
-   ![Popis obrázku|vlevo](Attachments/soubor.png)
+   ![Popis obrázku|vlevo](soubor.png)
    Kde snippet chybí (web, GitHub), zobrazí se obrázek nad textem. */
 
 img[alt$="vlevo"] {

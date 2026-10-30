@@ -10,6 +10,13 @@ W = "KostkaTest/WikiKostkaTest/"
 T = "\t"
 
 
+def p(name):
+    """Cesta článku ve wiki: rozcestník a -TMP v kořeni, ostatní v adresáři svého jména."""
+    if name == "KostkaTest.md" or name.endswith("-TMP.md"):
+        return W + name
+    return W + name[:-3] + "/" + name
+
+
 def tmdl(*lines):
     return "\n".join(l.replace("    ", T) for l in lines) + "\n"
 
@@ -67,27 +74,27 @@ def base():
         "KostkaTest/pbir/Prodej/Prodej.Report/definition/pages/p1/visuals/v1/visual.json":
             '{"visual": {"query": {"From": [{"Name": "f", "Entity": "FactProdej"}]}}}',
         "KostkaTest/pbip/KostkaTest.Report/definition/report.json": "{}",
-        W + "KostkaTest.md": article("KostkaTest", ["_KostkaTest"], ["Vazby", "Reporty", "Aktuálnost dat"],
+        p("KostkaTest.md"): article("KostkaTest", ["_KostkaTest"], ["Vazby", "Reporty", "Aktuálnost dat"],
                                      "[[KostkaTest FactProdej|FactProdej]] a [[KostkaTest Prodej|Prodej]]."),
-        W + "KostkaTest FactProdej.md": article("FactProdej", ["_KostkaTest", "_FactProdej"], ["Dimenze", "Ukazatele", "Zdroj dat"]),
-        W + "KostkaTest FactSklad.md": article("FactSklad", ["_KostkaTest", "_FactSklad"], ["Dimenze", "Ukazatele", "Zdroj dat"]),
-        W + "KostkaTest DimZakaznik.md": article("DimZakaznik", ["_KostkaTest", "_FactProdej", "DimZakaznik"], ["Kde se vyskytuje", "Zdroj dat"]),
-        W + "KostkaTest Prodej.md": article("Prodej", ["_KostkaTest", "_FactProdej", "_Report"], ["Stránky", "Z čeho čerpá"]),
-        W + "KostkaTest Mapování.md": article("Mapování", ["_KostkaTest", "Údržba"], ["Postup", "Na co si dát pozor"]),
-        W + "Poznámky-TMP.md": "Dočasný článek se nekontroluje.\n",
+        p("KostkaTest FactProdej.md"): article("FactProdej", ["_KostkaTest", "_FactProdej"], ["Dimenze", "Ukazatele", "Zdroj dat"]),
+        p("KostkaTest FactSklad.md"): article("FactSklad", ["_KostkaTest", "_FactSklad"], ["Dimenze", "Ukazatele", "Zdroj dat"]),
+        p("KostkaTest DimZakaznik.md"): article("DimZakaznik", ["_KostkaTest", "_FactProdej", "DimZakaznik"], ["Kde se vyskytuje", "Zdroj dat"]),
+        p("KostkaTest Prodej.md"): article("Prodej", ["_KostkaTest", "_FactProdej", "_Report"], ["Stránky", "Z čeho čerpá"]),
+        p("KostkaTest Mapování.md"): article("Mapování", ["_KostkaTest", "Údržba"], ["Postup", "Na co si dát pozor"]),
+        p("Poznámky-TMP.md"): "Dočasný článek se nekontroluje.\n",
     }
 
 
 def drop(*names):
     def f(files):
         for n in names:
-            del files[W + n]
+            del files[p(n)]
     return f
 
 
 def put(name, text):
     def f(files):
-        files[W + name] = text
+        files[p(name)] = text
     return f
 
 

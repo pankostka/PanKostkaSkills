@@ -1,0 +1,1 @@
+Slovník vedle SKILL.md.

@@ -1,6 +1,6 @@
 ---
 name: pankostka-obsidian
-description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a menu.md, nastavení app.json (Attachments, odkazy, skryté soubory), co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
+description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a menu.md, nastavení app.json (přílohy vedle článku, odkazy, skryté soubory), plugin Folder Notes, co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
 argument-hint: "[adresář vaultu]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *)
 ---
@@ -59,7 +59,7 @@ Na co si dát pozor:
 
 | Klíč | Hodnota | Proč |
 | --- | --- | --- |
-| `attachmentFolderPath` | `./Attachments` | přílohy vznikají v podsložce aktuální složky, vedle článku |
+| `attachmentFolderPath` | `./` | přílohy vznikají ve složce aktuálního článku, tedy v jeho adresáři (viz `pankostka-md`) |
 | `newLinkFormat` | `shortest` | wikilink jen názvem článku |
 | `alwaysUpdateLinks` | `true` | přejmenování článku nebo přílohy opraví odkazy bez ptaní |
 | `showUnsupportedFiles` | `false` | `.sql`, `.json`, `.xlsx` a další se nezobrazí, adresář bez článků taky ne |
@@ -98,6 +98,8 @@ Konfigurace `.obsidian` se dělí na tři hromádky. Test: **jmenuje ten soubor 
 ## Šablona
 
 Adresář `template/` v adresáři tohoto skillu je hromádka *jak se Obsidian chová*: nastavení, seznam pluginů s manifesty a CSS snippety. Kód pluginů a téma v ní nejsou, Obsidian po otevření vaultu nabídne jejich stažení ze storu.
+
+**Plugin Folder Notes** je v šabloně kvůli adresáři na článek: článek leží v adresáři svého jména a plugin ho otevře kliknutím na adresář, skryje ho ve stromu souborů a při přejmenování adresáře přejmenuje i článek. Jeho výchozí nastavení (článek uvnitř adresáře, název podle adresáře) odpovídá pravidlům, takže `data.json` v šabloně není potřeba.
 
 `obsidian/template-file-list` **Kopíruje se jmenovitý seznam souborů, adresář se nezrcadlí.** Zrcadlení by při další synchronizaci smazalo `data.json` pluginů a další soubory, které jmenují články cílového vaultu.
 

@@ -29,11 +29,13 @@ D. `wiki/ai-draft-human-edit` **Vytvářená AI, upravovaná člověkem.** Prvn�
 
 ## Umístění a názvy
 
-Články leží v adresáři **`Wiki<Kostka>/`** vedle PBIP projektu kostky, přílohy v `Wiki<Kostka>/Attachments/`. Adresář se jmenuje `Wiki<Kostka>`, ne jednotně: Obsidian používá název adresáře jako název vaultu a stejně pojmenované vaulty by v seznamu nešly rozlišit.
+Wiki leží v adresáři **`Wiki<Kostka>/`** vedle PBIP projektu kostky. Adresář se jmenuje `Wiki<Kostka>`, ne jednotně: Obsidian používá název adresáře jako název vaultu a stejně pojmenované vaulty by v seznamu nešly rozlišit.
+
+Rozcestník leží v kořeni wiki, **každý další článek ve vlastním adresáři** s přílohami vedle sebe, stejně jako každý článek podle `pankostka-md`: `Wiki<Kostka>/KostkaEKO FactDenik/KostkaEKO FactDenik.md`.
 
 | Článek | Název | Příklad |
 | --- | --- | --- |
-| kostka, tedy rozcestník | `<Kostka>.md` | `KostkaEKO.md` |
+| kostka, tedy rozcestník | `<Kostka>.md` v kořeni wiki | `KostkaEKO.md` |
 | faktovka | `<Kostka> <Tabulka>.md` | `KostkaEKO FactDenik.md` |
 | dimenze | `<Kostka> <Tabulka>.md` | `KostkaEKO DimÚčet.md` |
 | report | `<Kostka> <Report>.md` | `KostkaEKO Výsledovka.md` |

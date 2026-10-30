@@ -36,7 +36,7 @@
    a Wiki<Kostka>/. Název kostky je název adresáře.
 
    --check      nic nezapíše, jen řekne, jestli by se blok změnil
-   --clanek     jiný článek než Wiki<Kostka>/<Kostka> <Fakt>.md (test na kopii)
+   --clanek     jiný článek než Wiki<Kostka>/<Kostka> <Fakt>/<Kostka> <Fakt>.md (test na kopii)
 
    Návratový kód 0 = blok je aktuální nebo byl zapsán, 1 = při --check
    by se blok změnil, 2 = špatné parametry, chybí článek nebo značky.
@@ -306,7 +306,7 @@ def main():
     p = argparse.ArgumentParser(description='Udržuje tabulku ukazatelů v článku faktovky podle modelu.')
     p.add_argument('kostka', help='adresář kostky, obsahuje <Kostka>.SemanticModel a Wiki<Kostka>/')
     p.add_argument('fakt', help='tabulka v modelu, například FactRegistrace')
-    p.add_argument('--clanek', help='cesta k článku, jinak Wiki<Kostka>/<Kostka> <Fakt>.md')
+    p.add_argument('--clanek', help='cesta k článku, jinak Wiki<Kostka>/<Kostka> <Fakt>/<Kostka> <Fakt>.md')
     p.add_argument('--check', '--kontrola', dest='kontrola', action='store_true', help='nic nezapíše')
     a = p.parse_args()
 
@@ -316,7 +316,8 @@ def main():
         print('CHYBA: pod %s není %s.SemanticModel' % (a.kostka, kostka))
         return 2
     tmdl = os.path.join(definition, 'tables', a.fakt + '.tmdl')
-    clanek = a.clanek or os.path.join(a.kostka, 'Wiki' + kostka, '%s %s.md' % (kostka, a.fakt))
+    nazev = '%s %s' % (kostka, a.fakt)
+    clanek = a.clanek or os.path.join(a.kostka, 'Wiki' + kostka, nazev, nazev + '.md')
     for cesta in (tmdl, clanek):
         if not os.path.isfile(cesta):
             print('CHYBA: soubor neexistuje: %s' % cesta)

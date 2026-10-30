@@ -5,7 +5,7 @@ Použití: check_tasks.py <adresář repa | adresář tasks>...
 Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
-Odkaz z tasks.md, který míří mimo tasks/ (třeba na soubor s rozhodnutími), se hledá v celém repu. Bez gitu se pravidlo git přeskočí.
+Úkol je adresář tasks/<Úkol>/ s článkem <Úkol>.md a pomocnými soubory -TMP. Odkaz z tasks.md, který míří mimo tasks/ (třeba na soubor s rozhodnutími), se hledá v celém repu. Bez gitu se pravidlo git přeskočí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
 import os
@@ -57,13 +57,23 @@ def check_dir(arg):
         return [(tdir, 1, "tasks/index", "adresář tasks/ neexistuje")]
 
     articles = {}
-    others = []
+    loose = []
     for n in sorted(os.listdir(tdir)):
         path = os.path.join(tdir, n)
         if is_tmp(n):
-            others.append(path)
-        elif n.lower().endswith(".md") and n.lower() != "tasks.md" and os.path.isfile(path):
+            loose.append(path)
+        elif os.path.isdir(path):
+            if n in SKIP_DIRS or n.startswith("."):
+                continue
+            article = os.path.join(path, n + ".md")
+            if os.path.isfile(article):
+                articles[n] = article
+            else:
+                findings.append((path, 1, "tasks/task-folder", f"adresář {n} nemá článek {n}/{n}.md"))
+        elif n.lower().endswith(".md") and n.lower() != "tasks.md":
+            # článek mimo adresář se hlásí, ale odkazy na něj platí, ať se nehlásí dvakrát
             articles[n[:-3]] = path
+            findings.append((path, 1, "tasks/task-folder", f"článek úkolu leží mimo svůj adresář, přesuň ho do {n[:-3]}/{n}"))
 
     linked = set()
     if not os.path.isfile(index):
@@ -88,10 +98,9 @@ def check_dir(arg):
             if name not in linked:
                 findings.append((path, 1, "tasks/article-per-task", f"na úkol {name} nevede odkaz z tasks.md, doplň odrážku"))
 
-    for path in others:
+    for path in loose:
         n = os.path.basename(path)
-        if not any(n.lower().startswith(a.lower()) for a in articles):
-            findings.append((path, 1, "tasks/tmp-naming", f"{n} nepatří k žádnému úkolu, nejspíš zbytek po smazaném úkolu (v gitu není, smazaný se nevrátí)"))
+        findings.append((path, 1, "tasks/tmp-in-task-folder", f"{n} leží mimo adresář úkolu, přesuň ho k úkolu, nebo je to zbytek po smazaném úkolu (v gitu není, smazaný se nevrátí)"))
 
     known = tracked(tdir)
     if known is not None:

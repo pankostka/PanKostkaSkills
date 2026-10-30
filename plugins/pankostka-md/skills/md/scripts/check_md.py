@@ -5,11 +5,12 @@ Použití: check_md.py <soubor|adresář>... | --changed
 Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
-Bloky kódu, inline kód a HTML komentáře se nekontrolují. Oslovení čtenáře, umístění a názvy článků posuzuje model.
+Bloky kódu, inline kód a HTML komentáře se nekontrolují. Oslovení čtenáře a názvy článků posuzuje model.
 Pravidla md/tag-one-variant a md/no-link-to-private porovnávají články mezi sebou, cíle odkazů se hledají v celém vaultu.
 Řádek s výjimkou <!-- pankostka: allow <identifikátor>, <důvod> --> na něm nebo nad ním se nehlásí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
+import json
 import os
 import re
 import subprocess
@@ -31,6 +32,8 @@ FORBIDDEN = {
 MARKER = "\U0001F310"
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp"}
 SKIP_DIRS = {".git", ".obsidian", ".trash", "node_modules", "__pycache__"}
+# soubory, jejichž jméno a umístění určuje nástroj nebo konvence, vlastní adresář nedostávají
+NO_FOLDER = {"readme", "claude", "claude_project", "agents", "menu", "license", "changelog", "contributing", "skill", "tasks"}
 OLD_KEYS = {
     "titul": "klíč titul nástroj nečte, použij title",
     "datum": "klíč datum nástroj nečte, použij date",
@@ -187,15 +190,71 @@ def check_images(lines, fm_end, skip, findings):
         line = clean(lines[i])
         for m in RE_WIKI.finditer(line):
             if m.group(1) and os.path.splitext(m.group(2).strip())[1].lower() in IMAGE_EXT:
-                findings.append((i + 1, "md/image-markdown-alt", f"obrázek jako ![[{m.group(2).strip()}]], použij ![Popis](Attachments/soubor.png)"))
+                findings.append((i + 1, "md/image-markdown-alt", f"obrázek jako ![[{m.group(2).strip()}]], použij ![Popis](soubor.png)"))
         for m in RE_MD_IMAGE.finditer(line):
             alt, target = m.group(1).strip(), unquote(m.group(2).strip("<>"))
             if not alt:
                 findings.append((i + 1, "md/image-markdown-alt", f"obrázek {target} nemá popis"))
             if re.match(r"[a-z][a-z0-9+.-]*:", target, re.IGNORECASE) or target.startswith("#"):
                 continue
-            if not target.replace("\\", "/").lstrip("./").startswith("Attachments/"):
-                findings.append((i + 1, "md/attachments-folder", f"obrázek {target} neleží v Attachments/ vedle článku"))
+            target = target.replace("\\", "/")
+            if "/" in (target[2:] if target.startswith("./") else target):
+                findings.append((i + 1, "md/attachment-own-folder", f"obrázek {target} neleží přímo v adresáři článku, přesuň ho vedle článku"))
+
+
+def is_vault(d):
+    return os.path.isdir(os.path.join(d, ".obsidian"))
+
+
+def templates_folder(vault):
+    """Složka šablon podle .obsidian/templates.json, nebo None."""
+    try:
+        with open(os.path.join(vault, ".obsidian", "templates.json"), encoding="utf-8-sig") as f:
+            folder = json.load(f).get("folder")
+    except (OSError, ValueError, AttributeError):
+        return None
+    return os.path.normcase(os.path.join(vault, folder)) if folder else None
+
+
+def check_folder(path):
+    """Článek leží v adresáři svého jména. Výjimky: pevná jména, soubory vedle SKILL.md, rozcestník vnořeného vaultu, šablony."""
+    path = os.path.abspath(path)
+    d, stem = os.path.dirname(path), os.path.basename(path)[:-3]
+    if stem.lower() in NO_FOLDER or stem == os.path.basename(d) or os.path.isfile(os.path.join(d, "SKILL.md")):
+        return []
+    vaults = []
+    v = d
+    while True:
+        if is_vault(v):
+            vaults.append(v)
+        parent = os.path.dirname(v)
+        if parent == v:
+            break
+        v = parent
+    if is_vault(d) and len(vaults) > 1:
+        return []
+    for v in vaults:
+        folder = templates_folder(v)
+        if folder and os.path.normcase(path).startswith(folder + os.sep):
+            return []
+    return [(1, "md/article-folder", f"článek neleží v adresáři svého jména, přesuň ho do {stem}/{stem}.md")]
+
+
+def tmp_links(lines, fm_end, skip):
+    """Odkazy a obrázky, jejichž cíl má v cestě sufix -TMP, jako [(řádek, cíl)]."""
+    out = []
+    for i in range(fm_end, len(lines)):
+        if skip[i]:
+            continue
+        line = clean(lines[i])
+        targets = [m.group(2) for m in RE_WIKI.finditer(line)]
+        targets += [unquote(m.group(2).strip("<>")) for m in RE_MD_IMAGE.finditer(line)]
+        targets += [unquote(m.group(1).strip("<>")) for m in RE_MD_LINK.finditer(line)]
+        for t in targets:
+            t = t.strip().replace("\\", "/").split("#")[0]
+            if t and not re.match(r"[a-z][a-z0-9+.-]*:", t, re.IGNORECASE) and any(is_tmp(p) for p in t.split("/")):
+                out.append((i + 1, t))
+    return out
 
 
 def parse_tags(raw):
@@ -255,11 +314,19 @@ def links_of(lines, fm_end, skip):
     return out
 
 
+def in_article_folder(path):
+    """Soubor leží v adresáři článku, tedy vedle <adresář>.md."""
+    d = os.path.dirname(os.path.abspath(path))
+    return os.path.isfile(os.path.join(d, os.path.basename(d) + ".md"))
+
+
 def check_attachment(path):
+    """Obrázek v adresáři článku. Náhledový obrázek pro web se jmenuje jako článek."""
     name = os.path.basename(path)
     if name.startswith("Pasted image"):
         return [(1, "md/attachment-name", "nepřejmenovaný obrázek z Obsidianu, přejmenuj ho malými písmeny s podtržítky")]
-    if os.path.basename(os.path.dirname(path)) == "Attachments" and not RE_ATTACHMENT.fullmatch(name):
+    stem = os.path.splitext(name)[0]
+    if stem != os.path.basename(os.path.dirname(os.path.abspath(path))) and not RE_ATTACHMENT.fullmatch(name):
         return [(1, "md/attachment-name", "název přílohy smí mít jen malá písmena bez diakritiky, číslice a podtržítka")]
     return []
 
@@ -289,6 +356,7 @@ def check_paths(paths, root):
         if not path.lower().endswith(".md"):
             findings.extend(check_attachment(path))
             continue
+        findings.extend(check_folder(path))
         text = read_text(path, findings)
         if text is None:
             continue
@@ -301,6 +369,8 @@ def check_paths(paths, root):
             tags.setdefault(tag.lower(), {}).setdefault(tag, []).append((path, line))
         if MARKER in os.path.basename(path):
             public.append((path, links_of(lines, fm_end, skip)))
+            for line, target in tmp_links(lines, fm_end, skip):
+                findings.append((line, "md/no-link-to-tmp", f"veřejný článek odkazuje na {target}, soubor -TMP není v gitu ani na webu"))
 
     for variants in tags.values():
         if len(variants) < 2:
@@ -316,7 +386,7 @@ def check_paths(paths, root):
         for path, links in public:
             for line, target in links:
                 key = target.lower()
-                names = index.get(key) or [n for k, v in index.items() if k.endswith("/" + key) for n in v]
+                names = index.get(key) or [n for k, v in index.items() if k.endswith("/" + key) for n in v] or index.get(key.split("/")[-1])
                 if names and not any(MARKER in n for n in names):
                     results[path].append((line, "md/no-link-to-private", f"veřejný článek odkazuje na neveřejný [[{target}]]"))
 
@@ -337,11 +407,12 @@ def allowed(lines, line, rule):
 
 
 def wanted(path, rel):
-    """Soubor, který kontrola zajímá: článek, nebo příloha. Sufix -TMP se hledá jen v relativní části cesty."""
+    """Soubor, který kontrola zajímá: článek, nebo obrázek v adresáři článku. Sufix -TMP se hledá jen v relativní části cesty."""
     name = os.path.basename(path)
     if is_tmp(name) or any(is_tmp(p) or p in SKIP_DIRS for p in re.split(r"[\\/]", os.path.dirname(rel))):
         return False
-    return name.lower().endswith(".md") or name.startswith("Pasted image") or os.path.basename(os.path.dirname(os.path.abspath(path))) == "Attachments"
+    image = os.path.splitext(name)[1].lower() in IMAGE_EXT
+    return name.lower().endswith(".md") or name.startswith("Pasted image") or (image and in_article_folder(path))
 
 
 def git_top():

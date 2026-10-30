@@ -46,6 +46,19 @@ docs/               dokumentace repa
 tasks/              rozpracované úkoly
 ```
 
+`dwh/object-folder` **Objekt, který má článek, má vlastní adresář** pojmenovaný po plnicí proceduře. V adresáři leží článek, kód procedury, případně skript tabulky a přílohy článku, takže všechno o objektu je pohromadě (viz adresář článku v `pankostka-md`). Objekt bez článku zůstává souborem přímo ve vrstvě.
+
+```
+20_dim/
+  nsp20DimMena.sql          objekt bez článku
+  nsp20DimUcet/             objekt s článkem
+    nsp20DimUcet.md
+    nsp20DimUcet.sql
+    DimUcet.sql
+```
+
+Když objekt dostane článek, přestěhuje se do adresáře i jeho kód. Nasazovací skript, který cestu ke kódu jmenuje, se upraví ve stejném commitu.
+
 ### 00_common
 
 **Není to vrstva plnění.** Procedury odsud se volají *z* vrstev 10, 20 a 30, samy nic neplní. Prefix `00` je jen kvůli řazení na začátek.
@@ -130,7 +143,7 @@ Sémantický model se jmenuje `Kostka<Mart>`. Pokud je celý mart určen jen pro
 
 ## Zásady
 
-- `dwh/start-from-vzor` **Při zakládání procedury vyjdi z procedury `-VZOR` ve stejném adresáři.** Vzorů může být víc, třeba ve stage jeden s `OPENQUERY` a druhý bez. Když nevíš, který použít, zeptej se.
+- `dwh/start-from-vzor` **Při zakládání procedury vyjdi z procedury `-VZOR` ve stejném adresáři**, u objektu ve vlastním adresáři z adresáře vrstvy nad ním. Vzorů může být víc, třeba ve stage jeden s `OPENQUERY` a druhý bez. Když nevíš, který použít, zeptej se.
 - **Podívej se na sousední soubory ve stejné vrstvě** a napodob jejich styl. Konzistence s existujícím kódem je důležitější než vlastní preference.
 - `dwh/no-unit-price` **Nikdy nepoužívej jednotkové ceny.** Vždy množství a cenu celkem. Jednotková cena se počítá až v DAX podílem.
 - `dwh/no-stored-measures` **Míry se neukládají jako sloupec.** Faktovka drží jen hrubou hodnotu na úrovni zrnitosti (`DenikKc`), míry (`MD`, `DAL`, `Obrat`) se počítají výhradně v DAX.
@@ -169,7 +182,7 @@ Platí, jen když argument výše není prázdný. Argument je soubor `.sql`, ad
 
    Soubory a adresáře se sufixem `-TMP` skript přeskočí.
 
-2. **Projdi soubory sám** na to, co skript nepozná: `dwh/always-schema` (odkazy na tabulky bez schématu, procedury samotné se zakládají tak, jak to dělají sousední soubory), `dwh/unknown-member`, `dwh/load-order` v procedurách `_RUN`, `dwh/stage-minimal`, `dwh/no-unit-price`, `dwh/no-stored-measures` a `dwh/unique-names`. Pravidla T-SQL kontroluje skill `pankostka-tsql`.
+2. **Projdi soubory sám** na to, co skript nepozná: `dwh/always-schema` (odkazy na tabulky bez schématu, procedury samotné se zakládají tak, jak to dělají sousední soubory), `dwh/unknown-member`, `dwh/load-order` v procedurách `_RUN`, `dwh/stage-minimal`, `dwh/no-unit-price`, `dwh/no-stored-measures`, `dwh/unique-names` a `dwh/object-folder` (článek o objektu bez vlastního adresáře, nebo kód objektu s článkem mimo jeho adresář). Pravidla T-SQL kontroluje skill `pankostka-tsql`.
 
 3. **Vypiš výsledek** po souborech, u každé neshody identifikátor pravidla a konkrétní návrh opravy, na konci souhrn.
 

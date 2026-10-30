@@ -1,6 +1,6 @@
 ---
 name: pankostka-tasks
-description: Zásady pro adresář tasks/ s rozpracovanými úkoly - rozcestník tasks.md, jeden článek na úkol, průběžný zápis postupu, pomocné soubory -TMP, mazání po dokončení, rozdíl proti souboru s rozhodnutími. Použij vždy, když zakládáš úkol, pracuješ na úkolu z tasks/ nebo ho dokončuješ. S argumentem (adresář repa nebo tasks/) zkontroluje rozcestník a články a vypíše neshody.
+description: Zásady pro adresář tasks/ s rozpracovanými úkoly - rozcestník tasks.md, jeden adresář s článkem na úkol, průběžný zápis postupu, pomocné soubory -TMP, mazání po dokončení, rozdíl proti souboru s rozhodnutími. Použij vždy, když zakládáš úkol, pracuješ na úkolu z tasks/ nebo ho dokončuješ. S argumentem (adresář repa nebo tasks/) zkontroluje rozcestník a články a vypíše neshody.
 argument-hint: "[adresář]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_tasks.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_tasks.py *)
 ---
@@ -13,7 +13,7 @@ Argument: `$ARGUMENTS`
 
 ## Rozcestník
 
-`tasks/index` Rozcestník je `tasks/tasks.md`, seznam všech úkolů. Úkol, na kterém se ještě nedělá, je tam jen odrážkou. `tasks/article-per-task` Jakmile se na něm začne pracovat, vznikne vedle článek `tasks/<Název úkolu>.md` a odrážka na něj odkáže wikilinkem. Když úkol vzniká za běhu a v `tasks.md` ještě není, doplň tam odrážku.
+`tasks/index` Rozcestník je `tasks/tasks.md`, seznam všech úkolů. Úkol, na kterém se ještě nedělá, je tam jen odrážkou. `tasks/article-per-task` Jakmile se na něm začne pracovat, vznikne adresář s článkem `tasks/<Název úkolu>/<Název úkolu>.md` a odrážka na něj odkáže wikilinkem. Když úkol vzniká za běhu a v `tasks.md` ještě není, doplň tam odrážku.
 
 Odrážka má za odkazem jednu až dvě věty: o co jde a v jakém je úkol stavu. Rozcestník se tak dá přečíst bez otevírání článků.
 
@@ -29,9 +29,11 @@ Odrážka má za odkazem jednu až dvě věty: o co jde a v jakém je úkol stav
 - **Podúkoly:** tabulka s číslem, podúkolem, kde se dělá, na čem závisí, výstupem a stavem. Hodí se u úkolu s víc kroky.
 - **Průběh:** co se udělalo, s datem, co se ověřilo a jak, co zbývá nasadit ručně.
 
-## Pomocné soubory
+## Adresář úkolu
 
-`tasks/tmp-naming` Testovací dotazy, výstupy měření a ukázky k úkolu leží vedle jeho článku a jmenují se **`<Název úkolu>-<co>-TMP.<přípona>`**, třeba `Intercompany v KostkaEKO-mereni-TMP.sql`. Sufix `-TMP` je drží mimo git, název úkolu na začátku říká, ke kterému úkolu patří, a po smazání úkolu je jasné, co smazat s ním.
+`tasks/task-folder` **Každý úkol má vlastní adresář**, stejně jako každý článek podle `pankostka-md`: `tasks/Intercompany v KostkaEKO/Intercompany v KostkaEKO.md`. Adresář se jmenuje přesně jako článek.
+
+`tasks/tmp-in-task-folder` Testovací dotazy, výstupy měření a ukázky k úkolu leží **v adresáři úkolu** se sufixem `-TMP`, třeba `tasks/Intercompany v KostkaEKO/mereni-TMP.sql`. Sufix je drží mimo git, adresář říká, ke kterému úkolu patří, a po dokončení úkolu se smaže celý. Soubor `-TMP` přímo v `tasks/` k žádnému úkolu nepatří a je nejspíš zbytek po smazaném úkolu.
 
 ## Git
 
@@ -39,7 +41,7 @@ Odrážka má za odkazem jednu až dvě věty: o co jde a v jakém je úkol stav
 
 ## Dokončení
 
-`tasks/delete-when-done` Po dokončení úkolu smaž jeho článek, jeho pomocné soubory `-TMP` a odrážku v `tasks.md`. Co má přežít, přenes do `docs/` nebo k dotčenému objektu.
+`tasks/delete-when-done` Po dokončení úkolu smaž jeho adresář i s článkem a pomocnými soubory `-TMP` a odrážku v `tasks.md`. Co má přežít, přenes do `docs/` nebo k dotčenému objektu.
 
 ## Rozhodnutí a otevřené otázky
 
@@ -62,7 +64,8 @@ Platí, jen když argument výše není prázdný. Argument je adresář repa (k
    Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`, řádek `tasks.md` s výjimkou `pankostka: allow` a důvodem se nehlásí. Pravidla:
    - `tasks/index`: chybí `tasks/tasks.md`, nebo odkaz v něm míří na článek, který v repu není,
    - `tasks/article-per-task`: článek v `tasks/`, na který v `tasks.md` nevede odkaz,
-   - `tasks/tmp-naming`: soubor `-TMP`, jehož název nezačíná názvem žádného úkolu, tedy nejspíš zbytek po smazaném úkolu,
+   - `tasks/task-folder`: článek úkolu přímo v `tasks/` mimo svůj adresář, nebo adresář bez článku svého jména,
+   - `tasks/tmp-in-task-folder`: soubor nebo adresář `-TMP` přímo v `tasks/`, mimo adresář úkolu,
    - `tasks/in-git`: článek úkolu, který git nesleduje.
 
 2. **Projdi články sám**: dá se podle článku navázat bez historie chatu, odpovídá stav v článku stavu v `tasks.md`, nezůstal viset dokončený úkol a nepatří část textu do `docs/` nebo do souboru s rozhodnutími.

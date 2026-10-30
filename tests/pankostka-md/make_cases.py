@@ -2,6 +2,7 @@
 """Vyrobí testovací vaulty pro check_md.py.
 
 Testy porušují pravidla záměrně: zakázané znaky, mezery na konci řádku, BOM a cp1250. Editor i nástroje AI by je při zápisu tiše opravily, proto vznikají tímhle skriptem.
+Každý článek leží v adresáři svého jména, jinak by každý test hlásil i md/article-folder.
 Spuštění: python tests/pankostka-md/make_cases.py, pak python tests/pankostka-md/run.py
 """
 import os
@@ -20,8 +21,13 @@ def w(rel, text, enc="utf-8", bom=False):
         f.write(data)
 
 
+def a(case, name, text, **kw):
+    """Článek v adresáři svého jména: <case>/<name>/<name>.md."""
+    w(f"{case}/{name}/{name}.md", text, **kw)
+
+
 # --- ok_article: vzorový článek, porušení jen v kódu, komentáři a -TMP
-w("ok_article/Článek Vzor.md", f"""---
+a("ok_article", "Článek Vzor", f"""---
 title: Vzorový článek
 date: 2026-10-27
 tags:
@@ -34,7 +40,11 @@ tags:
 
 Odkaz na [[Druhý Článek]] a na [[#Sekce]] uvnitř článku.
 
-![Schéma prvního kroku](Attachments/schema_krok1.png)
+![Schéma prvního kroku](schema_krok1.png)
+
+![Schéma druhého kroku](./schema_krok2.png)
+
+Interní článek smí odkazovat na [měření](mereni-TMP.sql).
 
 > [!note] Callout
 > Text calloutu na jednom řádku.
@@ -60,18 +70,33 @@ pokračuje záměrně.
 
 <!-- komentář — se nekontroluje -->
 """)
-w("ok_article/Druhý Článek.md", """---
+w("ok_article/Článek Vzor/schema_krok1.png", "")
+w("ok_article/Článek Vzor/schema_krok2.png", "")
+w("ok_article/Článek Vzor/Článek Vzor.png", "")  # náhled pro web se jmenuje jako článek
+w("ok_article/Článek Vzor/Pomocný Výstup-TMP.png", "")
+a("ok_article", "Druhý Článek", """---
 tags: [Obsidian, PowerBI]
 ---
 Druhý článek.
 """)
-w("ok_article/Attachments/schema_krok1.png", "")
 w("ok_article/Poznámky-TMP.md", "Dočasný článek — se nekontroluje.\nA je zalomený.\n")
-w(f"ok_article/Veřejný {G}.md", f"Odkaz na [[Druhý Veřejný {G}]] a [[Neexistující]].\n")
-w(f"ok_article/Druhý Veřejný {G}.md", "Veřejný článek.\n")
+a("ok_article", f"Veřejný {G}", f"Odkaz na [[Druhý Veřejný {G}]] a [[Neexistující]].\n")
+a("ok_article", f"Druhý Veřejný {G}", "Veřejný článek.\n")
+# článek o objektu leží v adresáři objektu spolu s jeho kódem
+a("ok_article", "nsp20DimUcet", "Plnění dimenze účtů, kód je v [nsp20DimUcet.sql](nsp20DimUcet.sql).\n")
+w("ok_article/nsp20DimUcet/nsp20DimUcet.sql", "SELECT 1\n")
+
+# --- ok_no-folder: soubory, které vlastní adresář nedostávají
+w("ok_no-folder/README.md", "Rozcestník.\n\n![Logo](logo.png)\n")
+w("ok_no-folder/logo.png", "")
+w("ok_no-folder/CLAUDE.md", "Pravidla pro AI.\n")
+w("ok_no-folder/menu.md", "Lišta.\n")
+w("ok_no-folder/tasks/tasks.md", "Rozcestník úkolů.\n")
+w("ok_no-folder/skills/md/SKILL.md", "Zásady.\n")
+w("ok_no-folder/skills/md/glossary.md", "Slovník vedle SKILL.md.\n")
 
 # --- ok_blocks: bloky za sebou bez prázdného řádku nejsou zalomení
-w("ok_blocks/Bloky.md", """# Nadpis
+a("ok_blocks", "Bloky", """# Nadpis
 Odstavec hned pod nadpisem.
 - odrážka hned pod odstavcem
 - druhá odrážka
@@ -87,22 +112,26 @@ Text před tabulkou.
 | --- | --- |
 
 Text před obrázkem.
-![Popis](Attachments/obr.png)
+![Popis](obr.png)
 
 Text a pod ním čára.
 ---
 """)
 
 # --- ok_allow: vědomá výjimka komentářem s důvodem
-w("ok_allow/Článek.md", """Citace dodavatele „doslova“ <!-- pankostka: allow md/keyboard-chars, citace dodavatele beze změny -->
+a("ok_allow", "Článek", """Citace dodavatele „doslova“ <!-- pankostka: allow md/keyboard-chars, citace dodavatele beze změny -->
 
 <!-- pankostka: allow md/no-hard-wrap, adresa po řádcích -->
 Firma s.r.o.
 Ulice 1
 """)
 
+# --- ko_article-folder
+w("ko_article-folder/Bez Adresáře.md", "<!-- celkem 2 -->\nČlánek přímo v kořeni.\n")
+w("ko_article-folder/Jiný/Jiný Název.md", "Článek v adresáři jiného jména.\n")
+
 # --- ko_keyboard-chars
-w("ko_keyboard-chars/Článek.md", """<!-- celkem 5 -->
+a("ko_keyboard-chars", "Článek", """<!-- celkem 5 -->
 Věta — s dlouhou pomlčkou.
 
 Odstavec s „uvozovkami“.
@@ -115,7 +144,7 @@ Výjimka bez důvodu — <!-- pankostka: allow md/keyboard-chars -->
 """)
 
 # --- ko_no-hard-wrap
-w("ko_no-hard-wrap/Článek.md", """<!-- celkem 4 -->
+a("ko_no-hard-wrap", "Článek", """<!-- celkem 4 -->
 První odstavec
 zalomený na dva řádky.
 
@@ -132,25 +161,27 @@ na tři řádky.
 """)
 
 # --- ko_image-markdown-alt
-w("ko_image-markdown-alt/Článek.md", """<!-- celkem 3 -->
+a("ko_image-markdown-alt", "Článek", """<!-- celkem 3 -->
 ![[obrazek.png]]
 
-![](Attachments/bez_popisu.png)
+![](bez_popisu.png)
 
-![](Attachments/taky_bez_popisu.png)
+![](taky_bez_popisu.png)
 
 ![[Jiný článek]] se nehlásí, je to vložený článek.
 """)
 
-# --- ko_attachments-folder
-w("ko_attachments-folder/Článek.md", """<!-- celkem 2 -->
+# --- ko_attachment-own-folder
+a("ko_attachment-own-folder", "Článek", """<!-- celkem 3 -->
 ![Popis](img/jinde.png)
 
-![Popis](jinde_vedle.png)
+![Popis](../Jiný/cizi.png)
+
+![Popis](Attachments/stary.png)
 """)
 
 # --- ko_frontmatter-keys
-w("ko_frontmatter-keys/Článek.md", """---
+a("ko_frontmatter-keys", "Článek", """---
 titul: Starý titulek
 datum: 2026-10-27
 publish: true
@@ -162,7 +193,7 @@ Text.
 """)
 
 # --- ko_tag-pascal-case
-w("ko_tag-pascal-case/Článek.md", """---
+a("ko_tag-pascal-case", "Článek", """---
 tags: [obsidian, Power BI, _KostkaEKO]
 ---
 <!-- celkem 2 -->
@@ -170,30 +201,40 @@ Text.
 """)
 
 # --- ko_attachment-name
-w("ko_attachment-name/Článek.md", """<!-- celkem 2 -->
-![Vložený obrázek](Attachments/Pasted%20image%2020260727145759.png)
+a("ko_attachment-name", "Článek", """<!-- celkem 2 -->
+![Vložený obrázek](Pasted%20image%2020260727145759.png)
 
-![Schéma](Attachments/Schema-Krok1.png)
+![Schéma](Schema-Krok1.png)
 """)
-w("ko_attachment-name/Attachments/Pasted image 20260727145759.png", "")
-w("ko_attachment-name/Attachments/Schema-Krok1.png", "")
+w("ko_attachment-name/Článek/Pasted image 20260727145759.png", "")
+w("ko_attachment-name/Článek/Schema-Krok1.png", "")
 
 # --- ko_tag-one-variant
-w("ko_tag-one-variant/A.md", "---\ntags: [Obsidian]\n---\n<!-- celkem 1 -->\nA.\n")
-w("ko_tag-one-variant/B.md", "---\ntags:\n  - Obsidian\n---\nB.\n")
-w("ko_tag-one-variant/C.md", "---\ntags: [OBSIDIAN]\n---\nC.\n")
+a("ko_tag-one-variant", "A", "---\ntags: [Obsidian]\n---\n<!-- celkem 1 -->\nA.\n")
+a("ko_tag-one-variant", "B", "---\ntags:\n  - Obsidian\n---\nB.\n")
+a("ko_tag-one-variant", "C", "---\ntags: [OBSIDIAN]\n---\nC.\n")
 
 # --- ko_no-link-to-private
-w(f"ko_no-link-to-private/Veřejný {G}.md", f"""<!-- celkem 3 -->
+a("ko_no-link-to-private", f"Veřejný {G}", f"""<!-- celkem 3 -->
 Odkaz na [[Interní]] a na [[Druhý {G}]].
 
 ![[Interní]]
 
-Markdown odkaz na [interní článek](Interní.md).
+Markdown odkaz na [interní článek](../Interní/Interní.md).
 """)
-w("ko_no-link-to-private/Interní.md", f"Interní článek smí odkazovat na [[Veřejný {G}]].\n")
-w(f"ko_no-link-to-private/Druhý {G}.md", "Veřejný.\n")
+a("ko_no-link-to-private", "Interní", f"Interní článek smí odkazovat na [[Veřejný {G}]].\n")
+a("ko_no-link-to-private", f"Druhý {G}", "Veřejný.\n")
+
+# --- ko_no-link-to-tmp
+a("ko_no-link-to-tmp", f"Veřejný {G}", f"""<!-- celkem 3 -->
+![Graf](graf-TMP.png)
+
+Export do [PDF](<Veřejný {G}-TMP.pdf>).
+
+Rozepsaný článek [[Rozepsaný-TMP]].
+""")
+a("ko_no-link-to-tmp", "Interní", "Interní článek smí odkazovat na [měření](mereni-TMP.sql).\n")
 
 # --- ko_utf8-no-bom
-w("ko_utf8-no-bom/S BOM.md", "<!-- celkem 2 -->\nČlánek s BOM.\n", bom=True)
-w("ko_utf8-no-bom/Cp1250.md", "Článek v kódování Windows-1250.\n", enc="cp1250")
+a("ko_utf8-no-bom", "S BOM", "<!-- celkem 2 -->\nČlánek s BOM.\n", bom=True)
+a("ko_utf8-no-bom", "Cp1250", "Článek v kódování Windows-1250.\n", enc="cp1250")

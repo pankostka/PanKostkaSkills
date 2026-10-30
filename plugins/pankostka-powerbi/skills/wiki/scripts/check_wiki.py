@@ -121,11 +121,17 @@ def check(arg):
     def add(path, line, rule, msg):
         findings.append((path, line, rule, msg))
 
+    # rozcestník leží v kořeni wiki, ostatní články v adresáři svého jména (umístění hlídá pankostka-md)
     articles = {}
     if os.path.isdir(wiki):
         for n in os.listdir(wiki):
-            if n.endswith(".md") and not is_tmp(n):
-                articles[n[:-3]] = os.path.join(wiki, n)
+            path = os.path.join(wiki, n)
+            if is_tmp(n):
+                continue
+            if n.endswith(".md"):
+                articles[n[:-3]] = path
+            elif os.path.isfile(os.path.join(path, n + ".md")):
+                articles[n] = os.path.join(path, n + ".md")
 
     # chybějící články
     expected = {kostka: ("kostka", None)}
@@ -136,7 +142,7 @@ def check(arg):
     for name, (kind, _) in sorted(expected.items()):
         if name not in articles:
             what = {"kostka": "rozcestník", "fakt": "faktovka", "dim": "dimenze", "report": "report"}[kind]
-            add(os.path.join(wiki, name + ".md"), 1, "wiki/index-article" if kind == "kostka" else "wiki/article-per-element", f"chybí článek, {what} {name}")
+            add(os.path.join(wiki, name + ".md") if kind == "kostka" else os.path.join(wiki, name, name + ".md"), 1, "wiki/index-article" if kind == "kostka" else "wiki/article-per-element", f"chybí článek, {what} {name}")
 
     related = {}
     for a, b in rels:

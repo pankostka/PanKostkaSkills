@@ -11,7 +11,11 @@ tags:
 
 Odkaz na [[Druhý Článek]] a na [[#Sekce]] uvnitř článku.
 
-![Schéma prvního kroku](Attachments/schema_krok1.png)
+![Schéma prvního kroku](schema_krok1.png)
+
+![Schéma druhého kroku](./schema_krok2.png)
+
+Interní článek smí odkazovat na [měření](mereni-TMP.sql).
 
 > [!note] Callout
 > Text calloutu na jednom řádku.

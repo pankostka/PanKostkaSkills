@@ -41,7 +41,7 @@ def build(root, case):
             f.write(content)
     if case.get("measures"):
         for table in ("FactProdej",):
-            article = os.path.join(root, W, f"KostkaTest {table}.md")
+            article = os.path.join(root, W, f"KostkaTest {table}", f"KostkaTest {table}.md")
             if os.path.isfile(article):
                 measures_table.aktualizuj(os.path.join(root, M, "tables", table + ".tmdl"), article, False, table, out=lambda *_: None)
     if case.get("git"):

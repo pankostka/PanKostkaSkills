@@ -17,7 +17,7 @@ import sys
 SKIP_DIRS = {".git", ".obsidian", ".trash", "node_modules", "__pycache__"}
 # výchozí hodnota Obsidianu, když klíč v app.json chybí, a hodnota, kterou skill vyžaduje
 REQUIRED = {
-    "attachmentFolderPath": ("/", "./Attachments"),
+    "attachmentFolderPath": ("/", "./"),
     "newLinkFormat": ("shortest", "shortest"),
     "alwaysUpdateLinks": (False, True),
     "showUnsupportedFiles": (False, False),

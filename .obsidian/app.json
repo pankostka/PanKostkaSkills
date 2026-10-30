@@ -4,7 +4,7 @@
   "foldHeading": true,
   "promptDelete": false,
   "newFileLocation": "current",
-  "attachmentFolderPath": "./Attachments",
+  "attachmentFolderPath": "./",
   "newLinkFormat": "shortest",
   "showUnsupportedFiles": false,
   "pdfExportSettings": {

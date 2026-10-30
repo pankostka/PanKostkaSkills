@@ -23,6 +23,8 @@ Do interní dokumentace to patří. Strojově to nepozná nikdo, proto se **pře
 
 Série veřejných článků se proto musí odkazovat sama na sebe a všechno interní nechat na rozcestník. `obsidian2html` při buildu hlásí, kolik odkazů takhle zploštil, ale to je kontrola až po převodu. Hlídat se to má při psaní, pravidlo `md/no-link-to-private` v `check_md.py` to umí.
 
+`md/no-link-to-tmp` **Veřejný článek neodkazuje ani na soubor `-TMP`**, třeba na pomocný graf nebo export v adresáři článku. Soubor není v gitu, takže ho build na jiném stroji nenajde a na webu chybí.
+
 ## Slug
 
 Ruční klíč `slug` ve frontmatteru je tam kvůli **stabilitě**. Jakmile je článek jednou venku, změna názvu by mu změnila adresu a rozbila odkazy zvenčí, které nikdo neopraví. U publikovaného článku proto slug jednou zapiš a už na něj nesahej, i kdyby se článek přejmenoval.
@@ -33,10 +35,10 @@ Zdroj je vždy Markdown, výstupy jsou z něj odvozené a dají se kdykoli vyrob
 
 | Výstup | Kam | Do gitu |
 | --- | --- | --- |
-| **PDF** | vedle článku, stejný název a sufix `-TMP` | ne, sufix ho vyřadí. Výjimečně se sufix odstraní a PDF se zaverzuje |
+| **PDF** | v adresáři článku, stejný název a sufix `-TMP` | ne, sufix ho vyřadí. Výjimečně se sufix odstraní a PDF se zaverzuje |
 | **HTML** | kam řekne `--dest`, vždy mimo repo | ne, je to odvozený výstup |
 
-**PDF vedle článku je záměr.** Kdo článek otevře, má u něj i to, co z něj naposledy šlo ven. Sufix `-TMP` drží tu kopii mimo historii. Když má konkrétní PDF být zaverzované (podepsaný dokument, příloha smlouvy), sufix se odstraní vědomě. Je to výjimka: git PDF nediffuje, takže každá verze uloží celý soubor znovu.
+**PDF v adresáři článku je záměr.** Kdo článek otevře, má u něj i to, co z něj naposledy šlo ven. Sufix `-TMP` drží tu kopii mimo historii. Když má konkrétní PDF být zaverzované (podepsaný dokument, příloha smlouvy), sufix se odstraní vědomě. Je to výjimka: git PDF nediffuje, takže každá verze uloží celý soubor znovu.
 
 **HTML se neverzuje ani po kusech.** Zásah do šablony nebo stylu přegeneruje každou stránku a commit by vypadal jako změna všech článků. Adresář pro výstup má být **mimo repo**, aby ten commit nebyl možný, ne jen zakázaný.
 

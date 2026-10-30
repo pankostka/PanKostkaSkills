@@ -14,7 +14,7 @@ Text před tabulkou.
 | --- | --- |
 
 Text před obrázkem.
-![Popis](Attachments/obr.png)
+![Popis](obr.png)
 
 Text a pod ním čára.
 ---
