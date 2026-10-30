@@ -16,6 +16,8 @@ CHECK = os.path.join(HERE, "..", "..", "plugins", "pankostka-md", "skills", "md"
 spec = importlib.util.spec_from_file_location("check", CHECK)
 check = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(check)
+sys.path.insert(0, os.path.dirname(CHECK))
+import convert_wikilinks as convert  # noqa: E402
 
 
 def expected_count(case):
@@ -51,8 +53,26 @@ def main():
             failed += 1
             for path, line, rule, msg in findings:
                 print(f"       {path}:{line}: [{rule}] {msg}")
-    print(f"Testů: {len(names)}, selhalo: {failed}")
+    failed += test_convert()
+    print(f"Testů: {len(names) + 1}, selhalo: {failed}")
     return 1 if failed else 0
+
+
+def test_convert():
+    """Převod wikilinků ve vaultu convert/: každý <článek>.md se po převodu musí shodovat s <článek>.expected vedle něj."""
+    case = os.path.join(HERE, "convert")
+    index = convert.build_index(case)
+    bad = []
+    for root, dirs, names in os.walk(case):
+        for name in names:
+            if name.endswith(".expected"):
+                path = os.path.join(root, name[:-9] + ".md")
+                content, changes, kept = convert.convert_file(path, index)
+                with open(os.path.join(root, name), "rb") as f:
+                    if content != f.read():
+                        bad.append(os.path.relpath(path, case))
+    print(f"{'FAIL' if bad else 'OK  '} convert: převod wikilinků{', liší se: ' + ', '.join(bad) if bad else ''}")
+    return 1 if bad else 0
 
 
 if __name__ == "__main__":

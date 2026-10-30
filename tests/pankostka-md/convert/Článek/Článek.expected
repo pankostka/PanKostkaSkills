@@ -1,0 +1,20 @@
+---
+tags: [Markdown]
+---
+Odkaz na [Druhý Článek](../Druhý%20Článek/Druhý%20Článek.md), s aliasem [druhý](../Druhý%20Článek/Druhý%20Článek.md) a s nadpisem [Druhý Článek](../Druhý%20Článek/Druhý%20Článek.md).
+
+| A | B |
+| --- | --- |
+| [v tabulce](../Druhý%20Článek/Druhý%20Článek.md) | 1 |
+
+![](schema.png)
+
+![[menu]]
+
+Chybí [[Neexistující]], kotva [[#Sekce]], dvojí [[Dvojí]].
+
+`[[V kódu]]` se nemění.
+
+```
+[[V bloku]]
+```

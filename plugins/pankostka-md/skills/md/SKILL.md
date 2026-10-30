@@ -2,7 +2,7 @@
 name: pankostka-md
 description: Zásady psaní dokumentace ve standardním Markdownu nezávisle na editoru (Obsidian, Markra) - čeština bez typografických znaků a bez oslovení čtenáře, odstavec na jednom řádku, kde článek leží, adresář na článek a přílohy v něm, názvy souborů, standardní odkazy místo wikilinků, mrtvé odkazy a obrázky, frontmatter a tagy, callouty, publikace na web. Použij vždy, když píšeš, upravuješ nebo kontroluješ soubor .md, tedy článek, README.md, CLAUDE.md, úkol nebo jinou dokumentaci. S argumentem (soubor, adresář nebo --changed) zkontroluje soubory proti zásadám a vypíše neshody.
 argument-hint: "[soubor | adresář | --changed]"
-allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_md.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_md.py *)
+allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_md.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_md.py *) Bash(python ${CLAUDE_SKILL_DIR}/scripts/convert_wikilinks.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/convert_wikilinks.py *)
 ---
 
 # Markdown - zásady
@@ -147,6 +147,14 @@ Wikilink je syntaxe Obsidianu. GitHub ho vypíše jako holý text a jiný editor
 - **Odkaz vede na článek, ne na nadpis v něm.** Kotva nadpisu má v každém nástroji jiný tvar (Obsidian `#Název%20nadpisu`, GitHub `#nazev-nadpisu`). Výjimkou je odkaz na sekci uvnitř téhož článku.
 
 `md/no-broken-link` **Odkaz míří na existující soubor.** Cenou za standardní odkaz je cesta: přesun nebo přejmenování článku ji rozbije. Obsidian odkazy při přejmenování a přesunu opraví sám, v Markře, gitem, skriptem nebo v AI se musí opravit ručně. Proto skript hlásí každý relativní odkaz a obrázek, jehož cíl neexistuje. Cíl se sufixem `-TMP` neověřuje, ten v gitu není.
+
+**Převod starých wikilinků** dělá skript `convert_wikilinks.py`, jen na výslovný pokyn uživatele. Bez `--make` vypíše, co by změnil, s `--make` to zapíše:
+
+```
+python ${CLAUDE_SKILL_DIR}/scripts/convert_wikilinks.py <adresář vaultu> [--make]
+```
+
+Cíl hledá jako Obsidian, podle názvu v celém adresáři. Nejednoznačný a neexistující cíl a odkaz na nadpis v témž článku nechá a vypíše jako `ponecháno`, ty se převedou ručně. Odkaz na nadpis jiného článku převede na odkaz na článek. Vloženému obrázku dá prázdný popis, který se doplní podle `md/image-markdown-alt`. Před `--make` musí být změny v gitu commitnuté, aby šel převod porovnat a případně vrátit.
 
 `md/image-markdown-alt` **Obrázek se vkládá jako `![Popis obrázku](soubor.png)`**, ne `![[soubor.png]]`. Popis potřebuje generátor webu i čtečka pro nevidomé.
 
