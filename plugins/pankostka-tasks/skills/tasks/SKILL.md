@@ -13,7 +13,7 @@ Argument: `$ARGUMENTS`
 
 ## Rozcestník
 
-`tasks/index` Rozcestník je `tasks/tasks.md`, seznam všech úkolů. Úkol, na kterém se ještě nedělá, je tam jen odrážkou. `tasks/article-per-task` Jakmile se na něm začne pracovat, vznikne adresář s článkem `tasks/<Název úkolu>/<Název úkolu>.md` a odrážka na něj odkáže wikilinkem. Když úkol vzniká za běhu a v `tasks.md` ještě není, doplň tam odrážku.
+`tasks/index` Rozcestník je `tasks/tasks.md`, seznam všech úkolů. Úkol, na kterém se ještě nedělá, je tam jen odrážkou. `tasks/article-per-task` Jakmile se na něm začne pracovat, vznikne adresář s článkem `tasks/<Název úkolu>/<Název úkolu>.md` a odrážka na něj odkáže standardním odkazem podle `pankostka-md`, tedy `[Název úkolu](Název%20úkolu/Název%20úkolu.md)`. Když úkol vzniká za běhu a v `tasks.md` ještě není, doplň tam odrážku.
 
 Odrážka má za odkazem jednu až dvě věty: o co jde a v jakém je úkol stavu. Rozcestník se tak dá přečíst bez otevírání článků.
 

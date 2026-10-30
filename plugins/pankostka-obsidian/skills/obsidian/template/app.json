@@ -5,7 +5,8 @@
   "promptDelete": false,
   "newFileLocation": "current",
   "attachmentFolderPath": "./",
-  "newLinkFormat": "shortest",
+  "useMarkdownLinks": true,
+  "newLinkFormat": "relative",
   "showUnsupportedFiles": false,
   "pdfExportSettings": {
     "includeName": false,

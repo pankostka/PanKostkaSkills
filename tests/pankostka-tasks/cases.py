@@ -6,11 +6,11 @@ Případ: files = {cesta: obsah}, git = založit repo a přidat do indexu soubor
 
 INDEX = """# Tasks
 
-- [[Report Prodej]] - report nad prodejem. Čeká na Desktop.
-- [[Intercompany v KostkaEKO|Intercompany]] - vzájemné vztahy firem.
+- [Report Prodej](Report%20Prodej/Report%20Prodej.md) - report nad prodejem. Čeká na Desktop.
+- [Intercompany](<Intercompany v KostkaEKO/Intercompany v KostkaEKO.md>) - vzájemné vztahy firem.
 - Úkol, na kterém se ještě nedělá, je jen odrážkou.
 
-Rozhodnutí jsou v [[TODO]].
+Rozhodnutí jsou v [TODO](../TODO.md).
 """
 
 
@@ -27,12 +27,12 @@ def base():
 CASES = {
     "ok_tasks": {"git": True},
     "ok_nogit": {},
-    "ok_allow": {"add": {"tasks/tasks.md": INDEX + "<!-- pankostka: allow tasks/index, úkol je v jiném repu -->\n- [[Úkol jinde]] - vede se v ProjektHelios.\n"}},
+    "ok_allow": {"add": {"tasks/tasks.md": INDEX + "<!-- pankostka: allow tasks/index, úkol je v jiném repu -->\n- [Úkol jinde](../../ProjektHelios/tasks/Úkol%20jinde/Úkol%20jinde.md) - vede se v ProjektHelios.\n"}},
     "ko_index": {"count": 1, "drop": ["tasks/tasks.md"]},
     "ko_article-per-task": {"count": 1, "add": {"tasks/Nový úkol/Nový úkol.md": "Zadání.\n"}},
-    "ko_index_dead": {"count": 1, "add": {"tasks/tasks.md": INDEX + "- [[Smazaný úkol]] - hotovo.\n"}},
+    "ko_index_dead": {"count": 1, "add": {"tasks/tasks.md": INDEX + "- [Smazaný úkol](Smazaný%20úkol/Smazaný%20úkol.md) - hotovo.\n"}},
     "ko_task-folder": {"count": 1, "add": {
-        "tasks/tasks.md": INDEX + "- [[Starý úkol]] - článek mimo adresář.\n",
+        "tasks/tasks.md": INDEX + "- [Starý úkol](Starý%20úkol.md) - článek mimo adresář.\n",
         "tasks/Starý úkol.md": "Zadání.\n",
     }},
     "ko_task-folder_empty": {"count": 1, "add": {"tasks/Prázdný/poznamky-TMP.txt": "x\n"}},

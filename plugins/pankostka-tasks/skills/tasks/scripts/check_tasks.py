@@ -91,7 +91,7 @@ def check_dir(arg):
                 if t.lower() in lower:
                     linked.add(lower[t.lower()])
                 elif t.lower() not in repo:
-                    findings.append((index, i + 1, "tasks/index", f"odkaz [[{t}]] míří na článek, který v repu není"))
+                    findings.append((index, i + 1, "tasks/index", f"odkaz na {t} míří na článek, který v repu není"))
 
     if os.path.isfile(index):
         for name, path in articles.items():

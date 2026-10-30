@@ -1,13 +1,13 @@
 ---
 name: pankostka-obsidian
-description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a menu.md, nastavení app.json (přílohy vedle článku, odkazy, skryté soubory), plugin Folder Notes, co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
+description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a menu.md, nastavení app.json (přílohy vedle článku, standardní odkazy s relativní cestou, skryté soubory), plugin Folder Notes, co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
 argument-hint: "[adresář vaultu]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *)
 ---
 
 # Obsidian - vault nad git repem
 
-Jak založit a udržovat vault v Obsidianu, když leží v git repu. Jak psát samotné články, řeší skill `pankostka-md`.
+Jak založit a udržovat vault v Obsidianu, když leží v git repu. Jak psát samotné články, řeší skill `pankostka-md`. Obsidian není jediný editor: články jsou ve standardním Markdownu a stejně se upravují třeba v Markře, nastavení vaultu proto nesmí vést k syntaxi, které rozumí jen Obsidian.
 
 Argument: `$ARGUMENTS`
 
@@ -20,13 +20,13 @@ Argument: `$ARGUMENTS`
 - **Cizí obsah se z indexu nedá vyřadit.** Export z cizího nástroje umí přinést tisíce prázdných souborů téhož jména a ty lezou do hledání i do Quick switcheru. `userIgnoreFilters` je jen ztlumí, neodstraní.
 - **Nastavení je na vault, ne na složku.** Repa kolegů a moje repa nejde ve společném vaultu nastavit zvlášť.
 
-Cenou za rozdělení je, že **wikilink neumí přejít z vaultu do vaultu**. Náhradou je odkaz `obsidian://open?vault=<Vault>&file=<Článek>`, který funguje, ale Obsidian ho při přejmenování článku neopraví. Rozdělení obvykle kopíruje obsah: v repu je dokumentace k tomu repu, obecné know-how je ve vlastním vaultu a odkazovat je potřeba hlavně uvnitř té hranice.
+Cenou za rozdělení je, že **odkaz neumí přejít z vaultu do vaultu**: Obsidian soubor mimo otevřený vault neotevře. Náhradou je odkaz `obsidian://open?vault=<Vault>&file=<Článek>`, který funguje, ale Obsidian ho při přejmenování článku neopraví. Rozdělení obvykle kopíruje obsah: v repu je dokumentace k tomu repu, obecné know-how je ve vlastním vaultu a odkazovat je potřeba hlavně uvnitř té hranice.
 
 ### Vnořený vault
 
 Vault uvnitř jiného vaultu je povolený, **když je to samostatný výstup**, typicky wiki pro uživatele, která se otevírá zvlášť. Nadřazený vault indexuje i jeho články, takže tytéž soubory žijí ve dvou vaultech.
 
-`obsidian/nested-same-settings` Proto musí mít vnořený vault **stejná nastavení, která rozhodují o souborech**, jako vault nadřazený: `attachmentFolderPath`, `newLinkFormat` a `alwaysUpdateLinks`. Jinak má článek podle otevřeného okna jinou složku na přílohy a jiný tvar odkazů. Vzhled, téma a pluginy se lišit smějí.
+`obsidian/nested-same-settings` Proto musí mít vnořený vault **stejná nastavení, která rozhodují o souborech**, jako vault nadřazený: `attachmentFolderPath`, `useMarkdownLinks`, `newLinkFormat` a `alwaysUpdateLinks`. Jinak má článek podle otevřeného okna jinou složku na přílohy a jiný tvar odkazů. Vzhled, téma a pluginy se lišit smějí.
 
 Rozcestník vnořeného vaultu určuje jeho obor, ne tenhle skill. Wiki kostky má rozcestník `<Kostka>.md` a `README.md` v ní být nemá, protože by ve vaultu repa nebyl jednoznačný.
 
@@ -49,8 +49,8 @@ Rozcestník vnořeného vaultu určuje jeho obor, ne tenhle skill. Wiki kostky m
 
 Na co si dát pozor:
 
-- **GitHub `![[menu]]` neumí** a vypíše ho v README doslova. To je cena za jeden soubor místo dvou.
-- **`README.md` v podadresářích dělá název nejednoznačným.** Odkaz `[[README]]` z kořene se trefí, protože Obsidian hledá nejdřív ve složce odkazujícího souboru, ale Quick switcher nabídne všechny.
+- **GitHub ani Markra `![[menu]]` neumí** a vypíšou ho doslova. Je to jediná syntaxe Obsidianu, kterou `pankostka-md` povoluje, a cena za jeden soubor místo dvou.
+- **`README.md` v podadresářích dělá název nejednoznačným.** Odkaz s cestou se trefí, ale Quick switcher a hledání nabídnou všechny.
 - **Startovní článek povinný není.** Obsidian ho sám neumí, je na to komunitní plugin Homepage. Bez něj se obnoví poslední rozložení oken a na rozcestník se jde záložkou nebo Quick switcherem.
 
 ## Nastavení
@@ -60,7 +60,8 @@ Na co si dát pozor:
 | Klíč | Hodnota | Proč |
 | --- | --- | --- |
 | `attachmentFolderPath` | `./` | přílohy vznikají ve složce aktuálního článku, tedy v jeho adresáři (viz `pankostka-md`) |
-| `newLinkFormat` | `shortest` | wikilink jen názvem článku |
+| `useMarkdownLinks` | `true` | nový odkaz je standardní `[Text](cesta.md)`, ne wikilink (viz `pankostka-md`) |
+| `newLinkFormat` | `relative` | cesta relativní k článku, funguje i na GitHubu a v jiném editoru |
 | `alwaysUpdateLinks` | `true` | přejmenování článku nebo přílohy opraví odkazy bez ptaní |
 | `showUnsupportedFiles` | `false` | `.sql`, `.json`, `.xlsx` a další se nezobrazí, adresář bez článků taky ne |
 

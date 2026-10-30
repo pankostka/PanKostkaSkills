@@ -9,7 +9,7 @@ tags:
 
 ## Sekce
 
-Odkaz na [[Druhý Článek]] a na [[#Sekce]] uvnitř článku.
+Odkaz na [Druhý Článek](../Druhý%20Článek/Druhý%20Článek.md), na [tentýž článek](<../Druhý Článek/Druhý Článek.md>) v lomených závorkách a na [sekci](#sekce) uvnitř článku.
 
 ![Schéma prvního kroku](schema_krok1.png)
 

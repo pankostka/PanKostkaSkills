@@ -16,7 +16,8 @@ with open(GITIGNORE, encoding="utf-8") as f:
 GOOD_APP = json.dumps({
     "alwaysUpdateLinks": True,
     "attachmentFolderPath": "./",
-    "newLinkFormat": "shortest",
+    "useMarkdownLinks": True,
+    "newLinkFormat": "relative",
     "showUnsupportedFiles": False,
     "userIgnoreFilters": ["StaticResources/", "/-TMP/"],
 }, indent=2)
@@ -31,9 +32,9 @@ CASES = {
             ".obsidian/plugins/plugin/data.json": "{}",
             ".gitignore": GITIGNORE_TXT,
             "README.md": "![[menu]]\n\nRozcestník.\n",
-            "menu.md": "[[README]]\n",
+            "menu.md": "[Rozcestník](README.md)\n",
             # vnořený vault se stejným nastavením souborů a vlastním rozcestníkem
-            "WikiKostkaTest/.obsidian/app.json": json.dumps({"alwaysUpdateLinks": True, "attachmentFolderPath": "./", "strictLineBreaks": False}),
+            "WikiKostkaTest/.obsidian/app.json": json.dumps({"alwaysUpdateLinks": True, "attachmentFolderPath": "./", "useMarkdownLinks": True, "newLinkFormat": "relative", "strictLineBreaks": False}),
             "WikiKostkaTest/KostkaTest.md": "Rozcestník kostky.\n",
         },
     },
@@ -57,7 +58,7 @@ CASES = {
         "files": {
             ".obsidian/app.json": GOOD_APP,
             "README.md": "Rozcestník.\n",
-            "Wiki/.obsidian/app.json": json.dumps({"alwaysUpdateLinks": False}),
+            "Wiki/.obsidian/app.json": json.dumps({"alwaysUpdateLinks": False, "useMarkdownLinks": True, "newLinkFormat": "relative"}),
             "Wiki/Wiki.md": "Wiki.\n",
         },
     },
@@ -66,10 +67,12 @@ CASES = {
         "files": {"README.md": "Bez vaultu.\n"},
     },
     "ko_app-settings": {
-        "count": 3,
+        "count": 4,
         "files": {
             ".obsidian/app.json": json.dumps({
                 "attachmentFolderPath": "/",
+                "useMarkdownLinks": True,
+                "newLinkFormat": "shortest",
                 "showUnsupportedFiles": True,
                 "userIgnoreFilters": ["StaticResources/", "/-TMP/"],
             }, indent=2),
@@ -82,6 +85,8 @@ CASES = {
             ".obsidian/app.json": json.dumps({
                 "alwaysUpdateLinks": True,
                 "attachmentFolderPath": "./",
+                "useMarkdownLinks": True,
+                "newLinkFormat": "relative",
                 "userIgnoreFilters": ["*-TMP", "StaticResources/", "/-TMP/"],
             }, indent=2),
             "README.md": "Rozcestník.\n",

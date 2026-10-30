@@ -10,12 +10,12 @@ Rozcestník. Uživatel se z něj dozví, co kostka pokrývá, a dostane se odsud
 
 - **Úvod** (bez nadpisu): dvě až tři věty, co kostka pokrývá a pro koho je.
 - **Vazby:** matice vazeb, viz níže.
-- **Reporty:** seznam reportů nad kostkou, každý wikilinkem a jednou větou.
+- **Reporty:** seznam reportů nad kostkou, každý odkazem a jednou větou.
 - **Aktuálnost dat:** jak často se data obnovují a kde se pozná, kdy naposledy. Konkrétní čas posledního nápočtu sem nepatří, zastaral by.
 - **Parametry a pomocné tabulky** (volitelná): field parametry a tabulky, které nejsou dimenze ani faktovka, každá jednou větou.
 - **Na co si dát pozor** (volitelná): vlastnosti kostky jako celku, například technické vazby, které při kombinaci témat vyprázdní výsledek.
 
-**Matice vazeb.** Ve sloupcích faktovky, v řádcích dimenze řazené abecedně, obojí jako wikilink. V buňce co nejkratší popis vazby, třeba `datum případu`. Prázdná buňka znamená, že vazba neexistuje. Diagram je volitelný doplněk, matice je závazná: text, který jde uživateli, na diagram spoléhat nesmí.
+**Matice vazeb.** Ve sloupcích faktovky, v řádcích dimenze řazené abecedně, obojí jako odkaz. V buňce co nejkratší popis vazby, třeba `datum případu`. Prázdná buňka znamená, že vazba neexistuje. Diagram je volitelný doplněk, matice je závazná: text, který jde uživateli, na diagram spoléhat nesmí.
 
 ## Faktovka
 
@@ -28,7 +28,7 @@ Rozcestník. Uživatel se z něj dozví, co kostka pokrývá, a dostane se odsud
 ## Dimenze
 
 - **Úvod** (bez nadpisu): co je jeden řádek dimenze.
-- **Kde se vyskytuje:** ve kterých faktovkách a reportech, jako wikilinky.
+- **Kde se vyskytuje:** ve kterých faktovkách a reportech, jako odkazy.
 - **Zdroj dat:** kde se udržují podkladová data a jak se kombinují zvláštní informace, například hierarchie udržovaná v Excelu.
 - **Atributy** (volitelná): jen atributy, jejichž význam není zřejmý z názvu, a hierarchie. Úplný seznam atributů sem nepatří, je vidět v Power BI.
 - **Na co si dát pozor** (volitelná).
@@ -37,7 +37,7 @@ Rozcestník. Uživatel se z něj dozví, co kostka pokrývá, a dostane se odsud
 
 - **Úvod** (bez nadpisu): k čemu report je a pro koho.
 - **Stránky:** seznam stránek v pořadí v reportu, u každé jedna věta, co ukazuje.
-- **Z čeho čerpá:** faktovky a dimenze, jako wikilinky.
+- **Z čeho čerpá:** faktovky a dimenze, jako odkazy.
 - **Na co si dát pozor** (volitelná).
 
 ## Údržba

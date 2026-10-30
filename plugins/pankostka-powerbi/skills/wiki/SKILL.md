@@ -1,6 +1,6 @@
 ---
 name: pankostka-powerbi-wiki
-description: Dokumentace kostky (sémantického modelu Power BI a jeho reportů) pro uživatele ve wiki v Obsidianu - adresář Wiki<Kostka>, jeden článek na kostku, faktovku, dimenzi a report, osnovy článků, frontmatter a tagy, tabulka ukazatelů generovaná z modelu, callouty Návrh AI. Použij, když zakládáš, píšeš nebo kontroluješ článek ve Wiki<Kostka>/, a na pokyn Aktualizuj wiki <Kostka> (také Make wiki, Do wiki). S argumentem <Kostka> porovná wiki s modelem a vypíše, co by udělal; s --make články založí a upraví.
+description: Dokumentace kostky (sémantického modelu Power BI a jeho reportů) pro uživatele ve wiki v Markdownu (Obsidian, Markra) - adresář Wiki<Kostka>, jeden článek na kostku, faktovku, dimenzi a report, osnovy článků, frontmatter a tagy, tabulka ukazatelů generovaná z modelu, callouty Návrh AI. Použij, když zakládáš, píšeš nebo kontroluješ článek ve Wiki<Kostka>/, a na pokyn Aktualizuj wiki <Kostka> (také Make wiki, Do wiki). S argumentem <Kostka> porovná wiki s modelem a vypíše, co by udělal; s --make články založí a upraví.
 argument-hint: "[<Kostka> [--make]]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_wiki.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_wiki.py *) Bash(python ${CLAUDE_SKILL_DIR}/scripts/measures_table.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/measures_table.py *)
 ---
@@ -41,11 +41,11 @@ Rozcestník leží v kořeni wiki, **každý další článek ve vlastním adres
 | report | `<Kostka> <Report>.md` | `KostkaEKO Výsledovka.md` |
 | údržba | `<Kostka> <Téma>.md` | `KostkaAXMain Mapování ManČlen.md` |
 
-`wiki/kostka-prefix` **Předpona kostky je povinná.** Obsidian páruje wikilinky podle názvu napříč celým vaultem a `DimDatum` je ve více kostkách. Bez předpony by `[[DimDatum]]` vedl náhodně do jedné z nich.
+`wiki/kostka-prefix` **Předpona kostky je povinná.** `DimDatum` je ve více kostkách a název článku musí být jednoznačný v celém vaultu repa. Bez předpony by hledání a Quick switcher nabízely několik článků téhož jména a na webu by se přepsaly, protože adresa vzniká z názvu článku.
 
 **Tabulka a report se jmenují přesně jako v modelu**, včetně diakritiky, pokud ji model má. Článek se tak dá dohledat z Power BI i naopak.
 
-`wiki/wikilink-alias` **Wikilink se píše s aliasem**, tedy `[[KostkaEKO DimÚčet|DimÚčet]]`. Předpona je v názvu kvůli jednoznačnosti, čtenáři nic neříká.
+`wiki/link-text` **Text odkazu je název bez předpony kostky**, tedy `[DimÚčet](../KostkaEKO%20DimÚčet/KostkaEKO%20DimÚčet.md)`. Předpona je v názvu souboru kvůli jednoznačnosti, čtenáři nic neříká. Odkaz je standardní markdownový s relativní cestou podle `pankostka-md`: z rozcestníku v kořeni wiki vede do `KostkaEKO%20DimÚčet/KostkaEKO%20DimÚčet.md`, z článku v adresáři do `../KostkaEKO%20DimÚčet/KostkaEKO%20DimÚčet.md`.
 
 `wiki/index-article` **Rozcestník kostky je `<Kostka>.md`, ne `README.md`.** `README.md` je rozcestník repa a ve vaultu repa by další soubor téhož jména nebyl jednoznačný. `README.md` repa odkazuje na rozcestník každé kostky, protože články leží u kostek a jedním výpisem adresáře se vyjmenovat nedají.
 
@@ -122,7 +122,7 @@ Wiki se převádí do HTML nástrojem [obsidian2html](https://github.com/pankost
 
 ## Výjimka z pravidla
 
-Vědomé porušení pravidla v článku zapiš HTML komentářem na řádek nálezu nebo na řádek nad ním. Komentář jmenuje identifikátor pravidla a za čárkou důvod: `<!-- pankostka: allow wiki/wikilink-alias, celý název je tu záměrně -->`. **Důvod je povinný**, bez něj skript nález hlásí dál. Nálezy, které se netýkají řádku článku (chybějící článek, revize starší než model), se výjimkou vyřadit nedají.
+Vědomé porušení pravidla v článku zapiš HTML komentářem na řádek nálezu nebo na řádek nad ním. Komentář jmenuje identifikátor pravidla a za čárkou důvod: `<!-- pankostka: allow wiki/link-text, celý název je tu záměrně -->`. **Důvod je povinný**, bez něj skript nález hlásí dál. Nálezy, které se netýkají řádku článku (chybějící článek, revize starší než model), se výjimkou vyřadit nedají.
 
 ## Kontrola
 
@@ -142,7 +142,7 @@ Platí, jen když argument výše není prázdný. Prvním slovem argumentu je n
    - `wiki/tags`: tagy neodpovídají druhu článku nebo vazbám v `relationships.tmdl`,
    - `wiki/outline`: chybí povinná sekce osnovy,
    - `wiki/revision-date`: poslední commit TMDL tabulky nebo PBIR reportu je novější než `date` článku,
-   - `wiki/wikilink-alias`: wikilink na článek kostky bez aliasu,
+   - `wiki/link-text`: odkaz na článek kostky, jehož text obsahuje předponu kostky,
    - `wiki/measures-table`: tabulka ukazatelů neodpovídá modelu, nebo článek faktovky značky nemá.
 
 2. **Projdi články sám** podle kroku 4 postupu výše: rozpor textu s modelem, nesrozumitelná místa, technické vazby s klíčem vždy `-1`, zbylé značky `⚠️` a porušení zásady C.

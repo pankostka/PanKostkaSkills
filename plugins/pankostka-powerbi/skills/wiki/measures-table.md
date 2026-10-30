@@ -10,7 +10,7 @@ Doplněk skillu `pankostka-powerbi-wiki`. Tabulka ukazatelů v sekci `## Ukazate
 | DAX | model -> wiki | skript, pod tabulkou, ne v ní |
 | Popis | wiki -> model (`///`) | člověk, AI navrhne |
 
-**Zdrojem popisu míry je wiki.** Popis se píše v Obsidianu, kde vzniká zbytek dokumentace, a ne v Power BI Desktop. Zápis popisu z wiki do `///` v TMDL zatím hotový není. Do té doby skript jen vypíše míry, jejichž popis ve wiki se liší od `///`.
+**Zdrojem popisu míry je wiki.** Popis se píše v článku wiki, kde vzniká zbytek dokumentace, a ne v Power BI Desktop. Zápis popisu z wiki do `///` v TMDL zatím hotový není. Do té doby skript jen vypíše míry, jejichž popis ve wiki se liší od `///`.
 
 **Technické poznámky k míře patří do výrazu DAX** jako komentář `--`, ne do popisu `///`. Popis vidí uživatel v tooltipu Power BI, smí v něm být jen text pro uživatele. Oddělovací bannery sekcí (`/// ####`) se do TMDL nepíšou vůbec, TMDL je přilepí k popisu následující míry.
 
@@ -39,12 +39,12 @@ Text nad značkami píše člověk a skript ho nemění. Mimo značky skript nez
 
 Řádek se páruje s mírou **podle názvu**. Nová míra dostane jako počáteční popis svůj `///` z TMDL, takže se tabulka naplní i poprvé. Míra, která z modelu zmizela, z tabulky vypadne a skript vypíše její popis, aby se neztratil. Když zároveň nějaká míra přibyla, ohlásí možné přejmenování. **Popis sám nepřenáší**, přejmenování potvrzuje člověk.
 
-`lineageTag` jako skrytý klíč v buňce je zamítnutý: HTML komentář v buňce ruší při editaci v Obsidianu.
+`lineageTag` jako skrytý klíč v buňce je zamítnutý: HTML komentář v buňce ruší při editaci v editoru Markdownu.
 
 ## Popis
 
-- Prostý text. Povolené jsou jen `zpětné apostrofy` kolem názvů měr a wikilinky. Do `///` půjdou jako prostý text, tooltip v Power BI Markdown neumí.
-- Svislítko v buňce se píše `\|`, i v aliasu wikilinku. Obsidian to v tabulce vyžaduje.
+- Prostý text. Povolené jsou jen `zpětné apostrofy` kolem názvů měr a odkazy na články. Do `///` půjdou jako prostý text, tooltip v Power BI Markdown neumí.
+- Svislítko v buňce se píše `\|`, jinak tabulka v Markdownu buňku rozdělí.
 - **Prázdná buňka znamená, že míra nemá popis.**
 - Delší vysvětlení patří do textu nad tabulkou nebo do sekce Na co si dát pozor.
 

@@ -7,6 +7,7 @@ Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
 Bloky kódu, inline kód a HTML komentáře se nekontrolují. Oslovení čtenáře a názvy článků posuzuje model.
 Pravidla md/tag-one-variant a md/no-link-to-private porovnávají články mezi sebou, cíle odkazů se hledají v celém vaultu.
+Pravidlo md/no-broken-link ověřuje, že relativní odkaz a obrázek míří na existující soubor. Cíl se sufixem -TMP se neověřuje, v gitu není.
 Řádek s výjimkou <!-- pankostka: allow <identifikátor>, <důvod> --> na něm nebo nad ním se nehlásí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
@@ -48,6 +49,7 @@ RE_RULE = re.compile(r"(([-*_])(\s*\2){2,}|=+)$")
 RE_ITEM = re.compile(r"([-*+]|\d+[.)])(\s|$)")
 RE_LINKDEF = re.compile(r"\[\^?[^\]]+\]:")
 RE_WIKI = re.compile(r"(!?)\[\[([^\]|#^]*)[^\]]*\]\]")
+RE_SCHEME = re.compile(r"[a-z][a-z0-9+.-]*:", re.IGNORECASE)
 RE_MD_IMAGE = re.compile(r"!\[([^\]]*)\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_MD_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_KEY = re.compile(r"([A-Za-z_][\w-]*)\s*:(.*)$")
@@ -202,6 +204,56 @@ def check_images(lines, fm_end, skip, findings):
                 findings.append((i + 1, "md/attachment-own-folder", f"obrázek {target} neleží přímo v adresáři článku, přesuň ho vedle článku"))
 
 
+def check_wikilinks(lines, fm_end, skip, articles, path, findings):
+    """Wikilink na článek. Vložení článku ![[...]] standardní Markdown nezná, proto se toleruje, obrázek hlídá md/image-markdown-alt."""
+    for i in range(fm_end, len(lines)):
+        if skip[i]:
+            continue
+        for m in RE_WIKI.finditer(clean(lines[i])):
+            if m.group(1):
+                continue
+            name = m.group(2).strip()
+            hits = articles.get(name.lower(), []) if name else []
+            if len(hits) == 1:
+                rel = os.path.relpath(hits[0], os.path.dirname(os.path.abspath(path))).replace("\\", "/")
+                hint = f"piš [{name}]({quote_path(rel)})"
+            else:
+                hint = "piš standardní odkaz s relativní cestou [Název](cesta/Název.md)"
+            findings.append((i + 1, "md/no-wikilink", f"wikilink {m.group().strip()}, {hint}"))
+
+
+def quote_path(rel):
+    """Cesta do odkazu tak, jak ji zapíše Obsidian: mezera jako %20."""
+    return rel.replace("%", "%25").replace(" ", "%20").replace("(", "%28").replace(")", "%29")
+
+
+def check_broken(lines, fm_end, skip, path, findings):
+    """Relativní odkaz a obrázek míří na existující soubor nebo adresář."""
+    base = os.path.dirname(os.path.abspath(path))
+    for i in range(fm_end, len(lines)):
+        if skip[i]:
+            continue
+        line = clean(lines[i])
+        targets = [m.group(2) for m in RE_MD_IMAGE.finditer(line)] + [m.group(1) for m in RE_MD_LINK.finditer(line)]
+        for raw in targets:
+            t = unquote(raw.strip("<>")).split("#")[0].split("?")[0].replace("\\", "/")
+            if not t or RE_SCHEME.match(t) or t.startswith("/") or any(is_tmp(p) for p in t.split("/")):
+                continue
+            if not os.path.exists(os.path.join(base, t)):
+                findings.append((i + 1, "md/no-broken-link", f"odkaz míří na {t}, který neexistuje, oprav cestu"))
+
+
+def article_paths(root):
+    """Články ve vaultu: název malými písmeny -> [cesty]."""
+    out = {}
+    for top, dirs, names in os.walk(root):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not is_tmp(d)]
+        for n in names:
+            if n.lower().endswith(".md") and not is_tmp(n):
+                out.setdefault(n[:-3].lower(), []).append(os.path.join(top, n))
+    return out
+
+
 def is_vault(d):
     return os.path.isdir(os.path.join(d, ".obsidian"))
 
@@ -304,7 +356,7 @@ def links_of(lines, fm_end, skip):
             continue
         line = clean(lines[i])
         targets = [m.group(2) for m in RE_WIKI.finditer(line)]
-        targets += [unquote(m.group(1).strip("<>")) for m in RE_MD_LINK.finditer(line) if m.group(1).lower().split("#")[0].endswith(".md")]
+        targets += [unquote(m.group(1).strip("<>")) for m in RE_MD_LINK.finditer(line) if m.group(1).strip("<>").lower().split("#")[0].endswith(".md")]
         for t in targets:
             t = t.strip().replace("\\", "/")
             ext = os.path.splitext(t)[1].lower()
@@ -350,6 +402,7 @@ def check_paths(paths, root):
     texts = {}
     tags = {}
     public = []
+    articles = article_paths(root)
     for path in paths:
         findings = []
         results[path] = findings
@@ -365,6 +418,8 @@ def check_paths(paths, root):
         check_chars(lines, skip, findings)
         check_wrap(lines, fm_end, skip, findings)
         check_images(lines, fm_end, skip, findings)
+        check_wikilinks(lines, fm_end, skip, articles, path, findings)
+        check_broken(lines, fm_end, skip, path, findings)
         for line, tag in check_frontmatter(lines, fm_end, findings):
             tags.setdefault(tag.lower(), {}).setdefault(tag, []).append((path, line))
         if MARKER in os.path.basename(path):
@@ -388,7 +443,7 @@ def check_paths(paths, root):
                 key = target.lower()
                 names = index.get(key) or [n for k, v in index.items() if k.endswith("/" + key) for n in v] or index.get(key.split("/")[-1])
                 if names and not any(MARKER in n for n in names):
-                    results[path].append((line, "md/no-link-to-private", f"veřejný článek odkazuje na neveřejný [[{target}]]"))
+                    results[path].append((line, "md/no-link-to-private", f"veřejný článek odkazuje na neveřejný {target}"))
 
     for path, findings in results.items():
         lines = texts.get(path, [])

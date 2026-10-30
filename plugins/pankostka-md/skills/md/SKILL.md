@@ -1,6 +1,6 @@
 ---
 name: pankostka-md
-description: Zásady psaní dokumentace v Markdownu a Obsidianu - čeština bez typografických znaků a bez oslovení čtenáře, odstavec na jednom řádku, kde článek leží, adresář na článek a přílohy v něm, názvy souborů, wikilinky a obrázky, frontmatter a tagy, callouty, publikace na web. Použij vždy, když píšeš, upravuješ nebo kontroluješ soubor .md, tedy článek, README.md, CLAUDE.md, úkol nebo jinou dokumentaci. S argumentem (soubor, adresář nebo --changed) zkontroluje soubory proti zásadám a vypíše neshody.
+description: Zásady psaní dokumentace ve standardním Markdownu nezávisle na editoru (Obsidian, Markra) - čeština bez typografických znaků a bez oslovení čtenáře, odstavec na jednom řádku, kde článek leží, adresář na článek a přílohy v něm, názvy souborů, standardní odkazy místo wikilinků, mrtvé odkazy a obrázky, frontmatter a tagy, callouty, publikace na web. Použij vždy, když píšeš, upravuješ nebo kontroluješ soubor .md, tedy článek, README.md, CLAUDE.md, úkol nebo jinou dokumentaci. S argumentem (soubor, adresář nebo --changed) zkontroluje soubory proti zásadám a vypíše neshody.
 argument-hint: "[soubor | adresář | --changed]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_md.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_md.py *)
 ---
@@ -41,11 +41,13 @@ Důvod: text musí jít opravit a dopsat přímo v editoru bez vkládání speci
 
 Výjimkou jsou instrukce pro AI (`CLAUDE.md`, popisy skillů), které mluví na agenta.
 
-## Obsidian
+## Editor
 
-Předpokládaným editorem je **Obsidian**, ale jen v repu, které má v kořeni adresář `.obsidian`. Jinde se s ním nepočítá a článek se otevře v čemkoli. Jak vault založit a co z jeho nastavení verzovat, řeší skill `pankostka-obsidian`.
+`md/standard-markdown` **Článek se píše ve standardním Markdownu** (CommonMark a GitHub Flavored Markdown), ne v syntaxi jednoho editoru. Tentýž článek se upravuje v Obsidianu i v Markře a čte se i na GitHubu, takže musí vypadat stejně všude. Jak založit a nastavit vault v Obsidianu, řeší skill `pankostka-obsidian`.
 
-Callout (`> [!typ] Titulek`) je syntaxe Obsidianu. V Obsidianu se vykreslí jako barevný rámeček, jinde (GitHub, HTML, PDF) jako obyčejná citace, takže se nerozbije, jen ztratí barvu. Vlastní typ dostane barvu a ikonu z CSS snippetu v `.obsidian/snippets/`, bez snippetu se zobrazí jako výchozí modrá poznámka.
+Callout (`> [!typ] Titulek`) je povolený. Obsidian, GitHub i Markra vykreslí jako rámeček typy `note`, `tip`, `important`, `warning` a `caution`. Vlastní typ, třeba `navrh-ai`, má barvu a ikonu jen v Obsidianu z CSS snippetu v `.obsidian/snippets/`, jinde se zobrazí jako obyčejná citace. Nerozbije se, jen ztratí barvu.
+
+Vložení článku do jiného (`![[menu]]`) standardní Markdown nezná a jiný editor ho vypíše doslova. Používá se jen tam, kde ho vyžaduje `pankostka-obsidian`, tedy pro lištu `menu.md` v rozcestníku.
 
 ## Kde článek leží
 
@@ -76,7 +78,7 @@ Důvod: článek je celek. Přesune se, přejmenuje nebo smaže jako jeden adres
 
 Platí to všude stejně: v `docs/`, ve vaultu s know-how, ve wiki kostky i u úkolů v `tasks/`. Článek o objektu leží v adresáři pojmenovaném po objektu, třeba po plnicí proceduře, a s ním i kód objektu: `20_dim/nsp20DimUcet/` obsahuje `nsp20DimUcet.md`, `nsp20DimUcet.sql` a případně skript tabulky.
 
-Přejmenování článku znamená přejmenovat i adresář. Obsidian sám přejmenuje jen soubor, adresář s ním přejmenuje plugin Folder Notes ze šablony vaultu (viz `pankostka-obsidian`). Plugin také otevře článek kliknutím na adresář.
+Přejmenování článku znamená přejmenovat i adresář. V Obsidianu to udělá plugin Folder Notes ze šablony vaultu (viz `pankostka-obsidian`), který také otevře článek kliknutím na adresář. V jiném editoru se adresář přejmenuje ručně a opraví se odkazy na článek, viz Odkazy.
 
 Vlastní adresář nedostávají soubory, jejichž jméno a umístění určuje nástroj nebo konvence:
 
@@ -95,13 +97,13 @@ Vlastní adresář nedostávají soubory, jejichž jméno a umístění určuje 
 
 `md/attachment-own-folder` Příloha je soubor, který článek doplňuje, ale sám článkem není: obrázek, XML vzorek, tabulka, dokument od dodavatele. **Leží přímo v adresáři článku, vedle souboru `.md`**, bez další podsložky. Složka `Attachments/` se nepoužívá: adresář článku je sám tou složkou a další úroveň by jen prodloužila cestu.
 
-**Příloha patří jen jednomu článku.** Když tentýž obrázek potřebuje druhý článek, dostane vlastní kopii, nebo odkáže wikilinkem na článek, ve kterém obrázek je. Na obrázek v adresáři jiného článku se neodkazuje: po přesunu nebo smazání toho článku by se rozbil odkaz, o kterém nikdo neví. Odkaz na jiný soubor v repu, třeba na proceduru, je v pořádku, to není příloha.
+**Příloha patří jen jednomu článku.** Když tentýž obrázek potřebuje druhý článek, dostane vlastní kopii, nebo odkáže na článek, ve kterém obrázek je. Na obrázek v adresáři jiného článku se neodkazuje: po přesunu nebo smazání toho článku by se rozbil odkaz, o kterém nikdo neví. Odkaz na jiný soubor v repu, třeba na proceduru, je v pořádku, to není příloha.
 
 Pravidlo *dokumentace se píše v Markdownu* mluví o tom, co se píše, ne o tom, co někdo pošle. Přijatý soubor (Word od dodavatele, screenshot, export) je příloha a sám o sobě se do Markdownu nepřevádí. Jakmile se ale stane autoritativním popisem něčeho v repu, **převeď ho na článek**: binární dokument se nedá diffovat, hledat v něm ani publikovat. Po převodu je z něj historický podklad, ne druhý zdroj pravdy. Podklad, který už nemá funkci, dostane sufix `-TMP`, takže zůstane na disku, ale ne v gitu.
 
-Aby přílohy vznikaly na správném místě samy, má Obsidian nastavené `attachmentFolderPath` na `./`, tedy *do stejné složky jako aktuální soubor*. Platí to i pro soubory bez vlastního adresáře: obrázek vložený do `README.md` leží vedle něj.
+Aby přílohy vznikaly na správném místě samy, má Obsidian nastavené `attachmentFolderPath` na `./`, tedy *do stejné složky jako aktuální soubor*. V jiném editoru se vkládání obrázků nastaví stejně, pokud to editor umí, jinak se obrázek přesune vedle článku ručně. Platí to i pro soubory bez vlastního adresáře: obrázek vložený do `README.md` leží vedle něj.
 
-`md/attachment-name` Vložený obrázek pojmenuje Obsidian sám jako `Pasted image 20260727145759.png`, tedy s mezerou, velkým písmenem a nic neříkajícím číslem. **Přejmenuj ho hned**, odkaz si Obsidian opraví sám. Výjimkou je náhledový obrázek pro web, ten se jmenuje jako článek (`Obsidian Nastavení.png`), protože ho generátor webu hledá podle názvu.
+`md/attachment-name` Vložený obrázek pojmenuje Obsidian sám jako `Pasted image 20260727145759.png`, tedy s mezerou, velkým písmenem a nic neříkajícím číslem. **Přejmenuj ho hned**. Obsidian si odkaz opraví sám, v jiném editoru se opraví ručně. Výjimkou je náhledový obrázek pro web, ten se jmenuje jako článek (`Obsidian Nastavení.png`), protože ho generátor webu hledá podle názvu.
 
 ### Soubory -TMP
 
@@ -132,12 +134,21 @@ Adresář článku je součást článku, ne struktura repa, proto smí mít dia
 
 ## Odkazy
 
-`md/wikilink-articles` a `md/image-markdown-alt` Schválně dvě konvence, protože každá řeší jiný problém:
+`md/no-wikilink` **Odkaz na článek je standardní markdownový odkaz s relativní cestou**, ne wikilink `[[...]]`:
 
-| Co | Jak | Proč |
-| --- | --- | --- |
-| **Odkaz na článek** | wikilink `[[Název článku]]` | Obsidian ho opraví při přejmenování i přesunu |
-| **Obrázek** | markdown `![Popis obrázku](soubor.png)` | popis potřebuje generátor webu i čtečka pro nevidomé |
+```markdown
+[Obsidian Nastavení](../Obsidian%20Nastavení/Obsidian%20Nastavení.md)
+```
+
+Wikilink je syntaxe Obsidianu. GitHub ho vypíše jako holý text a jiný editor ho nemusí otevřít. Standardní odkaz funguje všude.
+
+- **Mezera v cestě se píše `%20`**, tak odkaz zapíše Obsidian. Funguje i cesta v lomených závorkách `[Text](<../Obsidian Nastavení/Obsidian Nastavení.md>)`. Diakritika a emoji se nekódují.
+- **Text odkazu je název článku**, nebo slova věty, ke kterým odkaz patří.
+- **Odkaz vede na článek, ne na nadpis v něm.** Kotva nadpisu má v každém nástroji jiný tvar (Obsidian `#Název%20nadpisu`, GitHub `#nazev-nadpisu`). Výjimkou je odkaz na sekci uvnitř téhož článku.
+
+`md/no-broken-link` **Odkaz míří na existující soubor.** Cenou za standardní odkaz je cesta: přesun nebo přejmenování článku ji rozbije. Obsidian odkazy při přejmenování a přesunu opraví sám, v Markře, gitem, skriptem nebo v AI se musí opravit ručně. Proto skript hlásí každý relativní odkaz a obrázek, jehož cíl neexistuje. Cíl se sufixem `-TMP` neověřuje, ten v gitu není.
+
+`md/image-markdown-alt` **Obrázek se vkládá jako `![Popis obrázku](soubor.png)`**, ne `![[soubor.png]]`. Popis potřebuje generátor webu i čtečka pro nevidomé.
 
 ## Frontmatter
 
@@ -184,7 +195,7 @@ Firma s.r.o.
 Ulice 1
 ```
 
-Identifikátorů může být víc, oddělených čárkou. **Důvod je povinný**, bez něj skript nález hlásí dál. V Obsidianu ani na webu komentář vidět není.
+Identifikátorů může být víc, oddělených čárkou. **Důvod je povinný**, bez něj skript nález hlásí dál. V náhledu editoru ani na webu komentář vidět není.
 
 ## Kontrola
 
@@ -201,6 +212,8 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    - `md/keyboard-chars`: zakázané znaky mimo bloky kódu a inline kód,
    - `md/no-hard-wrap`: odstavec, odrážka nebo citace zalomená uprostřed věty, tedy na pevnou šířku,
    - `md/article-folder`: článek neleží v adresáři svého jména a není mezi výjimkami z tabulky v části Adresář článku,
+   - `md/no-wikilink`: odkaz jako `[[...]]`, s návrhem standardního odkazu, když článek ve vaultu najde. Vložení článku `![[...]]` nehlásí,
+   - `md/no-broken-link`: relativní odkaz nebo obrázek, jehož cíl neexistuje,
    - `md/image-markdown-alt`: obrázek jako `![[...]]`, obrázek bez popisu,
    - `md/attachment-own-folder`: obrázek neleží přímo v adresáři článku (cesta s `/`, tedy i `Attachments/`),
    - `md/frontmatter-keys`: klíče `titul`, `datum` a `publish`, `date` mimo tvar `RRRR-MM-DD`,
@@ -215,6 +228,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
    - `md/no-addressing-reader` a `md/czech-style`: oslovení čtenáře a dlouhá souvětí,
    - **věty na samostatných řádcích bez prázdného řádku mezi nimi**: skript je nehlásí, protože nejde o zalomení na pevnou šířku. Obsidian je zobrazí pod sebou, jiné nástroje je ale mohou spojit do jednoho odstavce. Když jde o samostatné myšlenky, navrhni prázdný řádek mezi nimi nebo odrážky,
+   - `md/standard-markdown`: syntaxe jen jednoho editoru, třeba vložení článku `![[...]]` mimo lištu `menu.md`, zvýraznění `==text==` nebo komentář `%%...%%`,
    - `md/term-article`: jednotná terminologie a pojem článek,
    - `md/article-location` a `md/readme-index`: umístění článku (`docs/` nebo v adresáři objektu spolu s jeho kódem) a rozcestník v `README.md`,
    - `md/file-names`: název článku a složky podle tabulky Názvy souborů,
@@ -226,6 +240,6 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
 
 3. **Vypiš výsledek** po souborech. U každé neshody `soubor:řádek`, identifikátor porušeného pravidla a konkrétní návrh opravy. Neshody ze skriptu a z vlastní kontroly slouč do jednoho seznamu a u sporných případů napiš, proč jsou sporné. Na konec dej souhrn: kolik souborů, kolik neshod podle pravidel.
 
-4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování přílohy nebo článku a přesun článku do vlastního adresáře dělej v Obsidianu nebo s opravou všech odkazů, jinak se rozbijí. Při přesunu do adresáře přesuň i přílohy, které článek používá, a oprav cesty k obrázkům.
+4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování přílohy nebo článku a přesun článku do vlastního adresáře dělej v Obsidianu nebo s opravou všech odkazů, jinak se rozbijí. Po přesunu spusť kontrolu znovu, `md/no-broken-link` ukáže, co zbylo. Při přesunu do adresáře přesuň i přílohy, které článek používá, a oprav cesty k obrázkům.
 
 U velkého adresáře nejdřív řekni, kolik souborů kontrola obsahuje, a u více než dvaceti se zeptej, jestli pokračovat, nebo zúžit výběr.

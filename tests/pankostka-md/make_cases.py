@@ -38,7 +38,7 @@ tags:
 
 ## Sekce
 
-Odkaz na [[Druhý Článek]] a na [[#Sekce]] uvnitř článku.
+Odkaz na [Druhý Článek](../Druhý%20Článek/Druhý%20Článek.md), na [tentýž článek](<../Druhý Článek/Druhý Článek.md>) v lomených závorkách a na [sekci](#sekce) uvnitř článku.
 
 ![Schéma prvního kroku](schema_krok1.png)
 
@@ -80,7 +80,7 @@ tags: [Obsidian, PowerBI]
 Druhý článek.
 """)
 w("ok_article/Poznámky-TMP.md", "Dočasný článek — se nekontroluje.\nA je zalomený.\n")
-a("ok_article", f"Veřejný {G}", f"Odkaz na [[Druhý Veřejný {G}]] a [[Neexistující]].\n")
+a("ok_article", f"Veřejný {G}", f"Odkaz na [Druhý Veřejný {G}](../Druhý%20Veřejný%20{G}/Druhý%20Veřejný%20{G}.md) a na [web](https://example.com).\n")
 a("ok_article", f"Druhý Veřejný {G}", "Veřejný článek.\n")
 # článek o objektu leží v adresáři objektu spolu s jeho kódem
 a("ok_article", "nsp20DimUcet", "Plnění dimenze účtů, kód je v [nsp20DimUcet.sql](nsp20DimUcet.sql).\n")
@@ -117,6 +117,7 @@ Text před obrázkem.
 Text a pod ním čára.
 ---
 """)
+w("ok_blocks/Bloky/obr.png", "")
 
 # --- ok_allow: vědomá výjimka komentářem s důvodem
 a("ok_allow", "Článek", """Citace dodavatele „doslova“ <!-- pankostka: allow md/keyboard-chars, citace dodavatele beze změny -->
@@ -170,6 +171,8 @@ a("ko_image-markdown-alt", "Článek", """<!-- celkem 3 -->
 
 ![[Jiný článek]] se nehlásí, je to vložený článek.
 """)
+w("ko_image-markdown-alt/Článek/bez_popisu.png", "")
+w("ko_image-markdown-alt/Článek/taky_bez_popisu.png", "")
 
 # --- ko_attachment-own-folder
 a("ko_attachment-own-folder", "Článek", """<!-- celkem 3 -->
@@ -179,6 +182,9 @@ a("ko_attachment-own-folder", "Článek", """<!-- celkem 3 -->
 
 ![Popis](Attachments/stary.png)
 """)
+w("ko_attachment-own-folder/Článek/img/jinde.png", "")
+w("ko_attachment-own-folder/Jiný/cizi.png", "")
+w("ko_attachment-own-folder/Článek/Attachments/stary.png", "")
 
 # --- ko_frontmatter-keys
 a("ko_frontmatter-keys", "Článek", """---
@@ -216,13 +222,13 @@ a("ko_tag-one-variant", "C", "---\ntags: [OBSIDIAN]\n---\nC.\n")
 
 # --- ko_no-link-to-private
 a("ko_no-link-to-private", f"Veřejný {G}", f"""<!-- celkem 3 -->
-Odkaz na [[Interní]] a na [[Druhý {G}]].
+Odkaz na [Interní](../Interní/Interní.md) a na [Druhý {G}](../Druhý%20{G}/Druhý%20{G}.md).
 
 ![[Interní]]
 
-Markdown odkaz na [interní článek](../Interní/Interní.md).
+Odkaz v lomených závorkách na [interní článek](<../Interní/Interní.md>).
 """)
-a("ko_no-link-to-private", "Interní", f"Interní článek smí odkazovat na [[Veřejný {G}]].\n")
+a("ko_no-link-to-private", "Interní", f"Interní článek smí odkazovat na [Veřejný {G}](../Veřejný%20{G}/Veřejný%20{G}.md).\n")
 a("ko_no-link-to-private", f"Druhý {G}", "Veřejný.\n")
 
 # --- ko_no-link-to-tmp
@@ -231,9 +237,26 @@ a("ko_no-link-to-tmp", f"Veřejný {G}", f"""<!-- celkem 3 -->
 
 Export do [PDF](<Veřejný {G}-TMP.pdf>).
 
-Rozepsaný článek [[Rozepsaný-TMP]].
+Rozepsaný [článek](../Rozepsaný-TMP/Rozepsaný-TMP.md).
 """)
 a("ko_no-link-to-tmp", "Interní", "Interní článek smí odkazovat na [měření](mereni-TMP.sql).\n")
+
+# --- ko_no-wikilink: vložení článku ![[...]] se toleruje
+a("ko_no-wikilink", "Článek", """<!-- celkem 3 -->
+Odkaz na [[Druhý]], s aliasem na [[Druhý|druhý článek]] a na [[Neexistující]].
+
+![[Druhý]]
+""")
+a("ko_no-wikilink", "Druhý", "Druhý článek.\n")
+
+# --- ko_no-broken-link: adresa, kotva a soubor -TMP se neověřují
+a("ko_no-broken-link", "Článek", """<!-- celkem 3 -->
+Odkaz na [chybějící článek](../Chybí/Chybí.md) a na [skript](<data/skript.sql>).
+
+![Obrázek](chybi.png)
+
+Na [web](https://example.com), na [sekci](#sekce) a na [měření](mereni-TMP.sql) se nehlásí.
+""")
 
 # --- ko_utf8-no-bom
 a("ko_utf8-no-bom", "S BOM", "<!-- celkem 2 -->\nČlánek s BOM.\n", bom=True)

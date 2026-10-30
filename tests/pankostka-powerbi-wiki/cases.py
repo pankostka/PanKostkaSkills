@@ -75,7 +75,7 @@ def base():
             '{"visual": {"query": {"From": [{"Name": "f", "Entity": "FactProdej"}]}}}',
         "KostkaTest/pbip/KostkaTest.Report/definition/report.json": "{}",
         p("KostkaTest.md"): article("KostkaTest", ["_KostkaTest"], ["Vazby", "Reporty", "Aktuálnost dat"],
-                                     "[[KostkaTest FactProdej|FactProdej]] a [[KostkaTest Prodej|Prodej]]."),
+                                     "[FactProdej](KostkaTest%20FactProdej/KostkaTest%20FactProdej.md) a [Prodej](<KostkaTest Prodej/KostkaTest Prodej.md>)."),
         p("KostkaTest FactProdej.md"): article("FactProdej", ["_KostkaTest", "_FactProdej"], ["Dimenze", "Ukazatele", "Zdroj dat"]),
         p("KostkaTest FactSklad.md"): article("FactSklad", ["_KostkaTest", "_FactSklad"], ["Dimenze", "Ukazatele", "Zdroj dat"]),
         p("KostkaTest DimZakaznik.md"): article("DimZakaznik", ["_KostkaTest", "_FactProdej", "DimZakaznik"], ["Kde se vyskytuje", "Zdroj dat"]),
@@ -100,16 +100,16 @@ def put(name, text):
 
 CASES = {
     "ok_kostka": {"measures": True, "git": True},
-    # odkaz bez aliasu s vědomou výjimkou a důvodem se nehlásí
-    "ok_allow": {"measures": True, "change": put("KostkaTest.md", article("KostkaTest", ["_KostkaTest"], ["Vazby", "Reporty", "Aktuálnost dat"], "<!-- pankostka: allow wiki/wikilink-alias, celý název je tu záměrně -->\n[[KostkaTest FactProdej]]"))},
+    # odkaz s předponou v textu s vědomou výjimkou a důvodem se nehlásí
+    "ok_allow": {"measures": True, "change": put("KostkaTest.md", article("KostkaTest", ["_KostkaTest"], ["Vazby", "Reporty", "Aktuálnost dat"], "<!-- pankostka: allow wiki/link-text, celý název je tu záměrně -->\n[KostkaTest FactProdej](KostkaTest%20FactProdej/KostkaTest%20FactProdej.md)"))},
     "ko_article-per-element": {"count": 2, "measures": True, "change": drop("KostkaTest DimZakaznik.md", "KostkaTest Prodej.md")},
     "ko_article-per-element_orphan": {"count": 1, "measures": True, "change": put("KostkaTest DimStara.md", article("DimStara", ["_KostkaTest", "DimStara"], ["Kde se vyskytuje", "Zdroj dat"]))},
     "ko_frontmatter": {"count": 2, "measures": True, "change": put("KostkaTest DimZakaznik.md", article("Zákazník", ["_KostkaTest", "_FactProdej", "DimZakaznik"], ["Kde se vyskytuje", "Zdroj dat"], date="31.12.2026"))},
     "ko_tags": {"count": 2, "measures": True, "change": put("KostkaTest DimZakaznik.md", article("DimZakaznik", ["_KostkaTest", "_FactSklad", "DimZakaznik"], ["Kde se vyskytuje", "Zdroj dat"]))},
     "ko_outline": {"count": 1, "measures": True, "change": put("KostkaTest Prodej.md", article("Prodej", ["_KostkaTest", "_FactProdej", "_Report"], ["Stránky"]))},
     "ko_revision-date": {"count": 1, "measures": True, "git": True, "change": put("KostkaTest DimZakaznik.md", article("DimZakaznik", ["_KostkaTest", "_FactProdej", "DimZakaznik"], ["Kde se vyskytuje", "Zdroj dat"], date="2026-01-01"))},
-    # text je v každé ze tří sekcí, vložení ![[...]] alias nepotřebuje
-    "ko_wikilink-alias": {"count": 3, "measures": True, "change": put("KostkaTest.md", article("KostkaTest", ["_KostkaTest"], ["Vazby", "Reporty", "Aktuálnost dat"], "[[KostkaTest FactProdej]] a ![[KostkaTest Prodej]]."))},
+    # text je v každé ze tří sekcí, obrázek a odkaz mimo kostku se nehlásí
+    "ko_link-text": {"count": 3, "measures": True, "change": put("KostkaTest.md", article("KostkaTest", ["_KostkaTest"], ["Vazby", "Reporty", "Aktuálnost dat"], "[KostkaTest FactProdej](KostkaTest%20FactProdej/KostkaTest%20FactProdej.md), ![KostkaTest schema](schema.png) a [KostkaTest](../README.md)."))},
     # FactProdej bez vygenerované tabulky, FactSklad nemá viditelné míry, takže se nehlásí
     "ko_measures-table": {"count": 1},
 }

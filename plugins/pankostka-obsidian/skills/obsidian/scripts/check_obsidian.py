@@ -18,11 +18,12 @@ SKIP_DIRS = {".git", ".obsidian", ".trash", "node_modules", "__pycache__"}
 # výchozí hodnota Obsidianu, když klíč v app.json chybí, a hodnota, kterou skill vyžaduje
 REQUIRED = {
     "attachmentFolderPath": ("/", "./"),
-    "newLinkFormat": ("shortest", "shortest"),
+    "useMarkdownLinks": (False, True),
+    "newLinkFormat": ("shortest", "relative"),
     "alwaysUpdateLinks": (False, True),
     "showUnsupportedFiles": (False, False),
 }
-FILE_KEYS = ("attachmentFolderPath", "newLinkFormat", "alwaysUpdateLinks")
+FILE_KEYS = ("attachmentFolderPath", "useMarkdownLinks", "newLinkFormat", "alwaysUpdateLinks")
 # cesta v .obsidian -> má ji .gitignore ignorovat?
 IGNORE_PROBES = [
     ("plugins/plugin/main.js", True, "kód pluginu plugins/*/main.js"),

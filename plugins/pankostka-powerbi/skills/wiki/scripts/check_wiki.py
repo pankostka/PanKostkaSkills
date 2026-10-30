@@ -12,6 +12,7 @@ import os
 import re
 import subprocess
 import sys
+from urllib.parse import unquote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import measures_table  # noqa: E402
@@ -26,7 +27,7 @@ SECTIONS = {
     "udrzba": ["Postup", "Na co si dát pozor"],
 }
 RE_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
-RE_WIKILINK = re.compile(r"(!?)\[\[([^\]|#]+)(#[^\]|]*)?(\|[^\]]*)?\]\]")
+RE_MDLINK = re.compile(r"(?<!!)\[([^\]]*)\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_ALLOW = re.compile(r"pankostka:\s*allow\s+([a-z]+/[a-z0-9-]+(?:\s*,\s*[a-z]+/[a-z0-9-]+)*)\s*,\s*[^\s-]", re.IGNORECASE)
 
 
@@ -207,11 +208,13 @@ def check(arg):
             if changed and changed > date:
                 add(path, fm["date"][0], "wiki/revision-date", f"model se změnil {changed}, článek je revidovaný {date}")
 
-        # odkazy bez aliasu
+        # text odkazu na článek kostky bez předpony
         for i, l in enumerate(lines):
-            for m in RE_WIKILINK.finditer(l):
-                if not m.group(1) and not m.group(4) and m.group(2).strip().startswith(kostka + " "):
-                    add(path, i + 1, "wiki/wikilink-alias", f"odkaz [[{m.group(2).strip()}]] nemá alias, piš [[{m.group(2).strip()}|{m.group(2).strip()[len(kostka) + 1:]}]]")
+            for m in RE_MDLINK.finditer(l):
+                text = m.group(1).strip()
+                target = os.path.basename(unquote(m.group(2).strip("<>")).split("#")[0])
+                if target.startswith(kostka + " ") and target.lower().endswith(".md") and text.startswith(kostka + " "):
+                    add(path, i + 1, "wiki/link-text", f"text odkazu {text} obsahuje předponu kostky, piš [{text[len(kostka) + 1:]}]({m.group(2)})")
 
         # tabulka ukazatelů
         if kind == "fakt":

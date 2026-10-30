@@ -19,7 +19,7 @@ Do interní dokumentace to patří. Strojově to nepozná nikdo, proto se **pře
 
 ## Odkazy z veřejných článků
 
-`md/no-link-to-private` **Veřejný článek nesmí odkazovat na neveřejný.** Marker vybírá články, ne odkazy, takže wikilink ven z té množiny projde a `obsidian2html` z něj na webu nechá jen holý text. Mrtvý odkaz sice nevznikne, ale čtenář narazí na zmínku, na kterou nejde kliknout. Opačný směr je v pořádku: interní rozcestník na veřejné články odkazovat může a má.
+`md/no-link-to-private` **Veřejný článek nesmí odkazovat na neveřejný.** Marker vybírá články, ne odkazy, takže odkaz ven z té množiny projde a `obsidian2html` z něj na webu nechá jen holý text. Mrtvý odkaz sice nevznikne, ale čtenář narazí na zmínku, na kterou nejde kliknout. Opačný směr je v pořádku: interní rozcestník na veřejné články odkazovat může a má.
 
 Série veřejných článků se proto musí odkazovat sama na sebe a všechno interní nechat na rozcestník. `obsidian2html` při buildu hlásí, kolik odkazů takhle zploštil, ale to je kontrola až po převodu. Hlídat se to má při psaní, pravidlo `md/no-link-to-private` v `check_md.py` to umí.
 
