@@ -45,6 +45,8 @@ Výjimkou jsou instrukce pro AI (`CLAUDE.md`, popisy skillů), které mluví na 
 
 `md/standard-markdown` **Článek se píše ve standardním Markdownu** (CommonMark a GitHub Flavored Markdown), ne v syntaxi jednoho editoru. Tentýž článek se upravuje v Obsidianu i v Markře a čte se i na GitHubu, takže musí vypadat stejně všude. Jak založit a nastavit vault v Obsidianu, řeší skill `pankostka-obsidian`.
 
+`md/rename-in-obsidian` **Článek a přílohu přejmenovávej a přesouvej v Obsidianu.** Obsidian při tom opraví všechny odkazy, které na ně vedou, i odkazy z přesunutého článku. Markra je jen editor: přejmenování ani přesun souboru odkazy neopraví, ověřeno 2026-10-30. V Markře se proto jen píše. Když se soubor přejmenuje nebo přesune jinde (v Markře, v průzkumníku, gitem, skriptem nebo v AI), odkazy se opraví ručně a kontrola `md/no-broken-link` ukáže, co zbylo.
+
 Callout (`> [!typ] Titulek`) je povolený. Obsidian, GitHub i Markra vykreslí jako rámeček typy `note`, `tip`, `important`, `warning` a `caution`. Vlastní typ, třeba `navrh-ai`, má barvu a ikonu jen v Obsidianu z CSS snippetu v `.obsidian/snippets/`, jinde se zobrazí jako obyčejná citace. Nerozbije se, jen ztratí barvu.
 
 Vložení článku do jiného (`![[Článek]]`) standardní Markdown nezná a jiný editor ho vypíše doslova. **Článek se nevkládá, odkazuje se na něj** (`md/no-wikilink`). Proto ani navigační lišta `menu.md` vkládaná do rozcestníku: navigaci dělá strom souborů a rozcestník v `README.md`.
@@ -145,7 +147,7 @@ Wikilink je syntaxe Obsidianu. GitHub ho vypíše jako holý text a jiný editor
 - **Text odkazu je název článku**, nebo slova věty, ke kterým odkaz patří.
 - **Odkaz vede na článek, ne na nadpis v něm.** Kotva nadpisu má v každém nástroji jiný tvar (Obsidian `#Název%20nadpisu`, GitHub `#nazev-nadpisu`). Výjimkou je odkaz na sekci uvnitř téhož článku.
 
-`md/no-broken-link` **Odkaz míří na existující soubor.** Cenou za standardní odkaz je cesta: přesun nebo přejmenování článku ji rozbije. Obsidian odkazy při přejmenování a přesunu opraví sám, v Markře, gitem, skriptem nebo v AI se musí opravit ručně. Proto skript hlásí každý relativní odkaz a obrázek, jehož cíl neexistuje. Cíl se sufixem `-TMP` neověřuje, ten v gitu není. Číslo řádku za cestou (`../20_dim/nsp20DimUcet.sql:179`) skript ignoruje a ověřuje jen soubor.
+`md/no-broken-link` **Odkaz míří na existující soubor.** Cenou za standardní odkaz je cesta: přesun nebo přejmenování článku ji rozbije. Obsidian odkazy při přejmenování a přesunu opraví sám, jinde se musí opravit ručně, viz `md/rename-in-obsidian`. Proto skript hlásí každý relativní odkaz a obrázek, jehož cíl neexistuje. Cíl se sufixem `-TMP` neověřuje, ten v gitu není. Číslo řádku za cestou (`../20_dim/nsp20DimUcet.sql:179`) skript ignoruje a ověřuje jen soubor.
 
 **Převod starých wikilinků** dělá skript `convert_wikilinks.py`, jen na výslovný pokyn uživatele. Bez `--make` vypíše, co by změnil, s `--make` to zapíše:
 
@@ -247,6 +249,6 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
 
 3. **Vypiš výsledek** po souborech. U každé neshody `soubor:řádek`, identifikátor porušeného pravidla a konkrétní návrh opravy. Neshody ze skriptu a z vlastní kontroly slouč do jednoho seznamu a u sporných případů napiš, proč jsou sporné. Na konec dej souhrn: kolik souborů, kolik neshod podle pravidel.
 
-4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování přílohy nebo článku a přesun článku do vlastního adresáře dělej v Obsidianu nebo s opravou všech odkazů, jinak se rozbijí. Po přesunu spusť kontrolu znovu, `md/no-broken-link` ukáže, co zbylo. Při přesunu do adresáře přesuň i přílohy, které článek používá, a oprav cesty k obrázkům.
+4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování přílohy nebo článku a přesun článku do vlastního adresáře dělej v Obsidianu nebo s opravou všech odkazů, jinak se rozbijí (`md/rename-in-obsidian`). Po přesunu spusť kontrolu znovu, `md/no-broken-link` ukáže, co zbylo. Při přesunu do adresáře přesuň i přílohy, které článek používá, a oprav cesty k obrázkům.
 
 U velkého adresáře nejdřív řekni, kolik souborů kontrola obsahuje, a u více než dvaceti se zeptej, jestli pokračovat, nebo zúžit výběr.
