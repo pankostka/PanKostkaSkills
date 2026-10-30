@@ -34,7 +34,7 @@ MARKER = "\U0001F310"
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp"}
 SKIP_DIRS = {".git", ".obsidian", ".trash", "node_modules", "__pycache__"}
 # soubory, jejichž jméno a umístění určuje nástroj nebo konvence, vlastní adresář nedostávají
-NO_FOLDER = {"readme", "claude", "claude_project", "agents", "menu", "license", "changelog", "contributing", "skill", "tasks"}
+NO_FOLDER = {"readme", "claude", "claude_project", "agents", "license", "changelog", "contributing", "skill", "tasks"}
 OLD_KEYS = {
     "titul": "klíč titul nástroj nečte, použij title",
     "datum": "klíč datum nástroj nečte, použij date",
@@ -206,14 +206,16 @@ def check_images(lines, fm_end, skip, findings):
 
 
 def check_wikilinks(lines, fm_end, skip, articles, path, findings):
-    """Wikilink na článek. Vložení článku ![[...]] standardní Markdown nezná, proto se toleruje, obrázek hlídá md/image-markdown-alt."""
+    """Wikilink a vložení článku ![[...]], které standardní Markdown nezná. Vložený obrázek hlídá md/image-markdown-alt."""
     for i in range(fm_end, len(lines)):
         if skip[i]:
             continue
         for m in RE_WIKI.finditer(clean(lines[i])):
-            if m.group(1):
-                continue
             name = m.group(2).strip()
+            if m.group(1):
+                if os.path.splitext(name)[1].lower() not in IMAGE_EXT:
+                    findings.append((i + 1, "md/no-wikilink", f"vložení článku {m.group().strip()} standardní Markdown nezná, nahraď ho odkazem na článek"))
+                continue
             hits = articles.get(name.lower(), []) if name else []
             if len(hits) == 1:
                 rel = os.path.relpath(hits[0], os.path.dirname(os.path.abspath(path))).replace("\\", "/")
@@ -358,7 +360,7 @@ def links_of(lines, fm_end, skip):
             continue
         line = clean(lines[i])
         targets = [m.group(2) for m in RE_WIKI.finditer(line)]
-        targets += [unquote(m.group(1).strip("<>")) for m in RE_MD_LINK.finditer(line) if m.group(1).strip("<>").lower().split("#")[0].endswith(".md")]
+        targets += [unquote(m.group(1).strip("<>").split("#")[0]) for m in RE_MD_LINK.finditer(line) if m.group(1).strip("<>").lower().split("#")[0].endswith(".md")]
         for t in targets:
             t = t.strip().replace("\\", "/")
             ext = os.path.splitext(t)[1].lower()

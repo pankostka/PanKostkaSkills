@@ -1,6 +1,6 @@
 ---
 name: pankostka-obsidian
-description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a menu.md, nastavení app.json (přílohy vedle článku, standardní odkazy s relativní cestou, skryté soubory), plugin Folder Notes, co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
+description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a navigace bez menu.md, nastavení app.json (přílohy vedle článku, standardní odkazy s relativní cestou, skryté soubory), plugin Folder Notes, co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
 argument-hint: "[adresář vaultu]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *)
 ---
@@ -32,15 +32,16 @@ Rozcestník vnořeného vaultu určuje jeho obor, ne tenhle skill. Wiki kostky m
 
 ## Kořen vaultu
 
-`obsidian/root-readme` a `obsidian/menu-embed` Ve všech vaultech stejně:
+`obsidian/root-readme` Ve všech vaultech stejně:
 
 | Soubor | Role |
 | --- | --- |
 | `CLAUDE.md` | pravidla pro AI, nepublikuje se |
 | `README.md` | rozcestník vaultu |
-| `menu.md` | navigační lišta, vkládá se do rozcestníku prvním řádkem `![[menu]]`. **Jen tam, kde je co navigovat** |
 
-**Jednotný název není kosmetika.** Na rozcestník vedou odkazy z lišty, ze záložky i ze startovního článku. Se shodným názvem je řádek `![[menu]]` i celá lišta přenositelná mezi vaulty a nastavení startovního článku jde do sdílené šablony.
+**Jednotný název není kosmetika.** Na rozcestník vedou odkazy ze záložky, ze startovního článku i z jiných článků. Se shodným názvem jde nastavení startovního článku do sdílené šablony.
+
+**Navigační lišta `menu.md` se nepoužívá.** Vkládala se do rozcestníku řádkem `![[menu]]`, který GitHub ani Markra neumí a vypíšou ho doslova, a byla to jediná syntaxe Obsidianu, kterou `pankostka-md` povoloval. Navigaci dělá strom souborů s očíslovanými oblastmi (`10.PowerBI/`, `61.Obsidian/`) a adresář na článek, viz `pankostka-md`. Rozcestník v `README.md` dává přehled odkazy na články. Ve velkém vaultu ho může psát skript, který projde adresáře článků a zapíše strom mezi dvě značky v `README.md`, zbytek rozcestníku zůstane ručně psaný. Rozcestníky oblastí (`61.Obsidian/61.Obsidian.md`) se také nezakládají: obsahují jen seznam článků, který strom souborů ukazuje sám, a každý další článek je potřeba do nich dopsat.
 
 **Proč `README.md`, a ne `home.md` nebo `index.md`:**
 
@@ -49,7 +50,6 @@ Rozcestník vnořeného vaultu určuje jeho obor, ne tenhle skill. Wiki kostky m
 
 Na co si dát pozor:
 
-- **GitHub ani Markra `![[menu]]` neumí** a vypíšou ho doslova. Je to jediná syntaxe Obsidianu, kterou `pankostka-md` povoluje, a cena za jeden soubor místo dvou.
 - **`README.md` v podadresářích dělá název nejednoznačným.** Odkaz s cestou se trefí, ale Quick switcher a hledání nabídnou všechny.
 - **Startovní článek povinný není.** Obsidian ho sám neumí, je na to komunitní plugin Homepage. Bez něj se obnoví poslední rozložení oken a na rozcestník se jde záložkou nebo Quick switcherem.
 
@@ -86,7 +86,7 @@ Konfigurace `.obsidian` se dělí na tři hromádky. Test: **jmenuje ten soubor 
 | --- | --- | --- |
 | Jak se Obsidian chová | `app.json`, `appearance.json`, `core-plugins.json`, `community-plugins.json`, `plugins/*/manifest.json`, `snippets/` | ano |
 | Co jmenuje konkrétní články | `bookmarks.json`, `templates.json`, `types.json`, `plugins/*/data.json`, `workspace*.json` | nikdy |
-| Obsah vaultu | `README.md`, `menu.md` | je to článek, ne konfigurace |
+| Obsah vaultu | `README.md` | je to článek, ne konfigurace |
 
 `obsidian/gitignore-plugin-code` a `obsidian/no-tracked-plugin-code` Do gitu jde `.obsidian` celý **kromě kódu pluginů, témat a stavu oken**. Řádky do `.gitignore` jsou v `gitignore.txt` v adresáři tohoto skillu (`${CLAUDE_SKILL_DIR}/gitignore.txt`):
 
@@ -110,7 +110,7 @@ Na požádání uživatele, ne z argumentu:
 
 1. Zkopíruj obsah `${CLAUDE_SKILL_DIR}/template/` do `<repo>/.obsidian/`. Existující soubory nepřepisuj, rozdíly ukaž a zeptej se.
 2. Doplň do `.gitignore` řádky z `${CLAUDE_SKILL_DIR}/gitignore.txt`, pokud tam ještě nejsou. V repu kolegů místo toho přidej `.obsidian/` do `.git/info/exclude`.
-3. Když chybí `README.md`, založ ho jako rozcestník. `menu.md` zakládej, jen když uživatel chce lištu.
+3. Když chybí `README.md`, založ ho jako rozcestník. `menu.md` ani rozcestníky oblastí nezakládej.
 4. Když jde o vnořený vault, srovnej nastavení podle části Vnořený vault.
 5. Spusť kontrolu níže.
 
@@ -131,8 +131,9 @@ Platí, jen když argument výše není prázdný. Argument je adresář vaultu.
    - `obsidian/ignore-filter-no-glob`: glob v `userIgnoreFilters`,
    - `obsidian/gitignore-plugin-code`: chybí řádky z `gitignore.txt`, nebo se ignoruje celé `plugins/`. Neplatí, když je `.obsidian` v `.git/info/exclude`,
    - `obsidian/no-tracked-plugin-code`: git verzuje kód pluginu, téma nebo stav oken,
-   - `obsidian/root-readme`: chybí `README.md` (u vnořeného vaultu se nevyžaduje), nebo existuje `index.md` či `home.md`,
-   - `obsidian/menu-embed`: `menu.md` není vložené prvním řádkem `README.md`.
+   - `obsidian/root-readme`: chybí `README.md` (u vnořeného vaultu se nevyžaduje), nebo existuje `index.md` či `home.md`.
+
+   Zbylou `menu.md` a řádek `![[menu]]` hlásí `pankostka-md` jako `md/article-folder` a `md/no-wikilink`.
 
    Vnořené vaulty uvnitř argumentu kontroluje skript taky.
 

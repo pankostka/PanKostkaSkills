@@ -31,8 +31,7 @@ CASES = {
             ".obsidian/plugins/plugin/manifest.json": '{"id": "plugin"}',
             ".obsidian/plugins/plugin/data.json": "{}",
             ".gitignore": GITIGNORE_TXT,
-            "README.md": "![[menu]]\n\nRozcestník.\n",
-            "menu.md": "[Rozcestník](README.md)\n",
+            "README.md": "Rozcestník.\n",
             # vnořený vault se stejným nastavením souborů a vlastním rozcestníkem
             "WikiKostkaTest/.obsidian/app.json": json.dumps({"alwaysUpdateLinks": True, "attachmentFolderPath": "./", "useMarkdownLinks": True, "newLinkFormat": "relative", "strictLineBreaks": False}),
             "WikiKostkaTest/KostkaTest.md": "Rozcestník kostky.\n",
@@ -49,8 +48,7 @@ CASES = {
     "ok_nogit": {
         "files": {
             ".obsidian/app.json": GOOD_APP,
-            "README.md": "---\ntitle: Rozcestník\n---\n![[menu]]\n",
-            "menu.md": "Lišta.\n",
+            "README.md": "---\ntitle: Rozcestník\n---\nRozcestník.\n",
         },
     },
     "ko_nested-same-settings": {
@@ -121,14 +119,6 @@ CASES = {
             ".obsidian/app.json": GOOD_APP,
             "index.md": "Rozcestník.\n",
             "home.md": "Rozcestník.\n",
-        },
-    },
-    "ko_menu-embed": {
-        "count": 1,
-        "files": {
-            ".obsidian/app.json": GOOD_APP,
-            "README.md": "# Rozcestník\n\n![[menu]]\n",
-            "menu.md": "Lišta.\n",
         },
     },
 }

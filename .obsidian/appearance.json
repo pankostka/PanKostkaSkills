@@ -3,7 +3,6 @@
   "monospaceFontFamily": "Cascadia Code",
   "cssTheme": "AnuPpuccin",
   "enabledCssSnippets": [
-    "menu-style",
     "obrazek-vlevo"
   ]
 }

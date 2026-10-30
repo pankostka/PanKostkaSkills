@@ -47,7 +47,7 @@ Výjimkou jsou instrukce pro AI (`CLAUDE.md`, popisy skillů), které mluví na 
 
 Callout (`> [!typ] Titulek`) je povolený. Obsidian, GitHub i Markra vykreslí jako rámeček typy `note`, `tip`, `important`, `warning` a `caution`. Vlastní typ, třeba `navrh-ai`, má barvu a ikonu jen v Obsidianu z CSS snippetu v `.obsidian/snippets/`, jinde se zobrazí jako obyčejná citace. Nerozbije se, jen ztratí barvu.
 
-Vložení článku do jiného (`![[menu]]`) standardní Markdown nezná a jiný editor ho vypíše doslova. Používá se jen tam, kde ho vyžaduje `pankostka-obsidian`, tedy pro lištu `menu.md` v rozcestníku.
+Vložení článku do jiného (`![[Článek]]`) standardní Markdown nezná a jiný editor ho vypíše doslova. **Článek se nevkládá, odkazuje se na něj** (`md/no-wikilink`). Proto ani navigační lišta `menu.md` vkládaná do rozcestníku: navigaci dělá strom souborů a rozcestník v `README.md`.
 
 ## Kde článek leží
 
@@ -86,7 +86,6 @@ Vlastní adresář nedostávají soubory, jejichž jméno a umístění určuje 
 | --- | --- |
 | `README.md` | titulní strana repa na GitHubu a rozcestník vaultu |
 | `CLAUDE.md`, `CLAUDE_Project.md`, `AGENTS.md` | AI je hledá podle jména |
-| `menu.md` | navigační lišta vkládaná do rozcestníku |
 | `LICENSE.md`, `CHANGELOG.md`, `CONTRIBUTING.md` | konvence GitHubu |
 | `SKILL.md` a články vedle něj | adresář skillu je jejich adresářem |
 | `tasks/tasks.md` | rozcestník úkolů, viz `pankostka-tasks` |
@@ -140,7 +139,7 @@ Adresář článku je součást článku, ne struktura repa, proto smí mít dia
 [Obsidian Nastavení](../Obsidian%20Nastavení/Obsidian%20Nastavení.md)
 ```
 
-Wikilink je syntaxe Obsidianu. GitHub ho vypíše jako holý text a jiný editor ho nemusí otevřít. Standardní odkaz funguje všude.
+Wikilink je syntaxe Obsidianu. GitHub ho vypíše jako holý text a jiný editor ho nemusí otevřít. Standardní odkaz funguje všude. Pravidlo hlásí i vložení článku `![[...]]`, viz Editor.
 
 - **Mezera v cestě se píše `%20`**, tak odkaz zapíše Obsidian. Funguje i cesta v lomených závorkách `[Text](<../Obsidian Nastavení/Obsidian Nastavení.md>)`. Diakritika a emoji se nekódují.
 - **Text odkazu je název článku**, nebo slova věty, ke kterým odkaz patří.
@@ -220,7 +219,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    - `md/keyboard-chars`: zakázané znaky mimo bloky kódu a inline kód,
    - `md/no-hard-wrap`: odstavec, odrážka nebo citace zalomená uprostřed věty, tedy na pevnou šířku,
    - `md/article-folder`: článek neleží v adresáři svého jména a není mezi výjimkami z tabulky v části Adresář článku,
-   - `md/no-wikilink`: odkaz jako `[[...]]`, s návrhem standardního odkazu, když článek ve vaultu najde. Vložení článku `![[...]]` nehlásí,
+   - `md/no-wikilink`: odkaz jako `[[...]]`, s návrhem standardního odkazu, když článek ve vaultu najde, a vložení článku `![[...]]`,
    - `md/no-broken-link`: relativní odkaz nebo obrázek, jehož cíl neexistuje,
    - `md/image-markdown-alt`: obrázek jako `![[...]]`, obrázek bez popisu,
    - `md/attachment-own-folder`: obrázek neleží přímo v adresáři článku (cesta s `/`, tedy i `Attachments/`),
@@ -236,7 +235,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
    - `md/no-addressing-reader` a `md/czech-style`: oslovení čtenáře a dlouhá souvětí,
    - **věty na samostatných řádcích bez prázdného řádku mezi nimi**: skript je nehlásí, protože nejde o zalomení na pevnou šířku. Obsidian je zobrazí pod sebou, jiné nástroje je ale mohou spojit do jednoho odstavce. Když jde o samostatné myšlenky, navrhni prázdný řádek mezi nimi nebo odrážky,
-   - `md/standard-markdown`: syntaxe jen jednoho editoru, třeba vložení článku `![[...]]` mimo lištu `menu.md`, zvýraznění `==text==` nebo komentář `%%...%%`,
+   - `md/standard-markdown`: syntaxe jen jednoho editoru, třeba zvýraznění `==text==` nebo komentář `%%...%%`,
    - `md/term-article`: jednotná terminologie a pojem článek,
    - `md/article-location` a `md/readme-index`: umístění článku (`docs/` nebo v adresáři objektu spolu s jeho kódem) a rozcestník v `README.md`,
    - `md/file-names`: název článku a složky podle tabulky Názvy souborů,

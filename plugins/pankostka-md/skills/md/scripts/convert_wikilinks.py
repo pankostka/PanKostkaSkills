@@ -62,7 +62,8 @@ def convert_line(line, cleaned, index, source):
         ext = os.path.splitext(target)[1].lower()
         image = ext in check_md.IMAGE_EXT
         if embed and not image:
-            continue  # vložení článku, třeba ![[menu]]
+            kept.append(f"{before} je vložení článku, standardní Markdown ho nezná, nahraď ho ručně odkazem nebo textem")
+            continue
         path, why = resolve(target, index, source)
         if path is None:
             kept.append(f"{before}: {why}")

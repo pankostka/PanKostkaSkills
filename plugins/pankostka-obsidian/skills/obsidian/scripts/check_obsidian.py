@@ -152,15 +152,6 @@ def check_git(vault, findings):
             findings.append((os.path.join(top, rel), 1, "obsidian/no-tracked-plugin-code", "git soubor verzuje, i když ho .gitignore ignoruje, odstraň ho z indexu přes git rm --cached"))
 
 
-def first_content_line(path):
-    with open(path, encoding="utf-8-sig") as f:
-        lines = [l.strip() for l in f.read().splitlines()]
-    if lines and lines[0] == "---":
-        end = next((i for i in range(1, len(lines)) if lines[i] in ("---", "...")), 0)
-        lines = lines[end + 1:]
-    return next((l for l in lines if l), "")
-
-
 def check_root(vault, nested, findings):
     """Vnořený vault je samostatný výstup a rozcestník mu určuje jeho obor, README.md se u něj nevyžaduje."""
     names = {n.lower(): n for n in os.listdir(vault)}
@@ -170,8 +161,6 @@ def check_root(vault, nested, findings):
     for other in ("index.md", "home.md"):
         if other in names:
             findings.append((os.path.join(vault, names[other]), 1, "obsidian/root-readme", f"{names[other]} jako rozcestník, použij README.md"))
-    if "menu.md" in names and "readme.md" in names and first_content_line(readme) != "![[menu]]":
-        findings.append((readme, 1, "obsidian/menu-embed", "menu.md existuje, ale README.md ho nevkládá prvním řádkem ![[menu]]"))
 
 
 def check_vault(vault, parent):

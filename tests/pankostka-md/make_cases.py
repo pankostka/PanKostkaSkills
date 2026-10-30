@@ -90,7 +90,6 @@ w("ok_article/nsp20DimUcet/nsp20DimUcet.sql", "SELECT 1\n")
 w("ok_no-folder/README.md", "Rozcestník.\n\n![Logo](logo.png)\n")
 w("ok_no-folder/logo.png", "")
 w("ok_no-folder/CLAUDE.md", "Pravidla pro AI.\n")
-w("ok_no-folder/menu.md", "Lišta.\n")
 w("ok_no-folder/tasks/tasks.md", "Rozcestník úkolů.\n")
 w("ok_no-folder/skills/md/SKILL.md", "Zásady.\n")
 w("ok_no-folder/skills/md/glossary.md", "Slovník vedle SKILL.md.\n")
@@ -168,8 +167,6 @@ a("ko_image-markdown-alt", "Článek", """<!-- celkem 3 -->
 ![](bez_popisu.png)
 
 ![](taky_bez_popisu.png)
-
-![[Jiný článek]] se nehlásí, je to vložený článek.
 """)
 w("ko_image-markdown-alt/Článek/bez_popisu.png", "")
 w("ko_image-markdown-alt/Článek/taky_bez_popisu.png", "")
@@ -224,7 +221,7 @@ a("ko_tag-one-variant", "C", "---\ntags: [OBSIDIAN]\n---\nC.\n")
 a("ko_no-link-to-private", f"Veřejný {G}", f"""<!-- celkem 3 -->
 Odkaz na [Interní](../Interní/Interní.md) a na [Druhý {G}](../Druhý%20{G}/Druhý%20{G}.md).
 
-![[Interní]]
+Odkaz s kotvou na [Interní](../Interní/Interní.md#nadpis).
 
 Odkaz v lomených závorkách na [interní článek](<../Interní/Interní.md>).
 """)
@@ -241,8 +238,8 @@ Rozepsaný [článek](../Rozepsaný-TMP/Rozepsaný-TMP.md).
 """)
 a("ko_no-link-to-tmp", "Interní", "Interní článek smí odkazovat na [měření](mereni-TMP.sql).\n")
 
-# --- ko_no-wikilink: vložení článku ![[...]] se toleruje
-a("ko_no-wikilink", "Článek", """<!-- celkem 3 -->
+# --- ko_no-wikilink: hlásí se i vložení článku ![[...]], vložený obrázek hlídá md/image-markdown-alt
+a("ko_no-wikilink", "Článek", """<!-- celkem 4 -->
 Odkaz na [[Druhý]], s aliasem na [[Druhý|druhý článek]] a na [[Neexistující]].
 
 ![[Druhý]]
