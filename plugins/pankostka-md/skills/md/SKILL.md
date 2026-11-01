@@ -74,7 +74,7 @@ Cenou je, že se články nedají vyjmenovat jedním výpisem `docs/`. `md/readm
 
 ## Adresář článku
 
-`md/article-folder` **Každý článek leží ve vlastním adresáři, který se jmenuje přesně jako článek**, včetně markeru 🌐 a sufixu `-TMP`: `Obsidian Nastavení 🌐/Obsidian Nastavení 🌐.md`. V adresáři je všechno, co k článku patří: obrázky, přílohy, ukázky, pomocné soubory `-TMP` i export do PDF.
+`md/article-folder` **Každý článek leží ve vlastním adresáři, který se jmenuje přesně jako článek**, včetně markeru 🌐 a sufixu `-TMP`: `Obsidian nastavení 🌐/Obsidian nastavení 🌐.md`. V adresáři je všechno, co k článku patří: obrázky, přílohy, ukázky, pomocné soubory `-TMP` i export do PDF.
 
 Důvod: článek je celek. Přesune se, přejmenuje nebo smaže jako jeden adresář a nezůstanou po něm osiřelé přílohy. Ve společné složce na přílohy nebylo poznat, co patří ke kterému článku.
 
@@ -104,7 +104,7 @@ Pravidlo *dokumentace se píše v Markdownu* mluví o tom, co se píše, ne o to
 
 Aby přílohy vznikaly na správném místě samy, má Obsidian nastavené `attachmentFolderPath` na `./`, tedy *do stejné složky jako aktuální soubor*. V jiném editoru se vkládání obrázků nastaví stejně, pokud to editor umí, jinak se obrázek přesune vedle článku ručně. Platí to i pro soubory bez vlastního adresáře: obrázek vložený do `README.md` leží vedle něj.
 
-`md/attachment-name` Vložený obrázek pojmenuje Obsidian sám jako `Pasted image 20260727145759.png`, tedy s mezerou, velkým písmenem a nic neříkajícím číslem. **Přejmenuj ho hned**. Obsidian si odkaz opraví sám, v jiném editoru se opraví ručně. Výjimkou je náhledový obrázek pro web, ten se jmenuje jako článek (`Obsidian Nastavení.png`), protože ho generátor webu hledá podle názvu.
+`md/attachment-name` Vložený obrázek pojmenuje Obsidian sám jako `Pasted image 20260727145759.png`, tedy nic neříkajícím číslem. **Přejmenuj ho hned podle obsahu**, třeba `Mapování krok 1.png`. Obsidian si odkaz opraví sám, v jiném editoru se opraví ručně. Jinak se název přílohy nekontroluje, do adresy na webu ho převede slug. Náhledový obrázek pro web se jmenuje přesně jako článek (`Obsidian nastavení.png`), protože ho generátor webu hledá podle názvu.
 
 ### Soubory -TMP
 
@@ -112,22 +112,20 @@ Pomocné soubory k článku, tedy testovací dotazy, výstupy měření, podklad
 
 `md/no-link-to-tmp` **Veřejný článek na soubor `-TMP` neodkazuje.** Soubor není v gitu ani na webu, takže čtenář narazí na mrtvý odkaz. Interní článek odkazovat smí, třeba úkol na výstup měření, protože ho čte ten, kdo soubor má na disku.
 
-Rozepsaný článek mimo git má sufix na adresáři i na souboru: `Nový Článek-TMP/Nový Článek-TMP.md`. Adresář se sufixem `-TMP` vyřadí z gitu i všechno uvnitř.
+Rozepsaný článek mimo git má sufix na adresáři i na souboru: `Nový článek-TMP/Nový článek-TMP.md`. Adresář se sufixem `-TMP` vyřadí z gitu i všechno uvnitř.
 
 ## Názvy souborů
 
-`md/file-names` Názvy článků, příloh a složek:
-
+`md/file-names` Názvy článků a složek:
 | Co | Konvence | Příklad |
 | --- | --- | --- |
-| **Článek** | mezera jako oddělovač, každé slovo velkým, **s diakritikou** | `Obsidian Nastavení.md` |
+| **Článek** | jako česká věta: velké první písmeno a vlastní jména, mezera jako oddělovač, **s diakritikou** | `Obsidian nastavení.md` |
 | **Článek pojmenovaný po objektu** | přesně název objektu, včetně diakritiky, pokud ji objekt má | `DimZakaznik.md`, `DimÚčet.md` |
-| **Adresář článku** | přesně jako článek, včetně markeru 🌐 a sufixu `-TMP` | `Obsidian Nastavení 🌐/` |
-| **Obrázek a příloha** | **malými písmeny bez diakritiky**, podtržítko jako oddělovač | `nastaveni_mapovani_krok1.png` |
+| **Adresář článku** | přesně jako článek, včetně markeru 🌐 a sufixu `-TMP` | `Obsidian nastavení 🌐/` |
 | **Složka strukturální** | **anglicky, ASCII**, bez emoji | `docs/`, `tasks/` |
 | **Složka tematická** | jako článek, bez emoji | `Účetnictví/` |
 
-Oddělovač v názvu přílohy je **podtržítko, ne pomlčka**. Pomlčka je vyhrazená pro sufixy `-VZOR`, `-DRAFT` a `-TMP`, které popisuje skill `pankostka-git`.
+Název článku je titulek, proto se píše jako česká věta. Velké písmeno u každého slova je anglický zvyk, v češtině působí cize a o velikosti písmen v adrese webu stejně nerozhoduje, slug ji převede na malá.
 
 Adresář článku je součást článku, ne struktura repa, proto smí mít diakritiku i marker. Složka strukturální je součást uspořádání repa nebo nástroje, složka tematická sdružuje články podle obsahu a čte se jako titulek. Rozhoduje povaha názvu, ne jeho autor: co se objeví v cestě, v adrese nebo v konfiguraci, je struktura; co čte člověk jako titulek, je obsah. Struktura zůstává v ASCII, protože se propisuje do skriptů, příkazové řádky a odkazů na GitHubu, kde diakritika naráží na kódování.
 
@@ -138,12 +136,12 @@ Adresář článku je součást článku, ne struktura repa, proto smí mít dia
 `md/no-wikilink` **Odkaz na článek je standardní markdownový odkaz s relativní cestou**, ne wikilink `[[...]]`:
 
 ```markdown
-[Obsidian Nastavení](../Obsidian%20Nastavení/Obsidian%20Nastavení.md)
+[Obsidian nastavení](../Obsidian%20nastavení/Obsidian%20nastavení.md)
 ```
 
 Wikilink je syntaxe Obsidianu. GitHub ho vypíše jako holý text a jiný editor ho nemusí otevřít. Standardní odkaz funguje všude. Pravidlo hlásí i vložení článku `![[...]]`, viz Editor.
 
-- **Mezera v cestě se píše `%20`**, tak odkaz zapíše Obsidian. Funguje i cesta v lomených závorkách `[Text](<../Obsidian Nastavení/Obsidian Nastavení.md>)`. Diakritika a emoji se nekódují.
+- **Mezera v cestě se píše `%20`**, tak odkaz zapíše Obsidian. Funguje i cesta v lomených závorkách `[Text](<../Obsidian nastavení/Obsidian nastavení.md>)`. Diakritika a emoji se nekódují.
 - **Text odkazu je název článku**, nebo slova věty, ke kterým odkaz patří.
 - **Odkaz vede na článek, ne na nadpis v něm.** Kotva nadpisu má v každém nástroji jiný tvar (Obsidian `#Název%20nadpisu`, GitHub `#nazev-nadpisu`). Výjimkou je odkaz na sekci uvnitř téhož článku.
 
@@ -174,7 +172,7 @@ Volitelný. Článek bez frontmatteru je plnohodnotný článek.
 
 `md/title-from-filename` **Titulek je název souboru**, jako v Obsidianu. `title` je výjimka pro technický název, třeba článek pojmenovaný po objektu. **Titulek se nebere z nadpisu `# H1`.** Jediné H1 bývá titulek, ale v článku ze šablony to může být první sekce, třeba `# Popis`, a z textu se to poznat nedá.
 
-**Slug je název výstupního souboru, tedy i adresa na webu.** Odvozuje se z názvu článku: malá písmena, bez diakritiky, mezera na pomlčku. `Obsidian Nastavení.md` dá `obsidian-nastaveni.html`.
+**Slug je název výstupního souboru, tedy i adresa na webu.** Odvozuje se z názvu článku: malá písmena, bez diakritiky, mezera na pomlčku. `Obsidian nastavení.md` dá `obsidian-nastaveni.html`.
 
 `md/tag-pascal-case` **Tag se píše v PascalCase**, tedy `Obsidian`, `Markdown`, `PowerBI`, `AI`: každé slovo velkým, bez mezer a oddělovačů. Tak, jak je zapsaný, se zobrazí na webu, takže je to i popisek pro čtenáře.
 
@@ -227,7 +225,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    - `md/attachment-own-folder`: obrázek neleží přímo v adresáři článku (cesta s `/`, tedy i `Attachments/`),
    - `md/frontmatter-keys`: klíče `titul`, `datum` a `publish`, `date` mimo tvar `RRRR-MM-DD`,
    - `md/tag-pascal-case`: tag mimo PascalCase (podtržítko na začátku je povolené),
-   - `md/attachment-name`: `Pasted image*`, obrázek v adresáři článku s jinými znaky než malá písmena, číslice a podtržítko, kromě náhledu pojmenovaného jako článek,
+   - `md/attachment-name`: nepřejmenovaný obrázek `Pasted image*`,
    - `md/tag-one-variant`: tentýž tag ve více variantách velikosti písmen,
    - `md/no-link-to-private`: článek s markerem 🌐 odkazuje na článek bez markeru,
    - `md/no-link-to-tmp`: článek s markerem 🌐 odkazuje na soubor nebo článek se sufixem `-TMP`.

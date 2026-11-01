@@ -204,13 +204,13 @@ Text.
 """)
 
 # --- ko_attachment-name
-a("ko_attachment-name", "Článek", """<!-- celkem 2 -->
+a("ko_attachment-name", "Článek", """<!-- celkem 1 -->
 ![Vložený obrázek](Pasted%20image%2020260727145759.png)
 
-![Schéma](Schema-Krok1.png)
+![Schéma](Schéma%20krok%201.png)
 """)
 w("ko_attachment-name/Článek/Pasted image 20260727145759.png", "")
-w("ko_attachment-name/Článek/Schema-Krok1.png", "")
+w("ko_attachment-name/Článek/Schéma krok 1.png", "")
 
 # --- ko_tag-one-variant
 a("ko_tag-one-variant", "A", "---\ntags: [Obsidian]\n---\n<!-- celkem 1 -->\nA.\n")

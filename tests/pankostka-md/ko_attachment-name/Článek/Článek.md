@@ -1,4 +1,4 @@
-<!-- celkem 2 -->
+<!-- celkem 1 -->
 ![Vložený obrázek](Pasted%20image%2020260727145759.png)
 
-![Schéma](Schema-Krok1.png)
+![Schéma](Schéma%20krok%201.png)

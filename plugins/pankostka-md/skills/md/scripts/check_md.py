@@ -55,7 +55,6 @@ RE_MD_IMAGE = re.compile(r"!\[([^\]]*)\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_MD_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)")
 RE_KEY = re.compile(r"([A-Za-z_][\w-]*)\s*:(.*)$")
 RE_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
-RE_ATTACHMENT = re.compile(r"[a-z0-9_]+(\.[a-z0-9]+)+")
 RE_ALLOW = re.compile(r"pankostka:\s*allow\s+([a-z]+/[a-z0-9-]+(?:\s*,\s*[a-z]+/[a-z0-9-]+)*)\s*,\s*[^\s-]", re.IGNORECASE)
 
 
@@ -370,20 +369,10 @@ def links_of(lines, fm_end, skip):
     return out
 
 
-def in_article_folder(path):
-    """Soubor leží v adresáři článku, tedy vedle <adresář>.md."""
-    d = os.path.dirname(os.path.abspath(path))
-    return os.path.isfile(os.path.join(d, os.path.basename(d) + ".md"))
-
-
 def check_attachment(path):
-    """Obrázek v adresáři článku. Náhledový obrázek pro web se jmenuje jako článek."""
-    name = os.path.basename(path)
-    if name.startswith("Pasted image"):
-        return [(1, "md/attachment-name", "nepřejmenovaný obrázek z Obsidianu, přejmenuj ho malými písmeny s podtržítky")]
-    stem = os.path.splitext(name)[0]
-    if stem != os.path.basename(os.path.dirname(os.path.abspath(path))) and not RE_ATTACHMENT.fullmatch(name):
-        return [(1, "md/attachment-name", "název přílohy smí mít jen malá písmena bez diakritiky, číslice a podtržítka")]
+    """Obrázek vložený do Obsidianu a nepřejmenovaný."""
+    if os.path.basename(path).startswith("Pasted image"):
+        return [(1, "md/attachment-name", "nepřejmenovaný obrázek z Obsidianu, pojmenuj ho podle obsahu")]
     return []
 
 
@@ -466,12 +455,11 @@ def allowed(lines, line, rule):
 
 
 def wanted(path, rel):
-    """Soubor, který kontrola zajímá: článek, nebo obrázek v adresáři článku. Sufix -TMP se hledá jen v relativní části cesty."""
+    """Soubor, který kontrola zajímá: článek, nebo nepřejmenovaný obrázek z Obsidianu. Sufix -TMP se hledá jen v relativní části cesty."""
     name = os.path.basename(path)
     if is_tmp(name) or any(is_tmp(p) or p in SKIP_DIRS for p in re.split(r"[\\/]", os.path.dirname(rel))):
         return False
-    image = os.path.splitext(name)[1].lower() in IMAGE_EXT
-    return name.lower().endswith(".md") or name.startswith("Pasted image") or (image and in_article_folder(path))
+    return name.lower().endswith(".md") or name.startswith("Pasted image")
 
 
 def git_top():

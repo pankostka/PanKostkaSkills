@@ -6,7 +6,7 @@ Web staví [obsidian2html](https://github.com/pankostka/obsidian2html), veřejn�
 
 ## Marker
 
-**Co jde na web, určuje marker na konci názvu článku, ne frontmatter.** Třeba `Obsidian Nastavení 🌐.md`. `obsidian2html` publikuje jen články se znakem, který mu dávka předá přepínačem `--publish`, a z titulku i z adresy ho strhne.
+**Co jde na web, určuje marker na konci názvu článku, ne frontmatter.** Třeba `Obsidian nastavení 🌐.md`. `obsidian2html` publikuje jen články se znakem, který mu dávka předá přepínačem `--publish`, a z titulku i z adresy ho strhne.
 
 Chybějící marker znamená neveřejné. Zveřejňuje se tak vědomým úkonem, nikdy opomenutím, a je to vidět rovnou ve stromu souborů, ne až v otevřeném článku. Web, který čte jen jeho autor, smí publikovat všechno (`--publish "*.md"`), ale i tam dávka říká nahlas, co jde ven. Klíč `publish` ve frontmatteru nástroj nečte a build na něj jen upozorní.
 
