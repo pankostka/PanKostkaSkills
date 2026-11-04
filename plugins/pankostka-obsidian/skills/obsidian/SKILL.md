@@ -1,6 +1,6 @@
 ---
 name: pankostka-obsidian
-description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a navigace bez menu.md, nastavení app.json (přílohy vedle článku, standardní odkazy s relativní cestou, skryté soubory), plugin Folder Notes, co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
+description: Zásady pro vault v Obsidianu nad git repem - jeden vault na repo, vnořený vault, kořen vaultu s README.md a navigace bez menu.md, nastavení app.json (přílohy vedle článku, standardní odkazy s relativní cestou, skryté soubory), co z .obsidian verzovat a co patří do .gitignore, šablona konfigurace pro nový vault. Použij, když zakládáš, nastavuješ nebo kontroluješ vault, adresář .obsidian nebo jeho řádky v .gitignore. S argumentem (adresář vaultu) zkontroluje vault proti zásadám a vypíše neshody.
 argument-hint: "[adresář vaultu]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_obsidian.py *)
 ---
@@ -100,7 +100,7 @@ Konfigurace `.obsidian` se dělí na tři hromádky. Test: **jmenuje ten soubor 
 
 Adresář `template/` v adresáři tohoto skillu je hromádka *jak se Obsidian chová*: nastavení, seznam pluginů s manifesty a CSS snippety. Kód pluginů a téma v ní nejsou, Obsidian po otevření vaultu nabídne jejich stažení ze storu.
 
-**Plugin Folder Notes** je v šabloně kvůli adresáři na článek: článek leží v adresáři svého jména a plugin ho otevře kliknutím na adresář, skryje ho ve stromu souborů a při přejmenování adresáře přejmenuje i článek. Jeho výchozí nastavení (článek uvnitř adresáře, název podle adresáře) odpovídá pravidlům, takže `data.json` v šabloně není potřeba.
+**Plugin Folder Notes v šabloně není.** Spojuje článek s adresářem podle shodného názvu, ale podle `pankostka-md` je název adresáře článku volný a v adresáři smí ležet víc článků. Plugin by tak pokryl jen část článků a při přejmenování adresáře by přejmenoval i článek, který se přejmenovat nemá.
 
 `obsidian/template-file-list` **Kopíruje se jmenovitý seznam souborů, adresář se nezrcadlí.** Zrcadlení by při další synchronizaci smazalo `data.json` pluginů a další soubory, které jmenují články cílového vaultu.
 
