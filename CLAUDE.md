@@ -24,7 +24,7 @@ Všechno, co uživatel píše, začíná `pankostka-`, a volání je v Claude Co
 
 - Bez argumentu skill jen načte zásady.
 - S argumentem (soubor, adresář, `--changed`, název objektu) skill kontroluje a vypisuje neshody s návrhy. **Nic nezapisuje.**
-- Zápis povoluje jen přepínač `--make`, a jen u skillu, který ho v `argument-hint` uvádí. Dnes je to `pankostka-powerbi-wiki`. Pokyn slovy, který o zápis výslovně žádá (třeba `Aktualizuj wiki`), znamená totéž co `--make`.
+- Zápis povoluje jen přepínač `--make`, a jen u skillu, který ho v `argument-hint` uvádí. Dnes je to `pankostka-powerbi-wiki` a `pankostka-audio-text`. Pokyn slovy, který o zápis výslovně žádá (třeba `Aktualizuj wiki`, `Přepiš nahrávku`), znamená totéž co `--make`.
 
 ## Identifikátory pravidel
 
@@ -41,7 +41,7 @@ Každé normativní pravidlo (co se má nebo nesmí) má identifikátor **`<tém
 - Názvy souborů a adresářů anglicky, obsah česky včetně diakritiky.
 - `SKILL.md` je zdroj pravidel, ne výtah z jiného dokumentu. Odůvodnění pravidel v něm zůstávají.
 - Skilly musí fungovat i samostatně jako zip pro claude.ai: žádné odkazy mimo adresář skillu a žádné `${CLAUDE_PLUGIN_ROOT}`, jen `${CLAUDE_SKILL_DIR}`.
-- Skripty jen se standardní knihovnou Pythonu.
+- Skripty jen se standardní knihovnou Pythonu. Výjimkou je `transcribe.py` v `pankostka-audio-text`, přepis řeči bez modelu nejde. Jeho závislosti uvádí `SKILL.md`.
 - Zkratky a pojmy jsou v `glossary.md` skillu, který je používá: DWH v `pankostka-dwh`, Helios v `pankostka-nephrite`, Power BI v `pankostka-powerbi`. Samostatný skill na slovník není, model by ho musel načítat zvlášť. Zkratka potřebná ve dvou skillech (FV, FD) je v obou. Zkratky společností a zdrojů do veřejného repa nepatří.
 - Mechanická pravidla kontroluje skript, úsudek model. Nové pravidlo ve skriptu potřebuje test `ko_<popis>`.
 - Testy: `ok_*` nesmí mít neshodu, `ko_<popis>_*` jen neshody pravidla s tím popisem, počet podle textu `celkem N` v testu. Test je soubor, nebo adresář, když pravidlo porovnává soubory mezi sebou (`pankostka-md`: přílohy, tagy, odkazy). Testy `ko_` porušují pravidla záměrně, kontrola skillu na ně nemíří.

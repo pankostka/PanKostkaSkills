@@ -16,6 +16,7 @@ Obsah skillů je česky.
 | [`pankostka-nephrite`](plugins/pankostka-nephrite/skills/nephrite/SKILL.md) | Databáze ERP Helios Nephrite: schéma `lcs`, datový model, vlastní tabulky, NSP procedury, formuláře, nasazení skriptů. Kontrola skriptů nasazovaných do Heliosu | `/pankostka-nephrite [soubor \| adresář \| --changed]` |
 | [`pankostka-tasks`](plugins/pankostka-tasks/skills/tasks/SKILL.md) | Adresář `tasks/` s rozpracovanými úkoly: rozcestník, článek na úkol, průběžný zápis, pomocné soubory, mazání po dokončení. Kontrola rozcestníku a článků | `/pankostka-tasks [adresář]` |
 | [`pankostka-git`](plugins/pankostka-git/skills/git/SKILL.md) | Práce s gitem: commit zpráva a její předání shellu, kdy commitovat, kódování, sufixy `-VZOR`, `-DRAFT` a `-TMP`, hooky. Kontrola `.gitignore`, sufixů, BOM a commit zpráv | `/pankostka-git [adresář repa]` |
+| [`pankostka-audio-text`](plugins/pankostka-audio-text/skills/audio-text/SKILL.md) | Přepis nahrávky schůzky na text lokálně přes faster-whisper: prostředí a jeho pasti, výstup `.txt` vedle zápisu, zápis z přepisu jako koncept. S `--make` nahrávku přepíše | `/pankostka-audio-text [<nahrávka> [--make]]` |
 | [`pankostka-powerbi-wiki`](plugins/pankostka-powerbi/skills/wiki/SKILL.md) | Wiki kostky pro uživatele: článek na kostku, faktovku, dimenzi a report, tabulka ukazatelů z modelu. Kontrola wiki proti modelu, s `--make` zakládá a upravuje články | `/pankostka-powerbi-wiki [<Kostka> [--make]]` |
 
 Plugin se jmenuje stejně jako skill, jen `pankostka-powerbi-wiki` je druhý skill v pluginu `pankostka-powerbi`.
@@ -51,7 +52,7 @@ Bez argumentu se skill načte sám, když Claude píše nebo upravuje soubor, kt
 
 `--changed` zkontroluje jen soubory skillu (`.sql`, `.md` a přílohy), které git hlásí jako změněné nebo nové. Výsledkem je seznam neshod se soubory, řádky a návrhy oprav; nic se neopravuje bez odsouhlasení.
 
-Zapisovat smí jen skill s přepínačem `--make`, dnes `pankostka-powerbi-wiki`: `/pankostka-powerbi-wiki KostkaEKO` jen vypíše, co by udělal, `/pankostka-powerbi-wiki KostkaEKO --make` články založí a upraví.
+Zapisovat smí jen skill s přepínačem `--make`, dnes `pankostka-powerbi-wiki` a `pankostka-audio-text`: `/pankostka-powerbi-wiki KostkaEKO` jen vypíše, co by udělal, `/pankostka-powerbi-wiki KostkaEKO --make` články založí a upraví. Stejně `/pankostka-audio-text nahravka.mp3` jen ověří prostředí, s `--make` nahrávku přepíše.
 
 ## Vývoj
 

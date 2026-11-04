@@ -44,6 +44,11 @@
       "name": "pankostka-git",
       "source": "./plugins/pankostka-git",
       "description": "Zásady práce s gitem - commit zpráva, kdy commitovat, kódování, sufixy -VZOR, -DRAFT a -TMP, hooky - a kontrola repa proti nim"
+    },
+    {
+      "name": "pankostka-audio-text",
+      "source": "./plugins/pankostka-audio-text",
+      "description": "Přepis nahrávky schůzky na text lokálně přes faster-whisper - prostředí a jeho pasti, výstup .txt, přepis jako podklad pro zápis ze schůzky"
     }
   ]
 }
