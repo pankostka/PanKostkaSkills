@@ -2,7 +2,7 @@
 """Vyrobí testovací vaulty pro check_md.py.
 
 Testy porušují pravidla záměrně: zakázané znaky, mezery na konci řádku, BOM a cp1250. Editor i nástroje AI by je při zápisu tiše opravily, proto vznikají tímhle skriptem.
-Každý článek leží v adresáři svého jména, jinak by každý test hlásil i md/article-folder.
+Články leží většinou v adresáři svého jména, i když to pravidlo md/article-folder nevyžaduje. Volný název adresáře zkouší ok_folder.
 Spuštění: python tests/pankostka-md/make_cases.py, pak python tests/pankostka-md/run.py
 """
 import os
@@ -126,9 +126,29 @@ Firma s.r.o.
 Ulice 1
 """)
 
-# --- ko_article-folder
-w("ko_article-folder/Bez Adresáře.md", "<!-- celkem 2 -->\nČlánek přímo v kořeni.\n")
-w("ko_article-folder/Jiný/Jiný Název.md", "Článek v adresáři jiného jména.\n")
+# --- ok_folder: volný název adresáře, víc článků v adresáři, přílohy v podadresáři a v adresáři jiného článku
+w("ok_folder/Obsidian/Obsidian nastavení.md", """Článek v adresáři s jiným názvem.
+
+![Schéma](img/schema.png)
+
+![Obrázek jiného článku](../Markdown/odkaz.png)
+
+Podčlánek [Pluginy](Pluginy/Pluginy%20v%20praxi.md).
+""")
+w("ok_folder/Obsidian/Poznámky.md", "Pomocné poznámky vedle článku.\n")
+w("ok_folder/Obsidian/img/schema.png", "")
+w("ok_folder/Obsidian/Pluginy/Pluginy v praxi.md", "Podadresář s článkem je samostatný článek.\n\n![Graf](../img/schema.png)\n")
+w("ok_folder/Markdown/Markdown zásady.md", "![Odkaz](odkaz.png)\n")
+w("ok_folder/Markdown/odkaz.png", "")
+w("ok_folder/Rozepsaný-TMP/graf.png", "")  # adresář -TMP se nekontroluje
+w("ok_folder/Rozepsaný-TMP/Rozepsaný.md", "Rozepsaný článek.\n")
+
+# --- ko_article-folder: článek přímo v docs/ a v tasks/, příloha vedle článku -TMP v adresáři bez -TMP
+# kořen vaultu se tu zkoušet nedá: repo je samo vault, testovací vault by byl vnořený a jeho rozcestník je výjimka
+w("ko_article-folder/docs/Nasazení.md", "<!-- celkem 3 -->\nČlánek přímo v docs/.\n")
+w("ko_article-folder/tasks/Úkol.md", "Úkol přímo v tasks/.\n")
+w("ko_article-folder/Koncept/Koncept-TMP.md", "Rozepsaný článek.\n")
+w("ko_article-folder/Koncept/graf.png", "")
 
 # --- ko_keyboard-chars
 a("ko_keyboard-chars", "Článek", """<!-- celkem 5 -->
@@ -171,17 +191,24 @@ a("ko_image-markdown-alt", "Článek", """<!-- celkem 3 -->
 w("ko_image-markdown-alt/Článek/bez_popisu.png", "")
 w("ko_image-markdown-alt/Článek/taky_bez_popisu.png", "")
 
-# --- ko_attachment-own-folder
-a("ko_attachment-own-folder", "Článek", """<!-- celkem 3 -->
+# --- ko_attachment-own-folder: hlásí se jen obrázek v adresáři, který nepatří žádnému článku
+a("ko_attachment-own-folder", "Článek", """<!-- celkem 2 -->
 ![Popis](img/jinde.png)
 
 ![Popis](../Jiný/cizi.png)
 
+![Popis](../Attachments/spolecny.png)
+
 ![Popis](Attachments/stary.png)
+
+![Popis](../Druhý/jeho.png)
 """)
 w("ko_attachment-own-folder/Článek/img/jinde.png", "")
 w("ko_attachment-own-folder/Jiný/cizi.png", "")
+w("ko_attachment-own-folder/Attachments/spolecny.png", "")
 w("ko_attachment-own-folder/Článek/Attachments/stary.png", "")
+a("ko_attachment-own-folder", "Druhý", "Druhý článek.\n")
+w("ko_attachment-own-folder/Druhý/jeho.png", "")
 
 # --- ko_frontmatter-keys
 a("ko_frontmatter-keys", "Článek", """---

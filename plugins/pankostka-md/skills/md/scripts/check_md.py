@@ -11,7 +11,7 @@ Pravidlo md/no-broken-link ověřuje, že relativní odkaz a obrázek míří na
 Řádek s výjimkou <!-- pankostka: allow <identifikátor>, <důvod> --> na něm nebo nad ním se nehlásí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
-import json
+import functools
 import os
 import re
 import subprocess
@@ -32,9 +32,12 @@ FORBIDDEN = {
 }
 MARKER = "\U0001F310"
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp"}
+ATTACHMENT_EXT = IMAGE_EXT | {".pdf", ".docx", ".xlsx", ".pptx"}
 SKIP_DIRS = {".git", ".obsidian", ".trash", "node_modules", "__pycache__"}
 # soubory, jejichž jméno a umístění určuje nástroj nebo konvence, vlastní adresář nedostávají
 NO_FOLDER = {"readme", "claude", "claude_project", "agents", "license", "changelog", "contributing", "skill", "tasks"}
+# strukturální složky, ve kterých článek nesmí ležet přímo, vedle kořene vaultu a repa
+STRUCTURAL = {"docs", "tasks"}
 OLD_KEYS = {
     "titul": "klíč titul nástroj nečte, použij title",
     "datum": "klíč datum nástroj nečte, použij date",
@@ -185,7 +188,27 @@ def check_chars(lines, skip, findings):
             findings.append((i + 1, "md/keyboard-chars", f"zakázaný znak: {msg}"))
 
 
-def check_images(lines, fm_end, skip, findings):
+def in_article_folder(image, base):
+    """Obrázek leží vedle odkazujícího souboru, nebo v adresáři článku: některý adresář od obrázku nahoru
+    až po společného předka s odkazujícím souborem obsahuje článek. README.md a jiné pevné názvy se za článek nepočítají."""
+    d = os.path.dirname(image)
+    if d == base:
+        return True
+    try:
+        top = os.path.commonpath([d, base])
+    except ValueError:
+        return True  # jiný disk
+    while True:
+        if any(n[:-3].lower() not in NO_FOLDER for n in md_files(d)):
+            return True
+        parent = os.path.dirname(d)
+        if d == top or parent == d:
+            return False
+        d = parent
+
+
+def check_images(lines, fm_end, skip, path, findings):
+    base = os.path.dirname(os.path.abspath(path))
     for i in range(fm_end, len(lines)):
         if skip[i]:
             continue
@@ -200,8 +223,11 @@ def check_images(lines, fm_end, skip, findings):
             if re.match(r"[a-z][a-z0-9+.-]*:", target, re.IGNORECASE) or target.startswith("#"):
                 continue
             target = target.replace("\\", "/")
-            if "/" in (target[2:] if target.startswith("./") else target):
-                findings.append((i + 1, "md/attachment-own-folder", f"obrázek {target} neleží přímo v adresáři článku, přesuň ho vedle článku"))
+            image = os.path.normpath(os.path.join(base, target))
+            if any(is_tmp(p) for p in target.split("/")) or not os.path.isfile(image):
+                continue  # neexistující cíl hlásí md/no-broken-link
+            if not in_article_folder(image, base):
+                findings.append((i + 1, "md/attachment-own-folder", f"obrázek {target} neleží v adresáři žádného článku, přesuň ho do adresáře článku"))
 
 
 def check_wikilinks(lines, fm_end, skip, articles, path, findings):
@@ -261,38 +287,40 @@ def is_vault(d):
     return os.path.isdir(os.path.join(d, ".obsidian"))
 
 
-def templates_folder(vault):
-    """Složka šablon podle .obsidian/templates.json, nebo None."""
+def is_structural(d):
+    """Adresář, ve kterém článek nesmí ležet přímo: kořen vaultu, kořen repa, docs/ a tasks/."""
+    return is_vault(d) or os.path.exists(os.path.join(d, ".git")) or os.path.basename(d).lower() in STRUCTURAL
+
+
+@functools.lru_cache(maxsize=None)
+def md_files(d):
+    """Soubory .md přímo v adresáři."""
     try:
-        with open(os.path.join(vault, ".obsidian", "templates.json"), encoding="utf-8-sig") as f:
-            folder = json.load(f).get("folder")
-    except (OSError, ValueError, AttributeError):
-        return None
-    return os.path.normcase(os.path.join(vault, folder)) if folder else None
+        return [n for n in os.listdir(d) if n.lower().endswith(".md") and os.path.isfile(os.path.join(d, n))]
+    except OSError:
+        return []
+
+
+def tmp_only_folder(d):
+    """Adresář bez -TMP, ve kterém jsou jen články -TMP. Přílohy v něm by šly do gitu bez článku."""
+    d = os.path.abspath(d)
+    names = md_files(d)
+    return bool(names) and all(is_tmp(n) for n in names) and not is_tmp(os.path.basename(d)) and not is_structural(d)
 
 
 def check_folder(path):
-    """Článek leží v adresáři svého jména. Výjimky: pevná jména, soubory vedle SKILL.md, rozcestník vnořeného vaultu, šablony."""
+    """Článek neleží přímo v kořeni vaultu nebo repa ani ve strukturální složce. Výjimky: pevná jména a rozcestník vnořeného vaultu."""
     path = os.path.abspath(path)
     d, stem = os.path.dirname(path), os.path.basename(path)[:-3]
-    if stem.lower() in NO_FOLDER or stem == os.path.basename(d) or os.path.isfile(os.path.join(d, "SKILL.md")):
+    if stem.lower() in NO_FOLDER or not is_structural(d):
         return []
-    vaults = []
-    v = d
-    while True:
-        if is_vault(v):
-            vaults.append(v)
-        parent = os.path.dirname(v)
-        if parent == v:
-            break
-        v = parent
-    if is_vault(d) and len(vaults) > 1:
-        return []
-    for v in vaults:
-        folder = templates_folder(v)
-        if folder and os.path.normcase(path).startswith(folder + os.sep):
-            return []
-    return [(1, "md/article-folder", f"článek neleží v adresáři svého jména, přesuň ho do {stem}/{stem}.md")]
+    if is_vault(d):
+        v = os.path.dirname(d)
+        while os.path.dirname(v) != v:
+            if is_vault(v):
+                return []  # rozcestník vnořeného vaultu
+            v = os.path.dirname(v)
+    return [(1, "md/article-folder", f"článek leží přímo v {os.path.basename(d) or d}/, přesuň ho do vlastního adresáře s krátkým výstižným názvem")]
 
 
 def tmp_links(lines, fm_end, skip):
@@ -370,10 +398,13 @@ def links_of(lines, fm_end, skip):
 
 
 def check_attachment(path):
-    """Obrázek vložený do Obsidianu a nepřejmenovaný."""
+    """Obrázek vložený do Obsidianu a nepřejmenovaný. Příloha v adresáři, kde jsou jen články -TMP."""
+    out = []
     if os.path.basename(path).startswith("Pasted image"):
-        return [(1, "md/attachment-name", "nepřejmenovaný obrázek z Obsidianu, pojmenuj ho podle obsahu")]
-    return []
+        out.append((1, "md/attachment-name", "nepřejmenovaný obrázek z Obsidianu, pojmenuj ho podle obsahu"))
+    if tmp_only_folder(os.path.dirname(os.path.abspath(path))):
+        out.append((1, "md/article-folder", "příloha leží vedle článku -TMP v adresáři bez -TMP a commitne se bez článku, dej sufix -TMP adresáři"))
+    return out
 
 
 def vault_index(root):
@@ -410,7 +441,7 @@ def check_paths(paths, root):
         texts[path] = lines
         check_chars(lines, skip, findings)
         check_wrap(lines, fm_end, skip, findings)
-        check_images(lines, fm_end, skip, findings)
+        check_images(lines, fm_end, skip, path, findings)
         check_wikilinks(lines, fm_end, skip, articles, path, findings)
         check_broken(lines, fm_end, skip, path, findings)
         for line, tag in check_frontmatter(lines, fm_end, findings):
@@ -459,7 +490,9 @@ def wanted(path, rel):
     name = os.path.basename(path)
     if is_tmp(name) or any(is_tmp(p) or p in SKIP_DIRS for p in re.split(r"[\\/]", os.path.dirname(rel))):
         return False
-    return name.lower().endswith(".md") or name.startswith("Pasted image")
+    if name.lower().endswith(".md") or name.startswith("Pasted image"):
+        return True
+    return os.path.splitext(name)[1].lower() in ATTACHMENT_EXT and tmp_only_folder(os.path.dirname(os.path.abspath(path)))
 
 
 def git_top():

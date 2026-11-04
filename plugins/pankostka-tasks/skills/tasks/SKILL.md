@@ -31,9 +31,9 @@ Odrážka má za odkazem jednu až dvě věty: o co jde a v jakém je úkol stav
 
 ## Adresář úkolu
 
-`tasks/task-folder` **Každý úkol má vlastní adresář**, stejně jako každý článek podle `pankostka-md`: `tasks/Intercompany v KostkaEKO/Intercompany v KostkaEKO.md`. Adresář se jmenuje přesně jako článek.
+`tasks/task-folder` **Každý úkol má vlastní adresář**, stejně jako každý článek podle `pankostka-md`: `tasks/Intercompany/Intercompany v KostkaEKO.md`. Název adresáře je volný, krátký a výstižný. Vedle článku úkolu smějí ležet další články, třeba poznámky, přepisy nebo seznam podúkolů. Z `tasks.md` vede odkaz na článek úkolu, ostatní jsou jeho součást.
 
-`tasks/tmp-in-task-folder` Testovací dotazy, výstupy měření a ukázky k úkolu leží **v adresáři úkolu** se sufixem `-TMP`, třeba `tasks/Intercompany v KostkaEKO/mereni-TMP.sql`. Sufix je drží mimo git, adresář říká, ke kterému úkolu patří, a po dokončení úkolu se smaže celý. Soubor `-TMP` přímo v `tasks/` k žádnému úkolu nepatří a je nejspíš zbytek po smazaném úkolu.
+`tasks/tmp-in-task-folder` Testovací dotazy, výstupy měření a ukázky k úkolu leží **v adresáři úkolu** se sufixem `-TMP`, třeba `tasks/Intercompany/mereni-TMP.sql`. Sufix je drží mimo git, adresář říká, ke kterému úkolu patří, a po dokončení úkolu se smaže celý. Soubor `-TMP` přímo v `tasks/` k žádnému úkolu nepatří a je nejspíš zbytek po smazaném úkolu.
 
 ## Git
 
@@ -63,8 +63,8 @@ Platí, jen když argument výše není prázdný. Argument je adresář repa (k
 
    Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Výstup je jedna řádka na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`, řádek `tasks.md` s výjimkou `pankostka: allow` a důvodem se nehlásí. Pravidla:
    - `tasks/index`: chybí `tasks/tasks.md`, nebo odkaz v něm míří na článek, který v repu není,
-   - `tasks/article-per-task`: článek v `tasks/`, na který v `tasks.md` nevede odkaz,
-   - `tasks/task-folder`: článek úkolu přímo v `tasks/` mimo svůj adresář, nebo adresář bez článku svého jména,
+   - `tasks/article-per-task`: úkol v `tasks/`, na jehož žádný článek nevede odkaz z `tasks.md`,
+   - `tasks/task-folder`: článek úkolu přímo v `tasks/` mimo svůj adresář, nebo adresář úkolu bez článku,
    - `tasks/tmp-in-task-folder`: soubor nebo adresář `-TMP` přímo v `tasks/`, mimo adresář úkolu,
    - `tasks/in-git`: článek úkolu, který git nesleduje.
 

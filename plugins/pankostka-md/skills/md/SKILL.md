@@ -74,13 +74,17 @@ Cenou je, že se články nedají vyjmenovat jedním výpisem `docs/`. `md/readm
 
 ## Adresář článku
 
-`md/article-folder` **Každý článek leží ve vlastním adresáři, který se jmenuje přesně jako článek**, včetně markeru 🌐 a sufixu `-TMP`: `Obsidian nastavení 🌐/Obsidian nastavení 🌐.md`. V adresáři je všechno, co k článku patří: obrázky, přílohy, ukázky, pomocné soubory `-TMP` i export do PDF.
+`md/article-folder` **Každý článek leží ve vlastním adresáři a všechno, co k němu patří, leží v tom adresáři nebo v jeho podadresářích**: obrázky, přílohy, ukázky, pomocné soubory `-TMP` i export do PDF. Článek nesmí ležet přímo v kořeni vaultu nebo repa ani ve strukturální složce, jako je `docs/`.
 
-Důvod: článek je celek. Přesune se, přejmenuje nebo smaže jako jeden adresář a nezůstanou po něm osiřelé přílohy. Ve společné složce na přílohy nebylo poznat, co patří ke kterému článku.
+Důvod: článek je celek. Přesune se nebo smaže jako jeden adresář a nezůstanou po něm osiřelé přílohy. Ve společné složce na přílohy nebylo poznat, co patří ke kterému článku.
 
-Platí to všude stejně: v `docs/`, ve vaultu s know-how, ve wiki kostky i u úkolů v `tasks/`. Článek o objektu leží v adresáři pojmenovaném po objektu, třeba po plnicí proceduře, a s ním i kód objektu: `20_dim/nsp20DimUcet/` obsahuje `nsp20DimUcet.md`, `nsp20DimUcet.sql` a případně skript tabulky.
+**Název adresáře je volný**, doporučený je krátký a výstižný: `Obsidian/Obsidian nastavení 🌐.md`. Se článkem se shodovat nemusí. Název článku je česká věta, a kdyby ji adresář opakoval, cesty by byly zbytečně dlouhé a každé přejmenování článku by měnilo i cesty k přílohám. Marker 🌐 na adresáři pravidlo nevyžaduje. Kdo chce mít veřejnost vidět i ve stromu adresářů, udržuje ho ručně.
 
-Přejmenování článku znamená přejmenovat i adresář. V Obsidianu to udělá plugin Folder Notes ze šablony vaultu (viz `pankostka-obsidian`), který také otevře článek kliknutím na adresář. V jiném editoru se adresář přejmenuje ručně a opraví se odkazy na článek, viz Odkazy.
+**Jednotkou je adresář, ne soubor.** V adresáři článku smí ležet víc souborů `.md`: vedle článku poznámky, seznam úkolů, přepisy a jiné pomocné texty. Všechny jsou rovnocenné a platí pro ně stejná pravidla. Na web jde každý podle svého markeru 🌐. **Podadresář, ve kterém leží `.md`, je samostatný článek** a přílohy v něm patří jemu.
+
+Platí to všude stejně: v `docs/`, ve vaultu s know-how, ve wiki kostky i u úkolů v `tasks/`. Článek o objektu leží v adresáři objektu, třeba plnicí procedury, a s ním i kód objektu: `20_dim/nsp20DimUcet/` obsahuje `nsp20DimUcet.md`, `nsp20DimUcet.sql` a případně skript tabulky.
+
+Přejmenování článku adresář neovlivní. Přejmenování nebo přesun adresáře se dělá v Obsidianu, který opraví odkazy na články i přílohy v něm, viz `md/rename-in-obsidian`.
 
 Vlastní adresář nedostávají soubory, jejichž jméno a umístění určuje nástroj nebo konvence:
 
@@ -96,9 +100,9 @@ Vlastní adresář nedostávají soubory, jejichž jméno a umístění určuje 
 
 ## Přílohy
 
-`md/attachment-own-folder` Příloha je soubor, který článek doplňuje, ale sám článkem není: obrázek, XML vzorek, tabulka, dokument od dodavatele. **Leží přímo v adresáři článku, vedle souboru `.md`**, bez další podsložky. Složka `Attachments/` se nepoužívá: adresář článku je sám tou složkou a další úroveň by jen prodloužila cestu.
+`md/attachment-own-folder` Příloha je soubor, který článek doplňuje, ale sám článkem není: obrázek, XML vzorek, tabulka, dokument od dodavatele. **Leží v adresáři článku**, obvykle přímo vedle souboru `.md`. Podadresář je povolený, třeba když je příloh hodně, jen v něm nesmí ležet `.md`, jinak je to samostatný článek. Společná složka `Attachments/` v kořeni vaultu nebo v tematické složce se nepoužívá: příloha v ní nepatří žádnému článku.
 
-**Příloha patří jen jednomu článku.** Když tentýž obrázek potřebuje druhý článek, dostane vlastní kopii, nebo odkáže na článek, ve kterém obrázek je. Na obrázek v adresáři jiného článku se neodkazuje: po přesunu nebo smazání toho článku by se rozbil odkaz, o kterém nikdo neví. Odkaz na jiný soubor v repu, třeba na proceduru, je v pořádku, to není příloha.
+Odkaz na přílohu v adresáři jiného článku je dovolený, pokud funguje. Když se ten článek přesune nebo smaže, rozbitý odkaz ukáže `md/no-broken-link`. Kdo chce mít článek nezávislý, dá mu vlastní kopii přílohy.
 
 Pravidlo *dokumentace se píše v Markdownu* mluví o tom, co se píše, ne o tom, co někdo pošle. Přijatý soubor (Word od dodavatele, screenshot, export) je příloha a sám o sobě se do Markdownu nepřevádí. Jakmile se ale stane autoritativním popisem něčeho v repu, **převeď ho na článek**: binární dokument se nedá diffovat, hledat v něm ani publikovat. Po převodu je z něj historický podklad, ne druhý zdroj pravdy. Podklad, který už nemá funkci, dostane sufix `-TMP`, takže zůstane na disku, ale ne v gitu.
 
@@ -112,7 +116,7 @@ Pomocné soubory k článku, tedy testovací dotazy, výstupy měření, podklad
 
 `md/no-link-to-tmp` **Veřejný článek na soubor `-TMP` neodkazuje.** Soubor není v gitu ani na webu, takže čtenář narazí na mrtvý odkaz. Interní článek odkazovat smí, třeba úkol na výstup měření, protože ho čte ten, kdo soubor má na disku.
 
-Rozepsaný článek mimo git má sufix na adresáři i na souboru: `Nový článek-TMP/Nový článek-TMP.md`. Adresář se sufixem `-TMP` vyřadí z gitu i všechno uvnitř.
+**Cokoli, co má `-TMP` v názvu souboru nebo kdekoli v cestě, není v gitu ani na webu.** Rozepsaný článek mimo git proto dostane sufix na adresáři: `Nový článek-TMP/Nový článek.md`. Adresář se sufixem `-TMP` vyřadí i všechno uvnitř. Když má sufix jen soubor článku, přílohy vedle něj se commitnou bez článku. Pravidlo `md/article-folder` proto hlásí obrázek nebo dokument v adresáři, ve kterém jsou jen články `-TMP`.
 
 ## Názvy souborů
 
@@ -121,7 +125,7 @@ Rozepsaný článek mimo git má sufix na adresáři i na souboru: `Nový člán
 | --- | --- | --- |
 | **Článek** | jako česká věta: velké první písmeno a vlastní jména, mezera jako oddělovač, **s diakritikou** | `Obsidian nastavení.md` |
 | **Článek pojmenovaný po objektu** | přesně název objektu, včetně diakritiky, pokud ji objekt má | `DimZakaznik.md`, `DimÚčet.md` |
-| **Adresář článku** | přesně jako článek, včetně markeru 🌐 a sufixu `-TMP` | `Obsidian nastavení 🌐/` |
+| **Adresář článku** | volný, krátký a výstižný, s diakritikou, marker 🌐 volitelně | `Obsidian/` |
 | **Složka strukturální** | **anglicky, ASCII**, bez emoji | `docs/`, `tasks/` |
 | **Složka tematická** | jako článek, bez emoji | `Účetnictví/` |
 
@@ -218,11 +222,11 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    - `md/utf8-no-bom`: soubor není v UTF-8 bez BOM,
    - `md/keyboard-chars`: zakázané znaky mimo bloky kódu a inline kód,
    - `md/no-hard-wrap`: odstavec, odrážka nebo citace zalomená uprostřed věty, tedy na pevnou šířku,
-   - `md/article-folder`: článek neleží v adresáři svého jména a není mezi výjimkami z tabulky v části Adresář článku,
+   - `md/article-folder`: článek leží přímo v kořeni vaultu nebo repa, v `docs/` nebo v `tasks/` a není mezi výjimkami z tabulky v části Adresář článku. Dále obrázek nebo dokument v adresáři bez `-TMP`, ve kterém jsou jen články `-TMP`, protože by se commitnul bez článku,
    - `md/no-wikilink`: odkaz jako `[[...]]`, s návrhem standardního odkazu, když článek ve vaultu najde, a vložení článku `![[...]]`,
    - `md/no-broken-link`: relativní odkaz nebo obrázek, jehož cíl neexistuje,
    - `md/image-markdown-alt`: obrázek jako `![[...]]`, obrázek bez popisu,
-   - `md/attachment-own-folder`: obrázek neleží přímo v adresáři článku (cesta s `/`, tedy i `Attachments/`),
+   - `md/attachment-own-folder`: vložený obrázek neleží v adresáři žádného článku, tedy ani v jeho adresáři, ani v adresáři jiného článku (třeba společné `Attachments/`),
    - `md/frontmatter-keys`: klíče `titul`, `datum` a `publish`, `date` mimo tvar `RRRR-MM-DD`,
    - `md/tag-pascal-case`: tag mimo PascalCase (podtržítko na začátku je povolené),
    - `md/attachment-name`: nepřejmenovaný obrázek `Pasted image*`,
@@ -238,8 +242,9 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    - `md/standard-markdown`: syntaxe jen jednoho editoru, třeba zvýraznění `==text==` nebo komentář `%%...%%`,
    - `md/term-article`: jednotná terminologie a pojem článek,
    - `md/article-location` a `md/readme-index`: umístění článku (`docs/` nebo v adresáři objektu spolu s jeho kódem) a rozcestník v `README.md`,
+   - `md/article-folder`: tematická složka, ve které leží článek přímo, tedy vedle adresářů jiných článků. Skript ji od adresáře článku s podčlánkem nerozezná,
    - `md/file-names`: název článku a složky podle tabulky Názvy souborů,
-   - `md/attachment-own-folder`: odkaz na přílohu, která není obrázek, v adresáři jiného článku. Odkaz na kód nebo jiný soubor repa, který přílohou není, je v pořádku,
+   - `md/attachment-own-folder`: příloha, která není obrázek, mimo adresář článku. Odkaz na kód nebo jiný soubor repa, který přílohou není, je v pořádku,
    - `md/tag-pascal-case` a `md/tag-one-variant`: tagy zapsané v textu jako `#Tag`, skript čte jen frontmatter,
    - **výjimky ze zakázaných znaků**: skript hlásí i znak v citaci nebo v diagramu mimo blok kódu, takové hlášení posuď a případně vyřaď.
 
@@ -247,6 +252,6 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
 
 3. **Vypiš výsledek** po souborech. U každé neshody `soubor:řádek`, identifikátor porušeného pravidla a konkrétní návrh opravy. Neshody ze skriptu a z vlastní kontroly slouč do jednoho seznamu a u sporných případů napiš, proč jsou sporné. Na konec dej souhrn: kolik souborů, kolik neshod podle pravidel.
 
-4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování přílohy nebo článku a přesun článku do vlastního adresáře dělej v Obsidianu nebo s opravou všech odkazů, jinak se rozbijí (`md/rename-in-obsidian`). Po přesunu spusť kontrolu znovu, `md/no-broken-link` ukáže, co zbylo. Při přesunu do adresáře přesuň i přílohy, které článek používá, a oprav cesty k obrázkům.
+4. **Nic neopravuj**, dokud uživatel opravy neodsouhlasí. Přejmenování přílohy nebo článku a přesun článku do vlastního adresáře dělej v Obsidianu nebo s opravou všech odkazů, jinak se rozbijí (`md/rename-in-obsidian`). Po přesunu spusť kontrolu znovu, `md/no-broken-link` ukáže, co zbylo. Při přesunu do adresáře přesuň i přílohy, které článek používá, a oprav cesty k obrázkům. Článek při přesunu nepřejmenovávej a adresáři dej krátký název.
 
 U velkého adresáře nejdřív řekni, kolik souborů kontrola obsahuje, a u více než dvaceti se zeptej, jestli pokračovat, nebo zúžit výběr.

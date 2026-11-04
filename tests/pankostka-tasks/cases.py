@@ -26,6 +26,11 @@ def base():
 
 CASES = {
     "ok_tasks": {"git": True},
+    "ok_free-folder": {"add": {
+        "tasks/tasks.md": INDEX + "- [Migrace](Migrace/Převod%20dat%20do%20nového%20skladu.md) - adresář s jiným názvem než článek.\n",
+        "tasks/Migrace/Převod dat do nového skladu.md": "Zadání.\n",
+        "tasks/Migrace/Přepis schůzky.md": "Poznámky vedle článku, odkaz na ně nevede.\n",
+    }},
     "ok_nogit": {},
     "ok_allow": {"add": {"tasks/tasks.md": INDEX + "<!-- pankostka: allow tasks/index, úkol je v jiném repu -->\n- [Úkol jinde](../../ProjektHelios/tasks/Úkol%20jinde/Úkol%20jinde.md) - vede se v ProjektHelios.\n"}},
     "ko_index": {"count": 1, "drop": ["tasks/tasks.md"]},

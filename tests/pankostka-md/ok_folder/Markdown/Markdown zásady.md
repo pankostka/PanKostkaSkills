@@ -1,0 +1,1 @@
+![Odkaz](odkaz.png)

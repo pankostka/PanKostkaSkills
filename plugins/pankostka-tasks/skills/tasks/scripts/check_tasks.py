@@ -5,7 +5,7 @@ Použití: check_tasks.py <adresář repa | adresář tasks>...
 Výstup: jedna řádka na neshodu ve tvaru soubor:řádek: [identifikátor] zpráva.
 Návratový kód: 0 bez neshod, 1 s neshodami, 2 chybné použití.
 
-Úkol je adresář tasks/<Úkol>/ s článkem <Úkol>.md a pomocnými soubory -TMP. Odkaz z tasks.md, který míří mimo tasks/ (třeba na soubor s rozhodnutími), se hledá v celém repu. Bez gitu se pravidlo git přeskočí.
+Úkol je adresář tasks/<Úkol>/ s aspoň jedním článkem .md, název adresáře je volný. Další články v něm jsou poznámky a pomocné texty, z tasks.md stačí odkaz na jeden z nich. Odkaz z tasks.md, který míří mimo tasks/ (třeba na soubor s rozhodnutími), se hledá v celém repu. Bez gitu se pravidlo git přeskočí.
 Jen standardní knihovna, aby skript běžel i v prostředí claude.ai.
 """
 import os
@@ -56,7 +56,8 @@ def check_dir(arg):
     if not os.path.isdir(tdir):
         return [(tdir, 1, "tasks/index", "adresář tasks/ neexistuje")]
 
-    articles = {}
+    articles = {}  # název článku -> cesta
+    tasks = {}  # úkol, tedy adresář nebo článek mimo adresář -> [názvy článků]
     loose = []
     for n in sorted(os.listdir(tdir)):
         path = os.path.join(tdir, n)
@@ -65,15 +66,17 @@ def check_dir(arg):
         elif os.path.isdir(path):
             if n in SKIP_DIRS or n.startswith("."):
                 continue
-            article = os.path.join(path, n + ".md")
-            if os.path.isfile(article):
-                articles[n] = article
+            mds = [m for m in sorted(os.listdir(path)) if m.lower().endswith(".md") and not is_tmp(m) and os.path.isfile(os.path.join(path, m))]
+            if mds:
+                tasks[n] = [m[:-3] for m in mds]
+                articles.update((m[:-3], os.path.join(path, m)) for m in mds)
             else:
-                findings.append((path, 1, "tasks/task-folder", f"adresář {n} nemá článek {n}/{n}.md"))
+                findings.append((path, 1, "tasks/task-folder", f"adresář {n} nemá žádný článek .md"))
         elif n.lower().endswith(".md") and n.lower() != "tasks.md":
             # článek mimo adresář se hlásí, ale odkazy na něj platí, ať se nehlásí dvakrát
             articles[n[:-3]] = path
-            findings.append((path, 1, "tasks/task-folder", f"článek úkolu leží mimo svůj adresář, přesuň ho do {n[:-3]}/{n}"))
+            tasks[n] = [n[:-3]]
+            findings.append((path, 1, "tasks/task-folder", f"článek úkolu leží mimo svůj adresář, přesuň ho do vlastního adresáře, třeba {n[:-3]}/{n}"))
 
     linked = set()
     if not os.path.isfile(index):
@@ -94,9 +97,10 @@ def check_dir(arg):
                     findings.append((index, i + 1, "tasks/index", f"odkaz na {t} míří na článek, který v repu není"))
 
     if os.path.isfile(index):
-        for name, path in articles.items():
-            if name not in linked:
-                findings.append((path, 1, "tasks/article-per-task", f"na úkol {name} nevede odkaz z tasks.md, doplň odrážku"))
+        # úkolu stačí odkaz na kterýkoli jeho článek, ostatní jsou poznámky a pomocné texty
+        for task, names in tasks.items():
+            if not any(name in linked for name in names):
+                findings.append((articles[names[0]], 1, "tasks/article-per-task", f"na úkol {task} nevede odkaz z tasks.md, doplň odrážku"))
 
     for path in loose:
         n = os.path.basename(path)
