@@ -118,7 +118,7 @@ Platí, jen když argument výše není prázdný. Argument je cesta k souboru, 
    python ${CLAUDE_SKILL_DIR}/scripts/check_tsql.py $ARGUMENTS
    ```
 
-   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`. Kontroluje `tsql/utf8-no-bom`, `tsql/create-or-alter`, `tsql/where-one-equals-one`, `tsql/no-inner-outer` a `tsql/no-right-join`. Řádek s výjimkou `pankostka: allow` a důvodem nehlásí. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
+   Když `python` neexistuje, použij `python3`. Skript spouštěj přes Bash, ne přes PowerShell: v PowerShellu volání padá na chybě `The command line is too long`. Skript vypíše jednu řádku na neshodu ve tvaru `soubor:řádek: [identifikátor] zpráva`. Kontroluje `tsql/utf8-no-bom`, `tsql/create-or-alter`, `tsql/where-one-equals-one` (včetně zarovnání `AND` pod `WHERE 1=1`, řádky uvnitř závorek vynechá), `tsql/no-inner-outer` a `tsql/no-right-join`. Řádek s výjimkou `pankostka: allow` a důvodem nehlásí. Soubor v UTF-16 nebo mimo UTF-8 jen nahlásí a dál ho nečte.
 
 2. **Projdi soubory sám** na pravidla, která skript nepokrývá:
    - `tsql/sargable`: sargable predikáty,

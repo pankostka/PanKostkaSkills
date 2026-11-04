@@ -98,6 +98,41 @@ def is_single_line_condition(code, end):
     return not RE_AND_OR.match(following.strip())
 
 
+def column(code, pos):
+    """Sloupec znaku na řádku, tabulátor se počítá jako čtyři mezery."""
+    start = code.rfind("\n", 0, pos) + 1
+    return len(code[start:pos].expandtabs(4))
+
+
+def misaligned_and(code, where_pos, one):
+    """Pozice řádků s AND nebo OR za WHERE 1=1, které nejsou zarovnané pod WHERE.
+
+    Měřítkem je sloupec WHERE, nebo sloupec 1=1, když stojí na samostatném řádku. Kontroluje se jen 1=1 na konci řádku, WHERE 1=1 AND x na jednom řádku nemá co zarovnávat.
+    Řádky uvnitř závorek se nekontrolují, tam je odsazení součást vnořené podmínky. Prázdný a zakomentovaný řádek blok neukončí.
+    """
+    eol = code.find("\n", one.end())
+    if eol == -1 or code[one.end():eol].strip():
+        return []
+    one_pos = one.end() - len(one.group(0).lstrip())
+    same_line = code.rfind("\n", 0, one_pos) < where_pos
+    ref = column(code, where_pos if same_line else one_pos)
+    found, depth, pos = [], 0, eol + 1
+    while pos < len(code):
+        end = code.find("\n", pos)
+        end = len(code) if end == -1 else end
+        line = code[pos:end]
+        stripped = line.strip()
+        if stripped:
+            if depth == 0:
+                if not RE_AND_OR.match(stripped):
+                    break
+                if len(line[:len(line) - len(line.lstrip())].expandtabs(4)) != ref:
+                    found.append(pos)
+            depth += line.count("(") - line.count(")")
+        pos = end + 1
+    return found
+
+
 def read_text(path, findings):
     """Načte soubor jako UTF-8. Při jiném kódování zapíše neshodu a vrátí None."""
     with open(path, "rb") as f:
@@ -127,8 +162,12 @@ def check_file(path):
         findings.append((line_of(code, m.start()), "tsql/create-or-alter", f"CREATE {m.group(1).upper()} bez OR ALTER, použij CREATE OR ALTER"))
 
     for m in RE_WHERE.finditer(code):
-        if not RE_ONE_EQ_ONE.match(code, m.end()) and not is_single_line_condition(code, m.end()):
+        one = RE_ONE_EQ_ONE.match(code, m.end())
+        if not one and not is_single_line_condition(code, m.end()):
             findings.append((line_of(code, m.start()), "tsql/where-one-equals-one", "víceřádková nebo složená podmínka nezačíná WHERE 1=1, podmínky připoj níž jako AND"))
+        if one:
+            for pos in misaligned_and(code, m.start(), one):
+                findings.append((line_of(code, pos), "tsql/where-one-equals-one", "AND pod WHERE 1=1 je odsazené jinak než WHERE, zarovnej ho pod WHERE bez odsazení"))
 
     for m in RE_REDUNDANT_JOIN.finditer(code):
         word = m.group(1).upper()

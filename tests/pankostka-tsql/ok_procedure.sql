@@ -31,8 +31,8 @@ IF 1=1 BEGIN
     FROM dbo.Tabulka t
     JOIN dbo.Druh d ON d.DruhId = t.DruhId
     WHERE 1=1
-        AND t.Datum >= '20260101'
-        --AND t.Spol = 'AX'
+    AND t.Datum >= '20260101'
+    --AND t.Spol = 'AX'
 
     -- dynamické SQL: řetězec skript přeskakuje, i se zdvojeným apostrofem
     SET @sql = N'SELECT * FROM dbo.TestOk WHERE Nazev = ''CREATE PROCEDURE'''
