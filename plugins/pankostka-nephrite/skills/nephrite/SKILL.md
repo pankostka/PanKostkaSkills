@@ -1,6 +1,6 @@
 ---
 name: pankostka-nephrite
-description: Zásady pro databázi ERP Helios Nephrite (dříve Noris, LCS) - schéma lcs, datový model (třída, pořadač, cislo_subjektu a cislo_nonsubjektu, dynamické vztahy, valuace), vlastní tabulky bez cizích klíčů, NSP procedury jako funkce nad přehledem, formulářové šablony a přehledy, zákaz zápisu do systémových tabulek, nasazení skriptů do Heliosu (USE, víc databází, dump ze SSMS), dokumentační portál. Použij vždy, když čteš data z Heliosu, zakládáš nebo upravuješ objekt ve schématu lcs nebo píšeš skript, který se nasazuje do Heliosu. S argumentem (soubor, adresář nebo --changed) zkontroluje skripty proti zásadám a vypíše neshody.
+description: Zásady pro databázi ERP Helios Nephrite (dříve Noris, LCS) - schéma lcs, datový model (třída, pořadač, cislo_subjektu a cislo_nonsubjektu, dynamické vztahy, valuace), vlastní tabulky bez cizích klíčů, NSP procedury jako funkce nad přehledem, formulářové šablony a přehledy, zákaz zápisu do systémových tabulek, nasazení skriptů do Heliosu (USE, víc databází, dump ze SSMS), obecný import (dotaz jako zdroj, názvy sloupců pro atributy a vztahy, transakční rozsah), auditlog s chybami funkcí, dokumentační portál. Použij vždy, když čteš data z Heliosu, zakládáš nebo upravuješ objekt ve schématu lcs, píšeš skript, který se nasazuje do Heliosu, nebo navrhuješ či ladíš obecný import. S argumentem (soubor, adresář nebo --changed) zkontroluje skripty proti zásadám a vypíše neshody.
 argument-hint: "[soubor | adresář | --changed]"
 allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_nephrite.py *) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_nephrite.py *)
 ---
@@ -9,7 +9,7 @@ allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_nephrite.py *) Bash
 
 Pravidla pro databázi Heliosu Nephrite (dříve Noris, LCS): jak jejímu datovému modelu rozumět při čtení a jak do ní zakládat objekty. Vycházejí z toho, jak je Helios čte a používá. Nejsou to preference, ale požadavky aplikace: když se poruší, obvykle nespadne build, ale uživateli přestane fungovat formulář nebo funkce nad přehledem.
 
-Obecné zásady psaní T-SQL jsou ve skillu `pankostka-tsql` a platí i tady. Pojmy (`CS`, `CN`, `NSP`, pořadač, třída) jsou v `${CLAUDE_SKILL_DIR}/glossary.md`. Jak psát skripty, které se do Heliosu nasazují, je v `${CLAUDE_SKILL_DIR}/deployment.md`, čti ho před založením nebo úpravou takového skriptu.
+Obecné zásady psaní T-SQL jsou ve skillu `pankostka-tsql` a platí i tady. Pojmy (`CS`, `CN`, `NSP`, pořadač, třída) jsou v `${CLAUDE_SKILL_DIR}/glossary.md`. Jak psát skripty, které se do Heliosu nasazují, je v `${CLAUDE_SKILL_DIR}/deployment.md`, čti ho před založením nebo úpravou takového skriptu. Jak naplnit třídu Heliosu obecným importem (třída 515) a jak pojmenovat sloupce jeho dotazu, je v `${CLAUDE_SKILL_DIR}/general-import.md`, čti ho před návrhem nebo laděním importu.
 
 Konkrétní databáze, servery, prefixy vlastních objektů a čísla objektů v Heliosu se liší zákazník od zákazníka. Sem nepatří, jejich místo je v `CLAUDE.md` repa nebo v repu organizace.
 
@@ -105,6 +105,25 @@ Konec procedury komentuj `END --KONEC PROCEDURY`.
 ## Změny existujících objektů
 
 `nephrite/no-rename` **Objekty ani sloupce nepřejmenovávej a neodstraňuj bez potvrzení.** V Heliosu na nich visí přehledy, formulářové šablony a definice funkcí, které se na ně odkazují **jménem**. Rozbijí se tiše: nespadne build, ale uživateli spadne formulář. Mezi změnou a jejím projevem můžou uběhnout týdny, protože se to pozná až ve chvíli, kdy někdo tu funkci pustí.
+
+## Auditlog
+
+**Výsledek funkcí Heliosu včetně chyb je v auditlogu**, ne jen v okně u uživatele. Kdo hledá, proč funkce nebo import neprošel, čte ho přímo z databáze:
+
+| Tabulka | Obsah |
+| --- | --- |
+| `lcs.auditlog_hlavicka` | jeden běh funkce: `cislo_transakce`, `funject` (číslo funkce, třeba `812` Spuštění importu), `pachatel`, `started`, `ended`, `stav` (`1` v pořádku, záporný při chybě) |
+| `lcs.auditlog_polozka` | hlášení běhu: `cislo_transakce`, `kdy`, `trida`, `popis`, `EWI` (`E` chyba, `W` varování, `I` informace) |
+
+```sql
+SELECT p.kdy, p.trida, p.EWI, p.popis
+FROM lcs.auditlog_polozka p
+WHERE 1=1
+AND p.cislo_transakce = (SELECT MAX(h.cislo_transakce) FROM lcs.auditlog_hlavicka h WHERE 1=1 AND h.funject = 812)
+ORDER BY p.id
+```
+
+Hlášení se opakují po řádcích importu, příčina bývá ve varování na začátku běhu. Proto je dobré nejdřív vyfiltrovat jedinečné texty, ne číst všechny řádky.
 
 ## Dokumentace Heliosu
 
