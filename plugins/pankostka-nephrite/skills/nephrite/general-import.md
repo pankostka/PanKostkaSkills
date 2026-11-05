@@ -36,6 +36,10 @@ Sloupce se párují podle aliasu v dotazu. Definice sloupců pak není povinná,
 - **Atribut, jehož název končí na `_nazev`, `_refer` nebo `_cispor`** (třeba `alternativni_nazev` na kmenové kartě), import podle názvů nepozná: `Řetězec '...' ze seznamu sloupců nelze rozpoznat jako atribut nebo vztah`. Nepomůže ani plný databázový název `lcs.<tabulka>.<sloupec>`. Pravděpodobně jde o příponu vyhrazenou pro vztah. Ověřené řešení zatím není; zbývá mapování dle pořadí, nebo atribut doplnit jinak.
 - **Alias začínající číslicí nebo obsahující tečku** se v T-SQL píše v hranatých závorkách.
 
+## Cílový pořadač
+
+**Při mapování dle názvů jde jeden import jen do jednoho pořadače.** Volba Zadání cílového pořadače `Jako první atribut v souboru` je v nápovědě popsaná pro definici sloupců dle pořadí. S mapováním dle názvů import první hodnotu řádku spotřebuje jako číslo pořadače, ale seznam názvů neposune, takže každá hodnota skončí v sousedním sloupci (chyba `Couldn't store <...> in ... Column`). Pořadač nejde poslat ani jako atribut: `lcs.subjekty.cislo_poradace` nápověda řadí mezi atributy, které import nenabízí. Pro víc pořadačů proto vzniká kopie importu na každý pořadač, s pořadačem v definici a podmínkou v dotazu. **Primární klíč kontrolovat v nastav na Celá třída**, jinak import kartu přesunutou do jiného pořadače nenajde a založí duplicitu.
+
 ## Hodnota vztahu
 
 Vztah se dohledává podle reference, názvu a pořadače a musí se dohledat **právě jeden** záznam. Když reference není jednoznačná, dá se místo ní poslat **hvězdička a číslo primárního klíče** (`'*' + CAST(cislo_subjektu AS varchar(12))`), import pak hledá podle `cislo_subjektu`. Funguje i pro nonsubjektové třídy. Klíč se dohledá ve zdrojovém dotazu, takže chybějící vazba je vidět už tam, ne až v auditlogu.
