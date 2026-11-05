@@ -32,8 +32,8 @@ Sloupce se párují podle aliasu v dotazu. Definice sloupců pak není povinná,
 - **Atribut** se jmenuje jako sloupec v databázi. U nedokladových tříd stačí název bez tabulky (`reference_subjektu`), u dokladových je plný název (`lcs.<tabulka>.<sloupec>`) prakticky povinný.
 - **Statický vztah** se jmenuje `<dbname>_refer` (reference navazovaného záznamu), `<dbname>_nazev` (název) nebo `<dbname>_cispor` (pořadač). Holý název vztahu bez přípony skončí chybou `Řetězec '...' byl rozpoznán jako vztah č. ..., ale neobsahuje příponu, která označuje vztah`.
 - **Dynamický vztah** se jmenuje `<číslo vztahu>_refer`, `_nazev` nebo `_cispor`. Tak se zapíše vztah **zleva**, tedy definovaný na importované třídě.
-- **Dynamický vztah zprava**, tedy definovaný na druhé třídě, potřebuje stranu: `<číslo vztahu>_R_refer`. Bez ní import hlásí `Číslo ..._refer ze seznamu sloupců nelze rozpoznat jako vztah třídy č. ...` a vztah se nenaváže. Ze které strany vztah je, ukáže `lcs.vztahy.cislo_tridy`. Podle nápovědy, zkušební import se zápisem `_R_` zatím neproběhl.
-- **Atribut, jehož název končí na `_nazev`, `_refer` nebo `_cispor`** (třeba `alternativni_nazev`), import čte jako vztah a nepozná ho: `Řetězec '...' ze seznamu sloupců nelze rozpoznat jako atribut nebo vztah`. Takový sloupec potřebuje plný databázový název, `[lcs.<tabulka>.<sloupec>]`. Chyba je ověřená, oprava plným názvem zatím jen podle nápovědy.
+- **Dynamický vztah zprava**, tedy definovaný na druhé třídě, potřebuje stranu: `<číslo vztahu>_R_refer`. Bez ní import hlásí `Číslo ..._refer ze seznamu sloupců nelze rozpoznat jako vztah třídy č. ...` a vztah se nenaváže. Ze které strany vztah je, ukáže `lcs.vztahy.cislo_tridy`. Ověřeno: účtovací skupina zboží na kmenové kartě je vztah ze strany skupiny a se zápisem `_R_refer` se navázala.
+- **Atribut, jehož název končí na `_nazev`, `_refer` nebo `_cispor`** (třeba `alternativni_nazev` na kmenové kartě), import podle názvů nepozná: `Řetězec '...' ze seznamu sloupců nelze rozpoznat jako atribut nebo vztah`. Nepomůže ani plný databázový název `lcs.<tabulka>.<sloupec>`. Pravděpodobně jde o příponu vyhrazenou pro vztah. Ověřené řešení zatím není; zbývá mapování dle pořadí, nebo atribut doplnit jinak.
 - **Alias začínající číslicí nebo obsahující tečku** se v T-SQL píše v hranatých závorkách.
 
 ## Hodnota vztahu
@@ -41,6 +41,10 @@ Sloupce se párují podle aliasu v dotazu. Definice sloupců pak není povinná,
 Vztah se dohledává podle reference, názvu a pořadače a musí se dohledat **právě jeden** záznam. Když reference není jednoznačná, dá se místo ní poslat **hvězdička a číslo primárního klíče** (`'*' + CAST(cislo_subjektu AS varchar(12))`), import pak hledá podle `cislo_subjektu`. Funguje i pro nonsubjektové třídy. Klíč se dohledá ve zdrojovém dotazu, takže chybějící vazba je vidět už tam, ne až v auditlogu.
 
 **Ověř, na jakou třídu vztah vede**, název vztahu to neříká. Cíl se pozná podle pořadače záznamů, které už ve vztahu jsou, v jiné databázi s daty (`lcs.subjekty.cislo_poradace` -> `lcs.poradace.cislo_tridy`). Když import hlásí `Nedohledán záznam pro vztah ... Nalezeno: 0 odpovídajících záznamů` i pro číslo subjektu, které existuje, vede vztah na jinou třídu.
+
+## Hodnoty atributů s editačním stylem
+
+Atribut s editačním stylem (výběr ze seznamu) ukládá kód, ne popisek. Platný kód s jiným významem, než se čekalo, projde importem bez chyby a pozná se až na formuláři. Povolené hodnoty bývají zabudované v aplikaci, ne v tabulkách `lcs.case_editstyl_*`. Význam kódů se proto ověřuje v nápovědě k formuláři a podle rozložení hodnot v databázi s daty, ne odhadem z písmene. Příklad: typ kmenové karty `V` není výrobek, ale vratný obal; zboží, materiál i vlastní výrobky mají běžně `Z`.
 
 ## Povinné údaje
 
