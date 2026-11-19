@@ -114,6 +114,20 @@ python ${CLAUDE_SKILL_DIR}/scripts/udf_layout.py <šablona.xml>
 
 Výpis patří k návrhu úpravy, aby člověk viděl přeskládání dřív, než skript spustí. Skript upozorní i na `ColSpan` větší než `TableColumns` oddílu; takové pole vykreslí na celou šířku oddílu, jak se to v Heliosu skutečně zobrazí, je potřeba ověřit ve formuláři.
 
+### Šablona položek (grid)
+
+Šablona položek (`TableName=EntriesTable`) se vykresluje jako editovatelný grid, typ `EditBrowse`. V XML ho šablona uvedený mít nemusí, doplní ho aplikace; v pohledu je pak u položek `TemplateName=EditBrowse:<cislo_sablony>`. Grid má jediný oddíl s `TableColumns="1"`, takže mřížka, `ColSpan` ani `udf_layout.py` tu nic neřeší. Rozložení řídí jen tři věci:
+
+- **pořadí `<column>` v XML je pořadí sloupců gridu**, zleva doprava,
+- **`Width` je šířka sloupce.** Paleta platí i tady, mimo ni zůstává jen `plus_minus` a checkboxy. Grid bývá širší než okno a uživatel ho posouvá vodorovně, takže sloupce, se kterými se pracuje, patří dopředu,
+- **`Invisible="True"` sloupec skryje.** Záložky grid nemá, nepoužívaná pole se proto neodsouvají na skrytou záložku jako v hlavičce, ale skryjí se a přesunou za viditelné sloupce.
+
+`nephrite/udf-grid-group` **Skupinu Kč a měna (`InputType="group"`) v gridu `Invisible` neskryje.** Viditelnost jejích polí přepíná aplikace v kódu podle měny dokladu a nastavení v šabloně přebije. Ověřeno: skupiny spotřební daně, rabatu částkou, ceny před slevou nebo vyčíslené slevy se `Invisible="True"` na skupině i na obou jejích polích se v gridu dál zobrazovaly. Skupinu, která v gridu být nemá, je proto potřeba ze šablony vypustit; sloupce v datech zůstanou, jen je grid neukáže. Stejně to řeší i šablony položek jiných firem. Obyčejné pole `Invisible="True"` skryje spolehlivě.
+
+`FontAndColor` obarví buňky sloupce a jde dát i na `groupcolumn`. Na položkách bývá systémový výraz pro neaktivní řádek, `iif(status_dokladu='2','LCS_WH_InactiveEntryAtActiveDocument', '')`. Barva se proto doplní do jeho druhé větve, výraz se nenahrazuje: `iif(status_dokladu='2','LCS_WH_InactiveEntryAtActiveDocument', 'ToProcess')`.
+
+Formulářový pohled ukládá rozložení sloupců položek jen se zaškrtnutým Uložit seznam a pořadí sloupců (`columnsLayout` v `grid_ms_net`). Bez něj se změna pořadí nebo šířek v šabloně projeví hned (ověřeno). Uložené rozložení podle nápovědy přebíjí šablonu, takže s ním by úprava šablony v gridu nebyla vidět.
+
 ### Vnořená šablona
 
 `<tab NestedTemplate="/app/...frm.xml">` vloží do formuláře systémovou šablonu ze souboru na aplikačním serveru (typicky tabulka sazeb DPH a finanční údaje dokladu). Ten soubor sdílí všechny formuláře, které ho vkládají, a každý patch Heliosu ho přepíše, takže se neupravuje. Když má část vypadat jinak jen v jedné UDF šabloně, **obsah vnořené šablony se do ní rozepíše** místo odkazu:
