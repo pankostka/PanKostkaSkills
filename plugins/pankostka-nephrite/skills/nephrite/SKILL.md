@@ -9,7 +9,7 @@ allowed-tools: Bash(python ${CLAUDE_SKILL_DIR}/scripts/check_nephrite.py *) Bash
 
 Pravidla pro databázi Heliosu Nephrite (dříve Noris, LCS): jak jejímu datovému modelu rozumět při čtení a jak do ní zakládat objekty. Vycházejí z toho, jak je Helios čte a používá. Nejsou to preference, ale požadavky aplikace: když se poruší, obvykle nespadne build, ale uživateli přestane fungovat formulář nebo funkce nad přehledem.
 
-Obecné zásady psaní T-SQL jsou ve skillu `pankostka-tsql` a platí i tady. Pojmy (`CS`, `CN`, `NSP`, pořadač, třída) jsou v `${CLAUDE_SKILL_DIR}/glossary.md`. Jak psát skripty, které se do Heliosu nasazují, je v `${CLAUDE_SKILL_DIR}/deployment.md`, čti ho před založením nebo úpravou takového skriptu. Jak naplnit třídu Heliosu obecným importem (třída 515) a jak pojmenovat sloupce jeho dotazu, je v `${CLAUDE_SKILL_DIR}/general-import.md`, čti ho před návrhem nebo laděním importu.
+Obecné zásady psaní T-SQL jsou ve skillu `pankostka-tsql` a platí i tady. Pojmy (`CS`, `CN`, `NSP`, pořadač, třída) jsou v `${CLAUDE_SKILL_DIR}/glossary.md`. Jak psát skripty, které se do Heliosu nasazují, je v `${CLAUDE_SKILL_DIR}/deployment.md`, čti ho před založením nebo úpravou takového skriptu. Jak naplnit třídu Heliosu obecným importem (třída 515), jak pojmenovat sloupce jeho dotazu, jak importovat doklad s položkami a co zrychlí pomalý import, je v `${CLAUDE_SKILL_DIR}/general-import.md`, čti ho před návrhem, laděním nebo zrychlováním importu.
 
 Konkrétní databáze, servery, prefixy vlastních objektů a čísla objektů v Heliosu se liší zákazník od zákazníka. Sem nepatří, jejich místo je v `CLAUDE.md` repa nebo v repu organizace.
 
