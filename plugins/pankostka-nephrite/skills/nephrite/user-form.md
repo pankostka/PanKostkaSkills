@@ -51,6 +51,19 @@ Proto **každý zásah do oddílu s víc sloupci přeskládá všechna pole za n
 - místo odebraného pole se vloží prázdné místo stejné šířky: `<column Name="placeholder_<něco>" InputType="Placeholder" ColSpan="<původní>"></column>` (`Name` musí být v šabloně jedinečné; starší šablony místo toho používají pole s `InputType="label"`). Ověřeno: placeholder bez `Width` na místě pole s `Width="Auto"` vrátí oddíl do původního rozložení,
 - nebo se o uvolněné buňky zvětší `ColSpan` sousedního pole.
 
+**Šířka pole (`Width`) je zhruba v pixelech** při 100% měřítku Windows. Kalibrováno jednou podle snímku formuláře a změřením textu písmem klienta (Segoe UI 9 pt přes GDI `GetTextExtentPoint32`), přepočítávat to znovu není potřeba, stačí odhad:
+
+| Co | Odhad |
+| --- | --- |
+| text s diakritikou, malá písmena | 5,8 px na znak |
+| kódy, číslice, velká písmena (`ORG0000250`, `OPT-806/2026`) | 6,6 px na znak |
+| okraje pole | +16 |
+| ikona vazby u pole `_refer` nebo `_nazev` | +20 |
+
+Pole pro 25 znaků názvu s vazbou tedy potřebuje asi `25 × 5,8 + 16 + 20 ≈ 180`. Délku hodnot ber z dat (hodnota, kterou pokryje zhruba 95 % záznamů, ne nejdelší), u vazby z navázaného číselníku. Popisek s `LabelPos="Left"` zabere vlastní buňku navíc, šířka řádku je tedy součet popisků a polí. Pro Full HD monitor se hodí šířka formuláře (`MasterWidth` na `<template>`) kolem 1000.
+
+**Barvy pole** (`FontAndColor`) ber z kalíšků, které databáze už používá v jiných šablonách, nebo ze systémových (`BadValue`, `ToProcess`, `GoodValue`, `Success`, `Warning`, `GroupLabel`, `InProcess`). Přehled použitých kalíšků dá regulární výraz `FontAndColor="'([^']+)'"` nad `sablona_xml` všech šablon. Kalíšek s firemním názvem (`Blue_front_protect`) v jiné databázi být nemusí.
+
 `nephrite/udf-layout-check` **U každé úpravy porovnej rozložení oddílů před a po** skriptem `${CLAUDE_SKILL_DIR}/scripts/udf_layout.py`. Nad skriptem úpravy porovná XML z bloku vrácení s novým XML a vypíše jen oddíly, kde se mřížka změnila, řádek po řádku:
 
 ```
