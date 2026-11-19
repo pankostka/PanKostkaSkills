@@ -45,7 +45,7 @@ Pole nemají souřadnice. Oddíl (`<tab>`) je mřížka o `TableColumns` buňká
 
 Proto **každý zásah do oddílu s víc sloupci přeskládá všechna pole za ním**: odebrané pole posune další o buňku doleva, přidané doprava, a změna `ColSpan` jednoho pole posune zbytek oddílu. Jestli je to žádoucí, rozhoduje člověk. Když má rozložení zůstat:
 
-- místo odebraného pole se vloží prázdné místo stejné šířky: `<column Name="placeholder_<něco>" InputType="Placeholder" ColSpan="<původní>"></column>` (`Name` musí být v šabloně jedinečné; starší šablony místo toho používají pole s `InputType="label"`),
+- místo odebraného pole se vloží prázdné místo stejné šířky: `<column Name="placeholder_<něco>" InputType="Placeholder" ColSpan="<původní>"></column>` (`Name` musí být v šabloně jedinečné; starší šablony místo toho používají pole s `InputType="label"`). Ověřeno: placeholder bez `Width` na místě pole s `Width="Auto"` vrátí oddíl do původního rozložení,
 - nebo se o uvolněné buňky zvětší `ColSpan` sousedního pole.
 
 `nephrite/udf-layout-check` **U každé úpravy porovnej rozložení oddílů před a po** skriptem `${CLAUDE_SKILL_DIR}/scripts/udf_layout.py`. Nad skriptem úpravy porovná XML z bloku vrácení s novým XML a vypíše jen oddíly, kde se mřížka změnila, řádek po řádku:
