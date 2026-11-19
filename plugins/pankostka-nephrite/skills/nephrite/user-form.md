@@ -60,7 +60,9 @@ Proto **každý zásah do oddílu s víc sloupci přeskládá všechna pole za n
 | okraje pole | +16 |
 | ikona vazby u pole `_refer` nebo `_nazev` | +20 |
 
-Pole pro 25 znaků názvu s vazbou tedy potřebuje asi `25 × 5,8 + 16 + 20 ≈ 180`. Délku hodnot ber z dat (hodnota, kterou pokryje zhruba 95 % záznamů, ne nejdelší), u vazby z navázaného číselníku. Popisek s `LabelPos="Left"` zabere vlastní buňku navíc, šířka řádku je tedy součet popisků a polí. Pro Full HD monitor se hodí šířka formuláře (`MasterWidth` na `<template>`) kolem 1000.
+Pole pro 25 znaků názvu s vazbou tedy potřebuje asi `25 × 5,8 + 16 + 20 ≈ 180`. Délku hodnot ber z dat (hodnota, kterou pokryje zhruba 95 % záznamů, ne nejdelší), u vazby z navázaného číselníku. Popisek s `LabelPos="Left"` zabere vlastní buňku navíc, šířka řádku je tedy součet popisků a polí. Pro Full HD monitor se hodí obsah formuláře široký kolem 1000.
+
+**Šířku okna šablona neurčí.** `TotalWidth`, `TotalHeight`, `MasterWidth` a `MasterHeight` na `<template>` jsou návrhové rozměry (standard 984 x 598 okno a 754 x 398 hlavička). Ověřeno: změna `MasterWidth` na 1000 se ve formuláři neprojevila. Skutečnou velikost okna a polohu příček mezi hlavičkou, položkami a vztahy si Helios ukládá do formulářového pohledu (`lcs.noris_form_views.grid_ms_net`) nebo do uživatelského donastavení (`lcs.pohledy_form_user_settings`), v otevření v záložkách (`positionForTabbed`) zvlášť. Obsah širší než okno uživatel uvidí s vodorovným posuvníkem. Širší hlavičku pro všechny proto nastav v Heliosu: posunout příčku, uložit jako formulářový pohled a ten dát jako implicitní pro kategorii. `lcs.pohledy_form_user_settings` se podle nápovědy ručně neupravuje, nanejvýš se nefunkční záznam smaže.
 
 **Barvy pole** (`FontAndColor`) ber z kalíšků, které databáze už používá v jiných šablonách, nebo ze systémových (`BadValue`, `ToProcess`, `GoodValue`, `Success`, `Warning`, `GroupLabel`, `InProcess`). Přehled použitých kalíšků dá regulární výraz `FontAndColor="'([^']+)'"` nad `sablona_xml` všech šablon. Kalíšek s firemním názvem (`Blue_front_protect`) v jiné databázi být nemusí.
 
