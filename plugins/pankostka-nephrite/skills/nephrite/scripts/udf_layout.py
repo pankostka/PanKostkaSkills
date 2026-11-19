@@ -32,7 +32,7 @@ def layout(xml_text):
     for tab in root:
         if tag(tab) != "tab":
             continue
-        if tab.get("TabPageLabel"):
+        if tab.get("TabPageLabel") and not (tab.get("RenderAs") or "").startswith("DesignTab"):
             page = tab.get("TabPageLabel")
         cols = int(tab.get("TableColumns") or default_cols)
         rows, row, warn = [], [], []

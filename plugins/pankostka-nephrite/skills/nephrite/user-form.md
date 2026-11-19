@@ -110,6 +110,16 @@ python ${CLAUDE_SKILL_DIR}/scripts/udf_layout.py <šablona.xml>
 
 Výpis patří k návrhu úpravy, aby člověk viděl přeskládání dřív, než skript spustí. Skript upozorní i na `ColSpan` větší než `TableColumns` oddílu; takové pole vykreslí na celou šířku oddílu, jak se to v Heliosu skutečně zobrazí, je potřeba ověřit ve formuláři.
 
+### Vnořená šablona
+
+`<tab NestedTemplate="/app/...frm.xml">` vloží do formuláře systémovou šablonu ze souboru na aplikačním serveru (typicky tabulka sazeb DPH a finanční údaje dokladu). Ten soubor sdílí všechny formuláře, které ho vkládají, a každý patch Heliosu ho přepíše, takže se neupravuje. Když má část vypadat jinak jen v jedné UDF šabloně, **obsah vnořené šablony se do ní rozepíše** místo odkazu:
+
+- Soubory jsou v adresáři aplikačního serveru `...\App\<modul>\...\Forms\`, často jen zabalené v `Forms.zip` vedle (soubor z `NestedTemplate` jako samostatný na disku být nemusí). Rozbal jen potřebné soubory, do vlastního adresáře.
+- **Jména polí a skupin (`group_zaklad1` apod.) zachovej.** Aplikace podle nich v kódu přepíná viditelnost (třeba Kč a cizí měnu) a přepočítává částky, šablona to v XML nemá.
+- Atributy polí (`EditStyle="#dynamic#"`, `EditMask`, `InputType`, `ReadOnly`, `RegisterItemChange`) přenes beze změny, mění se jen rozložení a šířky. Pole, které ve formuláři být nemá, přesuň na skrytou záložku, nemaž ho.
+- Popisky `fm(MSGxxx)` odkazují do hlášek vnořené šablony (`Messages` na jejím `<template>`); v hláškách UDF šablony stejný kód může znamenat něco jiného. Nahraď je prostým textem nebo hlášky přenes.
+- Rozepsaná kopie už nedostane opravy z patchů, stejně jako `sqlsyntax`. Je to vědomé rozhodnutí a patří do popisu skriptu.
+
 ### Dopočtené sloupce
 
 `nephrite/udf-sqludfsyntax` **Sloupce navíc přidávej přes `sqludfsyntax`, ne přes `sqlsyntax`.** `sqlsyntax` nahrazuje celý SELECT formuláře, a když dodavatel při aktualizaci přidá sloupec do systémové šablony, formulář s vlastním `sqlsyntax` přestane fungovat a musí se ručně opravit. `sqludfsyntax` načítá jen sloupce navíc, takže aktualizace systémové šablony ho nerozbije. Obojí v jedné šabloně je chyba.
