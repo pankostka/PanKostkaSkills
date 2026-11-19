@@ -31,13 +31,14 @@ Aplikace šablonu zapisuje přes view `lcs.template_form` s triggery `INSTEAD OF
 - `<column Name="...">` je pole. Povinný je jen `Name`, a ten musí být na formuláři jedinečný.
 - **`Name` podle druhu pole:**
   - atribut třídy jménem sloupce (`nazev_subjektu`), vazba jako `<sloupec>_refer` nebo `<sloupec>_nazev`,
-  - UDA atribut celým jménem `lcs.<uda_tabulka>.<sloupec>`, u UDA vazby s `_refer` nebo `_nazev` na konci,
+  - UDA atribut celým jménem `lcs.<uda_tabulka>.<sloupec>`, u UDA vazby s `_refer` nebo `_nazev` na konci. V šablonách uložených FormBuilderem se objevuje i tvar s podtržítky místo teček (`lcs_uda_<tabulka>_<sloupec>`); fungují oba, při hledání pole v XML hledej obojí,
   - dopočtený sloupec z `sqludfsyntax` s předponou `$udf_`, viz níže,
   - výpočtové pole libovolným jménem s atributem `Expr`.
 - Časté atributy pole: `Width` (číslo, `100%`, `Auto`), `ColSpan`, `Height` (jen textarea a obrázek), `Label`, `LabelPos` (`Left`, `Up`, `None`), `ReadOnly`, `Required`, `InputType` (`text`, `checkbox`, `textarea`, `select`, `label`, `string`, `picture`, `button`, `group`, `Placeholder`...), `Values` u checkboxu s jinými hodnotami než `A,N`, `EditMask`, `EditStyle`, `RegisterItemChange`.
 - **`Expr`, `Invisible`, `Protect`, `Required` a `FontAndColor` jsou výrazy** v syntaxi .NET `DataColumn.Expression`: `isnull(stav,'') = '1'`, `iif(cena>0,'GoodValue','BadValue')`. Na položkách se na hlavičku odkazuje `Parent.<sloupec>`. Kalíšek ve `FontAndColor` je výraz, takže jeho název musí být v apostrofech: `FontAndColor="'BadValue'"`.
 - **Obrázek (`InputType="picture"`) potřebuje `RegisterItemChange="True"`.** Bez něj vložení většího obrázku shodí klienta.
 - `InputType="string"` posílá na klienta prostý text, takže na něm nefunguje `Protect` ani `Invisible`.
+- **Popisek `fm(<kód>)` musí mít kód v `sablona_msg_xml`**, jinak se nepřeloží. Nové pole proto dostane buď `Label` prostým textem, nebo kód, který v hláškách šablony už je; ručně přidaný kód je potřeba doplnit do `sablona_msg_xml` ve všech jazycích.
 
 ### Rozložení a ColSpan
 
@@ -96,7 +97,8 @@ Zápis do `lcs.noris_form_templates` je výjimka z `nephrite/no-write-system` a 
 - `nephrite/udf-rollback` **Na konci skriptu je zakomentovaný blok vrácení**: `UPDATE` s celým původním XML a původním `last_update`, s podmínkou na `cislo_sablony` i `nazev_sablony`. Spouští se označením řádků uvnitř komentáře. Bez něj se úprava, která formulář rozhodí, vrací jen ručně ve FormBuilderu. Blok musí být v `/* ... */`, aby ho F5 nad celým souborem nespustil; před tím ověř, že XML neobsahuje `*/`.
 - **S XML se mění i `last_update = GETDATE()`.** Trigger podle něj aktualizuje evidenci přenosu konfigurace (`lcs.config_transfer_proxy`). Obnovení cache aplikace proběhne při každém `UPDATE` i bez toho.
 - **Nový text XML se do skriptu píše celý jako literál `N'...'`**, apostrofy uvnitř zdvojené. Úprava přes `REPLACE` nad uloženým XML tiše nic neudělá, když se hledaný text liší jedinou mezerou.
-- **Literál se generuje skriptem a porovná se s databází.** XML se upraví v Pythonu, ověří parserem, a literál vytažený zpět ze souboru se porovná s původním XML: rozdíl smí být jen v zamýšlených řádcích. Zachovej konce řádků (`CRLF`) a nepřidávej ani neubírej mezery.
+- **Literál se generuje skriptem a porovná se s databází.** XML se upraví v Pythonu, ověří parserem, a literál vytažený zpět ze souboru se porovná s původním XML: rozdíl smí být jen v zamýšlených řádcích. Zachovej konce řádků (`CRLF`) a nepřidávej ani neubírej mezery. **V Pythonu na Windows zapisuj soubor s `newline=""`**: v textovém režimu se z uloženého `\r\n` stane `\r\r\n` a do šablony by se zapsaly prázdné řádky navíc.
+- **Skript platí jen pro databázi, ze které bylo XML načtené.** Stejná šablona má v testovací a ostré databázi jiný `last_update`, často i jiný obsah. Pro ostrou se XML načte z ostré a skript se vygeneruje znovu; podmínka na `last_update` jinak `UPDATE` správně neprovede.
 - **Soubor je v UTF-8 bez BOM a SSMS ho může otevřít ve špatném kódování.** Před spuštěním zkontroluj v SSMS text s diakritikou uvnitř XML, jinak se do šablony zapíšou rozsypané znaky.
 - **Přesun nebo přidání pole posune sousedy**, viz Rozložení a ColSpan níže. Rozložení před a po se porovná skriptem a po úpravě se formulář v Heliosu otevře a zkontroluje.
 - `rozsah_platnosti = 'P'` s prázdným `seznam_poradacu` trigger odmítne a celý `UPDATE` vrátí.

@@ -19,4 +19,6 @@ Doplněk skillu `pankostka-nephrite`. Čísla pořadačů a dalších objektů s
 | Třída | Třída eviduje doklady stejného typu (FV, FD, výdejky). Pro třídu je buď jedna tabulka, nebo dvě u položkových tříd. Subjektová třída má ještě duplicitní řádek v tabulce `lcs.subjekty` kvůli jednoznačnosti v rámci celé databáze. |
 | UD | Účetní druh. Uživatelsky definovaný číselník v Heliosu. |
 | UDA | Uživatelsky definované atributy. Tabulka se stejným názvem jako třída, jen s prefixem `UDA_`. Zakládá je správce, ne vývojář. |
+| UDF | Uživatelsky definovaný formulář: formulářová šablona třídy (třída 983 Šablony formulářů) vytvořená ve FormBuilderu, uložená v `lcs.noris_form_templates`. Nezaměňovat s uživatelskou funkcí v SQL. Viz `user-form.md`. |
+| FormBuilder | Nástroj Heliosu na úpravu vzhledu formuláře (`FormBuilder.exe` u klienta, nebo `NorisWin32.exe /fb`). Ukládá formulářové šablony do databáze. |
 | Útvar | Číselník v Heliosu, účetní dimenze. V manažerské výsledovce druhý rozlišovací znak vedle účtu. |
