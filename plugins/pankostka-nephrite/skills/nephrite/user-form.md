@@ -71,11 +71,17 @@ where h.cislo_subjektu = @cislo_subjektu</sqludfsyntax>
 Zápis do `lcs.noris_form_templates` je výjimka z `nephrite/no-write-system` a skript ji uvádí komentářem. Pravidla skriptu:
 
 - **Vždy jedna šablona podle `cislo_sablony`**, nikdy podle názvu ani podle třídy.
-- **Nad `UPDATE` je `SELECT` současného stavu** (`nephrite/select-before-update`), aby se dal výsledek uložit stranou a změna vrátit.
+- **XML se načte z databáze těsně před úpravou**, ne z dřívějšího výpisu. Šablonu mezitím mohl někdo uložit ve FormBuilderu.
+- **`UPDATE` má podmínku na původní `last_update`.** Když šablonu někdo mezi načtením a spuštěním uložil, skript ji nepřepíše a za `UPDATE` vypíše `@@ROWCOUNT` 0.
+- **Nad `UPDATE` je `SELECT` současného stavu** (`nephrite/select-before-update`).
+- `nephrite/udf-rollback` **Na konci skriptu je zakomentovaný blok vrácení**: `UPDATE` s celým původním XML a původním `last_update`, s podmínkou na `cislo_sablony` i `nazev_sablony`. Spouští se označením řádků uvnitř komentáře. Bez něj se úprava, která formulář rozhodí, vrací jen ručně ve FormBuilderu. Blok musí být v `/* ... */`, aby ho F5 nad celým souborem nespustil; před tím ověř, že XML neobsahuje `*/`.
 - **S XML se mění i `last_update = GETDATE()`.** Trigger podle něj aktualizuje evidenci přenosu konfigurace (`lcs.config_transfer_proxy`). Obnovení cache aplikace proběhne při každém `UPDATE` i bez toho.
 - **Nový text XML se do skriptu píše celý jako literál `N'...'`**, apostrofy uvnitř zdvojené. Úprava přes `REPLACE` nad uloženým XML tiše nic neudělá, když se hledaný text liší jedinou mezerou.
+- **Literál se generuje skriptem a porovná se s databází.** XML se upraví v Pythonu, ověří parserem, a literál vytažený zpět ze souboru se porovná s původním XML: rozdíl smí být jen v zamýšlených řádcích. Zachovej konce řádků (`CRLF`) a nepřidávej ani neubírej mezery.
+- **Soubor je v UTF-8 bez BOM a SSMS ho může otevřít ve špatném kódování.** Před spuštěním zkontroluj v SSMS text s diakritikou uvnitř XML, jinak se do šablony zapíšou rozsypané znaky.
+- **Přesun pole posune sousedy.** Oddíl s `TableColumns="2"` a víc skládá pole po řádcích, takže po odebrání jednoho pole přeskočí všechna další o buňku. Po úpravě je potřeba formulář v Heliosu otevřít a rozložení zkontrolovat.
 - `rozsah_platnosti = 'P'` s prázdným `seznam_poradacu` trigger odmítne a celý `UPDATE` vrátí.
-- Skript se nejdřív pustí na testovací databázi, ověří se otevřením formuláře v Heliosu a teprve potom jde do ostré.
+- Skript se nejdřív pustí na testovací databázi, ověří se otevřením formuláře v Heliosu a teprve potom jde do ostré. Po spuštění se v databázi zkontroluje, že uložené XML se shoduje s literálem ve skriptu a že se změnil `last_update`.
 
 ```sql
 USE [HGFirmaTest24]
@@ -90,6 +96,24 @@ SET sablona_xml = N'<?xml version="1.0" encoding="utf-8"?>
 , last_update = GETDATE()
 WHERE 1=1
 AND cislo_sablony = 10001
+AND last_update = '2026-01-01 10:00:00.000'
+
+SELECT @@ROWCOUNT AS zmeneno_radku
+GO
+
+/* ===== VRÁCENÍ =====
+USE [HGFirmaTest24]
+-- pankostka: allow nephrite/no-write-system, vrácení úpravy XML UDF šablony
+UPDATE lcs.noris_form_templates
+SET sablona_xml = N'<?xml version="1.0" encoding="utf-8"?> ...původní XML celé...'
+, last_update = '2026-01-01 10:00:00.000'
+WHERE 1=1
+AND cislo_sablony = 10001
+AND nazev_sablony = N'<název šablony>'
+
+SELECT @@ROWCOUNT AS vraceno_radku
+GO
+===== KONEC VRÁCENÍ ===== */
 ```
 
 **Pohled (`lcs.noris_form_views.grid_ms_net`) se ručně neupravuje.** Rozložení okna se změní tak, že se pohled v Heliosu aplikuje, upraví a uloží pod stejným názvem. Implicitní pohled pro pořadač nebo kategorii se nastavuje v Heliosu v pořadači Implicitní formulářové pohledy.
