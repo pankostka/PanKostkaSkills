@@ -2,6 +2,18 @@
 
 Doplněk skillu `pankostka-nephrite`. Uživatelsky definovaný formulář (UDF, formulářová šablona z FormBuilderu) mění vzhled editačního formuláře třídy: pořadí a rozložení polí, záložky, popisky, ochranu polí, barvy a dopočtené sloupce navíc. Podrobný popis je v nápovědě Heliosu na stránkách `FormBuilder_-_příručka` a `Šablony_pro_formuláře_-_popis`, viz Dokumentace Heliosu ve `SKILL.md`. Tady je to, co je potřeba k úpravě šablony přímo v databázi.
 
+## Postup od zadání po ostrou
+
+Ověřený postup, jak s uživatelem přestavět formulář. Agent má k databázi jen čtení, zapisuje uživatel nebo správce.
+
+1. **Uživatel založí šablonu ve FormBuilderu** a řekne její číslo (`nephrite/udf-create-in-formbuilder`).
+2. **Agent načte XML z testovací databáze**, porovná ho se vzorem (systémová šablona, šablona jiné firmy) a navrhne změny i s výpisem rozložení `udf_layout.py`. Rozsáhlou přestavbu nejdřív odsouhlasit slovy, teprve pak generovat skript.
+3. **Agent vygeneruje skript úpravy** skriptem `udf_sql.py` (podmínka na `last_update`, blok vrácení, ověřené literály) a uživatel ho pustí v SSMS.
+4. **Agent ověří v databázi**, že uložené XML se shoduje se skriptem, a uživatel pošle snímek formuláře. Iteruje se po malých krocích, každý krok je jeden skript.
+5. **Velikost okna** nastaví uživatel formulářovým pohledem (`nephrite/udf-view-settings`), šablona ji neurčí.
+6. **Přenos do ostré**: skript se vygeneruje znovu nad ostrou databází (jiné `last_update`, může být jiné číslo šablony), spustí správce a v ostrém Heliosu se uloží a nastaví pohled.
+7. **Výsledek se uloží k dokumentaci procesu**, mezikroky se smažou (viz Výsledek).
+
 ## Kde je definice
 
 | Tabulka | Třída | Obsah |
@@ -29,7 +41,7 @@ Aplikace šablonu zapisuje přes view `lcs.template_form` s triggery `INSTEAD OF
 ### Vzhled
 
 - `<tab TabPageLabel="...">` začíná novou záložku formuláře, `<tab>` bez popisku je oddíl v ní, prázdné `<tab/>` je vodorovná čára. `TableColumns` určuje počet sloupců rozložení.
-- **Pole, se kterými uživatel nepracuje, se nemažou, ale přesunou na samostatnou záložku** (třeba Nepoužívat). Uživatel je tam pořád uvidí, když je potřebuje dohledat, a aplikace s nimi dál počítá, protože kód se na pole odkazuje jménem. Vzhled té záložky je vedlejší: jednoduchá mřížka o dvou sloupcích bez nadpisů a výplní stačí.
+- **Pole, se kterými uživatel nepracuje, se nemažou, ale přesunou na samostatnou záložku** (třeba Nepoužívat). Uživatel je tam pořád uvidí, když je potřebuje dohledat, a aplikace s nimi dál počítá, protože kód se na pole odkazuje jménem. Vzhled té záložky je vedlejší: jednoduchá mřížka o dvou sloupcích bez nadpisů a výplní stačí. Výjimkou je grid položek, viz Šablona položek.
 - **Záložka se nesmí jmenovat `UDA`.** Název je vyhrazený jádru, které na ni doplňuje UDA atributy.
 - `<column Name="...">` je pole. Povinný je jen `Name`, a ten musí být na formuláři jedinečný.
 - **`Name` podle druhu pole:**
@@ -179,7 +191,7 @@ Zápis do `lcs.noris_form_templates` je výjimka z `nephrite/no-write-system` a 
 - **Literál se generuje skriptem a porovná se s databází.** XML se upraví v Pythonu, ověří parserem, a literál vytažený zpět ze souboru se porovná s původním XML: rozdíl smí být jen v zamýšlených řádcích. Zachovej konce řádků (`CRLF`) a nepřidávej ani neubírej mezery. **V Pythonu na Windows zapisuj soubor s `newline=""`**: v textovém režimu se z uloženého `\r\n` stane `\r\r\n` a do šablony by se zapsaly prázdné řádky navíc.
 - **Skript platí jen pro databázi, ze které bylo XML načtené.** Stejná šablona má v testovací a ostré databázi jiný `last_update`, často i jiný obsah. Pro ostrou se XML načte z ostré a skript se vygeneruje znovu; podmínka na `last_update` jinak `UPDATE` správně neprovede.
 - **Soubor je v UTF-8 bez BOM a SSMS ho může otevřít ve špatném kódování.** Před spuštěním zkontroluj v SSMS text s diakritikou uvnitř XML, jinak se do šablony zapíšou rozsypané znaky.
-- **Přesun nebo přidání pole posune sousedy**, viz Rozložení a ColSpan níže. Rozložení před a po se porovná skriptem a po úpravě se formulář v Heliosu otevře a zkontroluje.
+- **Přesun nebo přidání pole posune sousedy**, viz Rozložení a ColSpan výše. Rozložení před a po se porovná skriptem a po úpravě se formulář v Heliosu otevře a zkontroluje.
 - `rozsah_platnosti = 'P'` s prázdným `seznam_poradacu` trigger odmítne a celý `UPDATE` vrátí.
 - Skript se nejdřív pustí na testovací databázi, ověří se otevřením formuláře v Heliosu a teprve potom jde do ostré. Po spuštění se v databázi zkontroluje, že uložené XML se shoduje s literálem ve skriptu a že se změnil `last_update`.
 
@@ -216,7 +228,34 @@ GO
 ===== KONEC VRÁCENÍ ===== */
 ```
 
+Skript se generuje skriptem `${CLAUDE_SKILL_DIR}/scripts/udf_sql.py` z XML uloženého do souborů. Databázi nečte: původní XML, název, třídu a `last_update` je potřeba načíst těsně předtím. Po zápisu vytáhne literály zpět ze souboru a porovná je se vstupy:
+
+```
+python ${CLAUDE_SKILL_DIR}/scripts/udf_sql.py úprava <db> <cislo_sablony> <nazev_sablony> <trida> <last_update> <původní.xml> <nové.xml> <výstup.sql> <popis>
+python ${CLAUDE_SKILL_DIR}/scripts/udf_sql.py obnovení <db> <cislo_sablony> <nazev_sablony> <trida> <last_update> <nové.xml> <výstup.sql> <popis>
+```
+
+Nové XML se nejjednodušeji sestaví skriptem v Pythonu z původního: jednotlivé `<column>` se přenesou jako text i se všemi atributy a mění se jen to, co se měnit má. Ruční přepis XML ztrácí atributy, které nikdo nečekal.
+
 **Pohled (`lcs.noris_form_views.grid_ms_net`) se ručně neupravuje.** Rozložení okna se změní tak, že se pohled v Heliosu aplikuje, upraví a uloží pod stejným názvem. Implicitní pohled pro pořadač nebo kategorii se nastavuje v Heliosu v pořadači Implicitní formulářové pohledy.
+
+### Přestavba podle šablony jiné firmy
+
+Šablona jiné databáze je vzor rozložení, ne kopie:
+
+- **UDA pole a firemní kalíšky vzoru v cílové databázi nebývají.** Pole ze vzoru se mapují na pole cílové šablony; co chybí, nahradí se nebo vypadne.
+- **Vnořenou šablonu ber z cílové šablony, ne ze vzoru.** Vnořená šablona musí mít stejný `FormatVersion` jako hlavní (soubory s `_fv3` patří k `FormatVersion="3"`), vzor ze starší šablony ji může mít v jiné verzi.
+- **Kódy popisků `fm(...)` se mezi šablonami liší**, stejný kód v hláškách jiné šablony znamená něco jiného.
+- **Každé pole cílové šablony musí v novém XML zůstat**, na Formuláři, nebo na skryté záložce. Kontrola: množina jmen `<column>` a `<groupcolumn>` před a po se liší jen o vědomě přidaná a vypuštěná pole.
+
+## Výsledek
+
+Po přenosu do ostré se k dokumentaci procesu uloží jen výsledek, mezikrokové skripty se smažou: platí jen pro stav databáze, ve kterém vznikly, a postup je zachycený tady. Výsledek jsou dva soubory se stejným názvem, s časovou značkou na začátku podle `last_update` šablony v ostré, aby se řadily podle názvu:
+
+- `RRRR-MM-DD HHMM UDF <cislo_sablony> <nazev_sablony>.frm.xml`: výsledné `sablona_xml`, beze změny konců řádků,
+- `RRRR-MM-DD HHMM UDF <cislo_sablony> <nazev_sablony>.sql`: skript obnovení (`udf_sql.py obnovení`) bez podmínky na `last_update`, s podmínkou na číslo, název a třídu šablony. Poslouží k obnovení šablony, kdyby ji někdo rozbil ve FormBuilderu, nebo jako základ pro nasazení do jiné databáze.
+
+Před uložením se ověří, že XML v souboru se přesně shoduje s ostrou databází.
 
 ## Jak číst šablonu
 
