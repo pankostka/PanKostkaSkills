@@ -77,7 +77,7 @@ Odhad z dat výše rozhodne, do které šířky pole patří, ne přesné čísl
 
 **Pole pod sebou mají stejnou šířku.** Pole v jednom sloupci mřížky oddílu (stejná pozice v řádku) dostanou stejnou šířku, i když by kratší stačila, jinak pravé okraje nelícují. Kde se šířky liší hodně, je lepší pole přesunout do jiného sloupce.
 
-**Popisky zarovnej přes oddíly.** Každý oddíl si šířku buňky popisků počítá sám, takže pole v oddílu s krátkými popisky začínají jinde než v oddílu s dlouhými. `FirstLeftColumnAlignMode="Template"` na `<template>` zarovná první sloupec popisků přes všechny oddíly záložky.
+**Popisky zarovnej přes oddíly.** Každý oddíl si šířku buňky popisků počítá sám, takže pole v oddílu s krátkými popisky začínají jinde než v oddílu s dlouhými. `FirstLeftColumnAlignMode="Template"` na `<template>` zarovná první sloupec popisků přes všechny oddíly záložky. Ověřeno, zarovná ale i oddíly, které zarovnané být nemají: vnořená tabulka sazeb DPH a ceny se odsunou doprava o šířku nejdelšího popisku. Takový oddíl se ze zarovnání vyjme atributem `FirstLeftColumnAlignMode="Tab"` na jeho `<tab>`.
 
 **Šířku okna šablona neurčí.** `TotalWidth`, `TotalHeight`, `MasterWidth` a `MasterHeight` na `<template>` jsou návrhové rozměry (standard 984 x 598 okno a 754 x 398 hlavička). Ověřeno: změna `MasterWidth` na 1000 se ve formuláři neprojevila. Skutečnou velikost okna a polohu příček mezi hlavičkou, položkami a vztahy si Helios ukládá do formulářového pohledu (`lcs.noris_form_views.grid_ms_net`) nebo do uživatelského donastavení (`lcs.pohledy_form_user_settings`), v otevření v záložkách (`positionForTabbed`) zvlášť. Obsah širší než okno uživatel uvidí s vodorovným posuvníkem. `lcs.pohledy_form_user_settings` se podle nápovědy ručně neupravuje, nanejvýš se nefunkční záznam smaže.
 
@@ -96,7 +96,7 @@ Odhad z dat výše rozhodne, do které šířky pole patří, ne přesné čísl
 
 3. V pořadači Implicitní formulářové pohledy (Správa programu, záložka Konfigurace) dát pohled jako implicitní pro třídu nebo pořadač a kategorii.
 
-Výsledek ověříš v databázi: pohled v `lcs.noris_form_views` má `zam_id = 0`, `master_template` a `entries_template` ukazují na šablony a v `grid_ms_net` je u `SplitterBar_MasterRelations` nová poloha (`positionForTabbed` pro otevírání v záložkách); implicitní pohled je řádek v `lcs.noris_defa_form_view`. Pohled ukazuje na šablonu číslem, takže pozdější úprava XML šablony se v pohledu projeví bez dalšího ukládání.
+Výsledek ověříš v databázi: pohled v `lcs.noris_form_views` má `zam_id = 0`, `master_template` a `entries_template` ukazují na šablony a v `grid_ms_net` je u `SplitterBar_MasterRelations` nová poloha (`positionForTabbed` pro otevírání v záložkách); implicitní pohled je řádek v `lcs.noris_defa_form_view`. Pohled ukazuje na šablonu číslem, takže pozdější úprava XML šablony se v pohledu projeví bez dalšího ukládání (ověřeno). Pohled se ukládá znovu jen kvůli změně velikosti okna nebo příček.
 
 **Barvy pole** (`FontAndColor`) ber z kalíšků, které databáze už používá v jiných šablonách, nebo ze systémových (`BadValue`, `ToProcess`, `GoodValue`, `Success`, `Warning`, `GroupLabel`, `InProcess`). Přehled použitých kalíšků dá regulární výraz `FontAndColor="'([^']+)'"` nad `sablona_xml` všech šablon. Kalíšek s firemním názvem (`Blue_front_protect`) v jiné databázi být nemusí.
 
