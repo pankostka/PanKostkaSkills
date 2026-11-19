@@ -39,6 +39,25 @@ Aplikace šablonu zapisuje přes view `lcs.template_form` s triggery `INSTEAD OF
 - **Obrázek (`InputType="picture"`) potřebuje `RegisterItemChange="True"`.** Bez něj vložení většího obrázku shodí klienta.
 - `InputType="string"` posílá na klienta prostý text, takže na něm nefunguje `Protect` ani `Invisible`.
 
+### Rozložení a ColSpan
+
+Pole nemají souřadnice. Oddíl (`<tab>`) je mřížka o `TableColumns` buňkách na řádek (výchozí hodnota z `<template>`, jinak 1) a pole se do ní skládají v pořadí, jak jsou v XML, zleva doprava a po řádcích. **`ColSpan` určuje, přes kolik buněk se pole vykreslí** (výchozí 1). Pole, které se do zbytku řádku nevejde, začne na novém řádku. Poloha pole je tedy dána součtem `ColSpan` všech polí před ním v oddílu.
+
+Proto **každý zásah do oddílu s víc sloupci přeskládá všechna pole za ním**: odebrané pole posune další o buňku doleva, přidané doprava, a změna `ColSpan` jednoho pole posune zbytek oddílu. Jestli je to žádoucí, rozhoduje člověk. Když má rozložení zůstat:
+
+- místo odebraného pole se vloží prázdné místo stejné šířky: `<column Name="placeholder_<něco>" InputType="Placeholder" ColSpan="<původní>"></column>` (`Name` musí být v šabloně jedinečné; starší šablony místo toho používají pole s `InputType="label"`),
+- nebo se o uvolněné buňky zvětší `ColSpan` sousedního pole.
+
+`nephrite/udf-layout-check` **U každé úpravy porovnej rozložení oddílů před a po** skriptem `${CLAUDE_SKILL_DIR}/scripts/udf_layout.py`. Nad skriptem úpravy porovná XML z bloku vrácení s novým XML a vypíše jen oddíly, kde se mřížka změnila, řádek po řádku:
+
+```
+python ${CLAUDE_SKILL_DIR}/scripts/udf_layout.py <skript.sql>
+python ${CLAUDE_SKILL_DIR}/scripts/udf_layout.py <před.xml> <po.xml>
+python ${CLAUDE_SKILL_DIR}/scripts/udf_layout.py <šablona.xml>
+```
+
+Výpis patří k návrhu úpravy, aby člověk viděl přeskládání dřív, než skript spustí. Skript upozorní i na `ColSpan` větší než `TableColumns` oddílu; takové pole vykreslí na celou šířku oddílu, jak se to v Heliosu skutečně zobrazí, je potřeba ověřit ve formuláři.
+
 ### Dopočtené sloupce
 
 `nephrite/udf-sqludfsyntax` **Sloupce navíc přidávej přes `sqludfsyntax`, ne přes `sqlsyntax`.** `sqlsyntax` nahrazuje celý SELECT formuláře, a když dodavatel při aktualizaci přidá sloupec do systémové šablony, formulář s vlastním `sqlsyntax` přestane fungovat a musí se ručně opravit. `sqludfsyntax` načítá jen sloupce navíc, takže aktualizace systémové šablony ho nerozbije. Obojí v jedné šabloně je chyba.
@@ -79,7 +98,7 @@ Zápis do `lcs.noris_form_templates` je výjimka z `nephrite/no-write-system` a 
 - **Nový text XML se do skriptu píše celý jako literál `N'...'`**, apostrofy uvnitř zdvojené. Úprava přes `REPLACE` nad uloženým XML tiše nic neudělá, když se hledaný text liší jedinou mezerou.
 - **Literál se generuje skriptem a porovná se s databází.** XML se upraví v Pythonu, ověří parserem, a literál vytažený zpět ze souboru se porovná s původním XML: rozdíl smí být jen v zamýšlených řádcích. Zachovej konce řádků (`CRLF`) a nepřidávej ani neubírej mezery.
 - **Soubor je v UTF-8 bez BOM a SSMS ho může otevřít ve špatném kódování.** Před spuštěním zkontroluj v SSMS text s diakritikou uvnitř XML, jinak se do šablony zapíšou rozsypané znaky.
-- **Přesun pole posune sousedy.** Oddíl s `TableColumns="2"` a víc skládá pole po řádcích, takže po odebrání jednoho pole přeskočí všechna další o buňku. Po úpravě je potřeba formulář v Heliosu otevřít a rozložení zkontrolovat.
+- **Přesun nebo přidání pole posune sousedy**, viz Rozložení a ColSpan níže. Rozložení před a po se porovná skriptem a po úpravě se formulář v Heliosu otevře a zkontroluje.
 - `rozsah_platnosti = 'P'` s prázdným `seznam_poradacu` trigger odmítne a celý `UPDATE` vrátí.
 - Skript se nejdřív pustí na testovací databázi, ověří se otevřením formuláře v Heliosu a teprve potom jde do ostré. Po spuštění se v databázi zkontroluje, že uložené XML se shoduje s literálem ve skriptu a že se změnil `last_update`.
 
