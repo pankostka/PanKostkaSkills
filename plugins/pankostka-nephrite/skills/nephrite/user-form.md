@@ -12,6 +12,8 @@ Doplněk skillu `pankostka-nephrite`. Uživatelsky definovaný formulář (UDF, 
 
 Aplikace šablonu zapisuje přes view `lcs.template_form` s triggery `INSTEAD OF`. Tabulka má vlastní triggery, které při změně obnoví cache aplikace (`lcs.set_cache_timestamp`), přepíšou název v `lcs.repository_translate` a při vložení založí práva v `lcs.permissions`.
 
+**Co se zobrazí po zrušení šablony, řídí třída.** Příznak `use_default_template_for_form` v `lcs.noris_classes` (atribut třídy Při zrušení formulářové šablony/pohledu použít výchozí šablonu) určuje, co formulář ukáže, když uživatel v okně výběru šablon nebo pohledů zruší platnost aplikované šablony: `A` vrátí základní (systémovou) šablonu, `N` implicitní pohled podle `lcs.noris_defa_form_view`. Obdobný `use_default_template_for_browse` platí pro přehled. Výchozí hodnota sloupce je `N`, ve starších databázích ale bývají starší třídy nastavené na `A`, takže se hodnota mezi databázemi liší i bez zásahu správce. Kdo zavádí implicitní pohledy, má u třídy počítat s `N`, jinak uživatel po zrušení šablony skončí na systémovém formuláři místo na firemním.
+
 **Formulář platí pro třídu, nebo pro pořadač.** Na šabloně a pohledu omezuje `rozsah_platnosti = 'P'` se `seznam_poradacu` (čísla oddělená čárkou), pro jaké pořadače se vůbec nabízejí. Častější je šablona pro celou třídu a implicitní pohled v `lcs.noris_defa_form_view` nastavený pro konkrétní pořadač, takže každý pořadač otevře jiný formulář. Kdo hledá, jaký formulář uživatel uvidí, čte obě místa.
 
 ## Tři XML šablony
