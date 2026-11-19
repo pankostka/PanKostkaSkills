@@ -29,6 +29,7 @@ Aplikace šablonu zapisuje přes view `lcs.template_form` s triggery `INSTEAD OF
 ### Vzhled
 
 - `<tab TabPageLabel="...">` začíná novou záložku formuláře, `<tab>` bez popisku je oddíl v ní, prázdné `<tab/>` je vodorovná čára. `TableColumns` určuje počet sloupců rozložení.
+- **Pole, se kterými uživatel nepracuje, se nemažou, ale přesunou na samostatnou záložku** (třeba Nepoužívat). Uživatel je tam pořád uvidí, když je potřebuje dohledat, a aplikace s nimi dál počítá, protože kód se na pole odkazuje jménem. Vzhled té záložky je vedlejší: jednoduchá mřížka o dvou sloupcích bez nadpisů a výplní stačí.
 - **Záložka se nesmí jmenovat `UDA`.** Název je vyhrazený jádru, které na ni doplňuje UDA atributy.
 - `<column Name="...">` je pole. Povinný je jen `Name`, a ten musí být na formuláři jedinečný.
 - **`Name` podle druhu pole:**
@@ -38,6 +39,9 @@ Aplikace šablonu zapisuje přes view `lcs.template_form` s triggery `INSTEAD OF
   - výpočtové pole libovolným jménem s atributem `Expr`.
 - Časté atributy pole: `Width` (číslo, `100%`, `Auto`), `ColSpan`, `Height` (jen textarea a obrázek), `Label`, `LabelPos` (`Left`, `Up`, `None`), `ReadOnly`, `Required`, `InputType` (`text`, `checkbox`, `textarea`, `select`, `label`, `string`, `picture`, `button`, `group`, `Placeholder`...), `Values` u checkboxu s jinými hodnotami než `A,N`, `EditMask`, `EditStyle`, `RegisterItemChange`.
 - **`Expr`, `Invisible`, `Protect`, `Required` a `FontAndColor` jsou výrazy** v syntaxi .NET `DataColumn.Expression`: `isnull(stav,'') = '1'`, `iif(cena>0,'GoodValue','BadValue')`. Na položkách se na hlavičku odkazuje `Parent.<sloupec>`. Kalíšek ve `FontAndColor` je výraz, takže jeho název musí být v apostrofech: `FontAndColor="'BadValue'"`.
+- **Výpočtové pole (`Expr`) dostane jméno, které v repository třídy není**, třeba s předponou `hl_`. Helios si k poli podle jména dohledává popisek a editační styl, a to i z atributu položek téže třídy. Ověřeno: pole `dph_celkem` na hlavičce převzalo masku atributu `lcs.sk_polozka.dph_celkem` a místo čísla zobrazilo text masky `L13;D2;T1;Z1`.
+- **Číselný výpočet potřebuje `ExprType="Decimal"`** a masku (`EditMask="L13;D2;T1;Z1"` pro částku), výchozí `ExprType` je `String`.
+- **Text bez rámečku, který se má umět schovat**, je pole s `Expr` a `NoBorder="True"`; `InputType="string"` `Invisible` neumí a `RenderAs="string"` vykreslí rámeček.
 - **Obrázek (`InputType="picture"`) potřebuje `RegisterItemChange="True"`.** Bez něj vložení většího obrázku shodí klienta.
 - `InputType="string"` posílá na klienta prostý text, takže na něm nefunguje `Protect` ani `Invisible`.
 - **Popisek `fm(<kód>)` musí mít kód v `sablona_msg_xml`**, jinak se nepřeloží. Nové pole proto dostane buď `Label` prostým textem, nebo kód, který v hláškách šablony už je; ručně přidaný kód je potřeba doplnit do `sablona_msg_xml` ve všech jazycích.
@@ -115,7 +119,7 @@ Výpis patří k návrhu úpravy, aby člověk viděl přeskládání dřív, ne
 `<tab NestedTemplate="/app/...frm.xml">` vloží do formuláře systémovou šablonu ze souboru na aplikačním serveru (typicky tabulka sazeb DPH a finanční údaje dokladu). Ten soubor sdílí všechny formuláře, které ho vkládají, a každý patch Heliosu ho přepíše, takže se neupravuje. Když má část vypadat jinak jen v jedné UDF šabloně, **obsah vnořené šablony se do ní rozepíše** místo odkazu:
 
 - Soubory jsou v adresáři aplikačního serveru `...\App\<modul>\...\Forms\`, často jen zabalené v `Forms.zip` vedle (soubor z `NestedTemplate` jako samostatný na disku být nemusí). Rozbal jen potřebné soubory, do vlastního adresáře.
-- **Jména polí a skupin (`group_zaklad1` apod.) zachovej.** Aplikace podle nich v kódu přepíná viditelnost (třeba Kč a cizí měnu) a přepočítává částky, šablona to v XML nemá.
+- **Jména polí a skupin (`group_zaklad1` apod.) zachovej, skupiny nerozbíjej.** Aplikace podle nich v kódu přepíná viditelnost (třeba Kč a cizí měnu) a přepočítává částky, šablona to v XML nemá. Ověřeno na zaokrouhlení: aplikace podle přepínače měny schová pole v Kč, nebo v měně, ať jsou ve skupině, nebo zvlášť. Když má být hodnota vidět vždy a pole zůstat editovatelné, dej do vlastní skupiny skutečné pole a jeho zobrazovací kopii s jiným jménem (`hl_zaokrouhleni_celkem` s `Expr="zaokrouhleni_celkem"`, jen pro čtení) s opačnými podmínkami `Invisible`: skutečné pole je vidět a editovatelné, dokud ho aplikace neschová, pak na jeho místě zůstane kopie. Výpočtové pole samo je vždy jen pro čtení, takže nestačí tam, kde uživatel hodnotu běžně přepisuje.
 - Atributy polí (`EditStyle="#dynamic#"`, `EditMask`, `InputType`, `ReadOnly`, `RegisterItemChange`) přenes beze změny, mění se jen rozložení a šířky. Pole, které ve formuláři být nemá, přesuň na skrytou záložku, nemaž ho.
 - Popisky `fm(MSGxxx)` odkazují do hlášek vnořené šablony (`Messages` na jejím `<template>`); v hláškách UDF šablony stejný kód může znamenat něco jiného. Nahraď je prostým textem nebo hlášky přenes.
 - Rozepsaná kopie už nedostane opravy z patchů, stejně jako `sqlsyntax`. Je to vědomé rozhodnutí a patří do popisu skriptu.
