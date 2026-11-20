@@ -34,6 +34,8 @@ Práva na šablonu jsou v `lcs.permissions` (`cislo_objektu = cislo_template`, o
 
 ### Offline import
 
+Export i import se spouští nad přehledem pořadače Šablony (Správa programu): ve zdrojové databázi se v něm označí šablony a spustí Offline export s volbou Exportovat včetně práv, v cílové databázi se v témže pořadači spustí Offline import. V pokynech pro uživatele vždy uveď i to, který pořadač má otevřít.
+
 `nephrite/template-always-insert` **Při kopii do jiné databáze zvol Importované záznamy vždy vkládat.** Šablona dostane nové číslo a nic existujícího se nepřepíše. Práva ze souboru se navážou na novou šablonu, i když v souboru odkazují na původní číslo, a stávající práva se stejným číslem zůstanou beze změny. Ověřeno: práva se v cílové databázi hledají podle klíčových atributů (třída, pořadač, operace, kategorie, uživatel, objekt), ne podle čísla. Volba Vkládat nebo aktualizovat hledá záznam podle identifikace XML rozhraní (u šablon vztah na třídu a `sync_id`, jinak GUNID) a záznam, který najde, přepíše.
 
 `nephrite/template-permissions` **Po importu zkontroluj, že šablona má práva.** Soubor bez bloku `<permissions>` založí šablonu bez práv a nikdo ji neuvidí. Auditlog to nehlásí, import skončí úspěšně. Práva do souboru dá offline export s volbou Exportovat včetně práv, nebo skript převodu z `RETRIEVE`.
@@ -64,7 +66,7 @@ python ${CLAUDE_SKILL_DIR}/scripts/retrieve_templates.py prevod <retrieve.xml> <
 - `prikaz` vezme přihlašovací část z odkazu na funkci (viz `xml-task.md`) a nahradí příkazy zprávou `RETRIEVE` na zadané šablony. Výsledný soubor obsahuje šifrované heslo, smaž ho po běhu.
 - `prevod` přejmenuje kořen na `INSERTUPDATE`, ke každé šabloně doplní pět výchozích práv pro Všichni a escapuje tabulátory a konce řádků v hodnotách atributů, viz `xml-task.md`.
 
-Výsledek se naimportuje funkcí Offline import s volbou Vždy vkládat. Šablona s jinými než výchozími právy je dostane výchozí a dorovnají se ručně.
+Výsledek se naimportuje funkcí Offline import v pořadači Šablony cílové databáze s volbou Vždy vkládat. Šablona s jinými než výchozími právy je dostane výchozí a dorovnají se ručně.
 
 ### SQL skript
 
