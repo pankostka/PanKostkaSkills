@@ -10,6 +10,11 @@ Doplněk skillu `pankostka-nephrite`. Čísla pořadačů a dalších objektů s
 | DVZ | Dynamický vztah. Umožňuje provázat dva doklady přes mezitabulku M:N. |
 | FD | Faktura došlá. |
 | FV | Faktura vydaná. |
+| GUNID | Globální identifikátor záznamu (třeba `00000A00001T003KW7`), podle kterého XML rozhraní a offline import dohledávají záznam, když třída nemá jiné klíčové atributy. Při importu s volbou Vždy vkládat dostane záznam nový GUNID. |
+| HeliosGreenXmlTask | Konzolová utilita, která pošle aplikačnímu serveru XML zprávu (spuštění funkce, `RETRIEVE`, `INSERTUPDATE`) podle příkazového souboru a odpověď uloží do souboru. Používá se v jobech. Viz `xml-task.md`. |
+| Odkaz na funkci | Příkazový soubor pro `HeliosGreenXmlTask` vytvořený v Heliosu funkcí Vytvoření odkazu: přihlášení se šifrovaným heslem a příkaz `RUN`. |
+| Offline export, offline import | Základní operace nad přehledem: export záznamů do XML souboru (zpráva `RETRIEVE` převedená na `INSERTUPDATE`) a jeho import do téže nebo jiné databáze. Třídy, vztahy a kategorie zapisuje symbolicky, takže sedí i mezi databázemi. |
+| Šablona přehledu | Uložené sloupce, řazení a filtry přehledu jedné třídy (třída 20 Šablony, `nazev_pbl = 'gsb'`). Viz `grid-template.md`. |
 | ManVysl | Manažerská výsledovka. Uživatelsky udržovaný číselník řádků manažerského výkazu, jiný pohled na náklady a výnosy než legislativní účtová osnova. Kde je vedená a v jakém pořadači, patří do repa projektu. |
 | NO | Nákladový okruh. Číselník v Heliosu, účetní dimenze. |
 | NSP | Procedura, kterou uživatel spouští jako **funkci nad přehledem**. Má povinnou signaturu `(@System_InputRecordNumber INT, @System_ResultRecordNumber INT OUTPUT)`. **Pozor na kolizi:** v datovém skladu znamená `nsp` plnicí proceduru (`nsp10`, `nsp20`, `nsp30`). |
